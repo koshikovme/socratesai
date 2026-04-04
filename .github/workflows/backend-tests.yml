@@ -1,4 +1,4 @@
-name: Backend Tests
+name: Automated Tests
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
   pull_request:
 
 jobs:
-  test:
+  backend-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,3 +26,27 @@ jobs:
 
       - name: Run backend tests
         run: mvn -B test
+
+  frontend-test:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: socratesai-frontend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: socratesai-frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Run frontend tests
+        run: npm test
