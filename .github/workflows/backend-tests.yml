@@ -24,8 +24,17 @@ jobs:
           java-version: '21'
           cache: maven
 
-      - name: Run backend tests
-        run: mvn -B test
+      - name: Run backend verification with coverage gates
+        run: mvn -B verify
+
+      - name: Upload backend coverage artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-jacoco-report
+          path: |
+            target/site/jacoco
+            target/site/jacoco/jacoco.xml
 
   frontend-test:
     runs-on: ubuntu-latest
@@ -48,5 +57,12 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
 
-      - name: Run frontend tests
-        run: npm test
+      - name: Run frontend coverage with quality gates
+        run: npm run test:coverage
+
+      - name: Upload frontend coverage artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: frontend-coverage-report
+          path: socratesai-frontend/coverage

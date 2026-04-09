@@ -3,6 +3,7 @@ package com.masters.socratesai.interaction.controller;
 import com.masters.socratesai.interaction.dto.InteractionResultResponse;
 import com.masters.socratesai.interaction.dto.InteractionResultUpdateRequest;
 import com.masters.socratesai.interaction.service.InteractionLogService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class InteractionController {
     @PostMapping("/{interactionId}/result")
     public ResponseEntity<InteractionResultResponse> updateResult(
             @PathVariable UUID interactionId,
-            @RequestBody InteractionResultUpdateRequest request
+            @Valid @RequestBody InteractionResultUpdateRequest request
     ) {
         return ResponseEntity.ok(
                 interactionLogService.updateInteractionResult(

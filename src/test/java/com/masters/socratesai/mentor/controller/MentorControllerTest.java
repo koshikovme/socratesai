@@ -1,6 +1,7 @@
 package com.masters.socratesai.mentor.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.masters.socratesai.analyzer.dto.AnalyzerResult;
 import com.masters.socratesai.mentor.dto.MentorAnalyzeRequest;
 import com.masters.socratesai.mentor.dto.MentorRequest;
 import com.masters.socratesai.mentor.dto.MentorResponse;
@@ -54,6 +55,7 @@ class MentorControllerTest {
         request.setTaskId(2L);
         request.setAttemptNo(3);
         request.setCode("if (x > 0) {}");
+        request.setAnalyzerResult(new AnalyzerResult());
 
         mockMvc.perform(post("/api/mentor/feedback")
                         .contentType(MediaType.APPLICATION_JSON)

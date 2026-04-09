@@ -5,6 +5,7 @@ import com.masters.socratesai.mentor.dto.MentorRequest;
 import com.masters.socratesai.mentor.dto.MentorResponse;
 import com.masters.socratesai.mentor.service.MentorService;
 import com.masters.socratesai.mentor.service.MentorWorkflowService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,12 +25,12 @@ public class MentorController {
     }
 
     @PostMapping("/feedback")
-    public ResponseEntity<MentorResponse> feedback(@RequestBody MentorRequest request) {
+    public ResponseEntity<MentorResponse> feedback(@Valid @RequestBody MentorRequest request) {
         return ResponseEntity.ok(mentorService.mentor(request));
     }
 
     @PostMapping("/analyze-feedback")
-    public ResponseEntity<MentorResponse> analyzeFeedback(@RequestBody MentorAnalyzeRequest request) {
+    public ResponseEntity<MentorResponse> analyzeFeedback(@Valid @RequestBody MentorAnalyzeRequest request) {
         return ResponseEntity.ok(mentorWorkflowService.analyzeAndMentor(request));
     }
 }

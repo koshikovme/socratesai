@@ -10,9 +10,9 @@ import com.masters.socratesai.task.model.Task;
 import com.masters.socratesai.task.repo.TaskRepository;
 import com.masters.socratesai.task.service.TaskService;
 import jakarta.persistence.EntityManagerFactory;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
@@ -26,7 +26,7 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
-@Configuration
+@TestConfiguration
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackageClasses = {
         TaskRepository.class,

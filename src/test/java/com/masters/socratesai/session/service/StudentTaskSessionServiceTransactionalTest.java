@@ -29,7 +29,11 @@ class StudentTaskSessionServiceTransactionalTest {
         StudentTaskSession second = service.getOrCreateActiveSession(11L, 22L);
 
         assertThat(second.getSessionId()).isEqualTo(first.getSessionId());
-        assertThat(repository.findAll()).hasSize(1);
+        assertThat(repository.findByStudentIdAndTaskIdAndEndedAtIsNull(11L, 22L))
+                .isPresent()
+                .get()
+                .extracting(StudentTaskSession::getSessionId)
+                .isEqualTo(first.getSessionId());
     }
 
     @Test
