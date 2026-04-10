@@ -210,6 +210,30 @@
 						</goals>
 					</execution>
 					<execution>
+						<id>report-core</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.reporting.outputDirectory}/jacoco-core</outputDirectory>
+							<excludes>
+								<exclude>org/springframework/**</exclude>
+								<exclude>com/masters/socratesai/config/**</exclude>
+								<exclude>com/masters/socratesai/common/**</exclude>
+								<exclude>com/masters/socratesai/websocket/**</exclude>
+								<exclude>com/masters/socratesai/**/dto/**</exclude>
+								<exclude>com/masters/socratesai/**/model/**</exclude>
+								<exclude>com/masters/socratesai/**/repo/**</exclude>
+								<exclude>com/masters/socratesai/SocratesaiApplication*</exclude>
+								<exclude>**/*BeanDefinitions*</exclude>
+								<exclude>**/*SpringCGLIB*</exclude>
+								<exclude>**/*Accessor*</exclude>
+								<exclude>**/*Instantiator*</exclude>
+							</excludes>
+						</configuration>
+					</execution>
+					<execution>
 						<id>check</id>
 						<phase>verify</phase>
 						<goals>
@@ -229,6 +253,46 @@
 											<counter>BRANCH</counter>
 											<value>COVEREDRATIO</value>
 											<minimum>0.05</minimum>
+										</limit>
+									</limits>
+								</rule>
+							</rules>
+						</configuration>
+					</execution>
+					<execution>
+						<id>check-core</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<configuration>
+							<excludes>
+								<exclude>org/springframework/**</exclude>
+								<exclude>com/masters/socratesai/config/**</exclude>
+								<exclude>com/masters/socratesai/common/**</exclude>
+								<exclude>com/masters/socratesai/websocket/**</exclude>
+								<exclude>com/masters/socratesai/**/dto/**</exclude>
+								<exclude>com/masters/socratesai/**/model/**</exclude>
+								<exclude>com/masters/socratesai/**/repo/**</exclude>
+								<exclude>com/masters/socratesai/SocratesaiApplication*</exclude>
+								<exclude>**/*BeanDefinitions*</exclude>
+								<exclude>**/*SpringCGLIB*</exclude>
+								<exclude>**/*Accessor*</exclude>
+								<exclude>**/*Instantiator*</exclude>
+							</excludes>
+							<rules>
+								<rule>
+									<element>BUNDLE</element>
+									<limits>
+										<limit>
+											<counter>LINE</counter>
+											<value>COVEREDRATIO</value>
+											<minimum>0.80</minimum>
+										</limit>
+										<limit>
+											<counter>BRANCH</counter>
+											<value>COVEREDRATIO</value>
+											<minimum>0.55</minimum>
 										</limit>
 									</limits>
 								</rule>

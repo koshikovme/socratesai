@@ -35,6 +35,8 @@ jobs:
           path: |
             target/site/jacoco
             target/site/jacoco/jacoco.xml
+            target/site/jacoco-core
+            target/site/jacoco-core/jacoco.xml
 
   frontend-test:
     runs-on: ubuntu-latest
