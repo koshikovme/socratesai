@@ -1,0 +1,37 @@
+spring:
+  datasource:
+    url: ${APP_DATASOURCE_URL}
+    username: ${APP_DATASOURCE_USERNAME}
+    password: ${APP_DATASOURCE_PASSWORD}
+  jpa:
+    show-sql: false
+  flyway:
+    enabled: true
+
+logging:
+  level:
+    org.hibernate.SQL: info
+    org.hibernate.orm.jdbc.bind: info
+
+app:
+  jwt:
+    secret: ${APP_JWT_SECRET}
+    expiration-ms: ${APP_JWT_EXPIRATION_MS:3600000}
+  gemini:
+    enabled: ${APP_GEMINI_ENABLED:false}
+    api-key: ${GEMINI_API_KEY:}
+  openai:
+    enabled: ${APP_OPENAI_ENABLED:false}
+    api-key: ${OPENAI_API_KEY:}
+  policy:
+    mode: ${APP_POLICY_MODE:rule}
+    ml:
+      enabled: ${APP_POLICY_ML_ENABLED:false}
+      base-url: ${APP_POLICY_ML_BASE_URL:http://localhost:8001}
+      fallback-to-rule: ${APP_POLICY_ML_FALLBACK_TO_RULE:true}
+
+springdoc:
+  api-docs:
+    enabled: ${APP_OPENAPI_ENABLED:false}
+  swagger-ui:
+    enabled: ${APP_SWAGGER_ENABLED:false}

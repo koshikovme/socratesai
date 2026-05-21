@@ -1,0 +1,139 @@
+{
+  "dataset_path": "ml\\problem_suite_policy_dataset.csv",
+  "dataset_rows": 1080,
+  "train_rows": 810,
+  "test_rows": 270,
+  "target_column": "target_feedback_action",
+  "split_strategy": "group_holdout",
+  "group_column": "problem_slug",
+  "train_groups": [
+    "climbing-stairs",
+    "longest-substring",
+    "lru-cache",
+    "matrix-diagonal-sum",
+    "merge-sorted-array",
+    "palindrome",
+    "reverse-linked-list",
+    "roman-to-integer",
+    "valid-parentheses"
+  ],
+  "test_groups": [
+    "binary-search",
+    "trapping-rain-water",
+    "two-sum"
+  ],
+  "target_distribution": {
+    "CODE_HIGHLIGHT": 300,
+    "CONCEPTUAL_HINT": 420,
+    "GUIDING_QUESTION": 180,
+    "NO_FEEDBACK": 180
+  },
+  "train_target_distribution": {
+    "CODE_HIGHLIGHT": 225,
+    "CONCEPTUAL_HINT": 315,
+    "GUIDING_QUESTION": 135,
+    "NO_FEEDBACK": 135
+  },
+  "test_target_distribution": {
+    "CODE_HIGHLIGHT": 75,
+    "CONCEPTUAL_HINT": 105,
+    "GUIDING_QUESTION": 45,
+    "NO_FEEDBACK": 45
+  },
+  "accuracy": 1.0,
+  "macro_f1": 1.0,
+  "labels": [
+    "CODE_HIGHLIGHT",
+    "CONCEPTUAL_HINT",
+    "GUIDING_QUESTION",
+    "NO_FEEDBACK"
+  ],
+  "classification_report": {
+    "CODE_HIGHLIGHT": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 75.0
+    },
+    "CONCEPTUAL_HINT": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 105.0
+    },
+    "GUIDING_QUESTION": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 45.0
+    },
+    "NO_FEEDBACK": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 45.0
+    },
+    "accuracy": 1.0,
+    "macro avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 270.0
+    },
+    "weighted avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 270.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      75,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      105,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      45,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      45
+    ]
+  ],
+  "feature_columns": [
+    "error_type",
+    "severity",
+    "compile_success",
+    "tests_passed",
+    "tests_failed",
+    "same_error_count",
+    "total_errors_seen",
+    "attempt_no",
+    "last_feedback_action",
+    "last_feedback_success",
+    "has_suspicious_region",
+    "code_lines",
+    "total_feedback_count_in_session"
+  ],
+  "model": {
+    "type": "RandomForestClassifier",
+    "n_estimators": 200,
+    "max_depth": 8,
+    "min_samples_leaf": 2,
+    "class_weight": "balanced_subsample",
+    "random_state": 42
+  }
+}

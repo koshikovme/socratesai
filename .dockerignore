@@ -1,0 +1,17 @@
+.git
+.github
+.idea
+.mvn/wrapper/maven-wrapper.jar
+target
+out
+venv
+__pycache__
+*.pyc
+ml/__pycache__
+socratesai-frontend/node_modules
+socratesai-frontend/dist
+web/node_modules
+web/dist
+*.log
+.env
+.env.*

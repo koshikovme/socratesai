@@ -7,6 +7,7 @@ import com.masters.socratesai.mentor.dto.MentorRequest;
 import com.masters.socratesai.mentor.dto.MentorResponse;
 import com.masters.socratesai.mentor.dto.StudentContextDto;
 import com.masters.socratesai.mentor.feedback.FeedbackGenerationService;
+import com.masters.socratesai.mentor.feedback.GeneratedFeedback;
 import com.masters.socratesai.mentor.model.FeedbackAction;
 import com.masters.socratesai.mentor.policy.MentorPolicyService;
 import com.masters.socratesai.mentor.policy.PolicyDecision;
@@ -62,7 +63,7 @@ public class MentorService {
         int policyTimeMs = (int) (System.currentTimeMillis() - policyStart);
 
         long feedbackStart = System.currentTimeMillis();
-        String feedbackText = feedbackGenerationService.generate(
+        GeneratedFeedback feedback = feedbackGenerationService.generateWithMetadata(
                 action,
                 analyzer,
                 request.getCode(),
@@ -80,8 +81,8 @@ public class MentorService {
                 context,
                 action,
                 policyDecision.policyVersion(),
-                feedbackText,
-                feedbackGenerationService.getSource(),
+                feedback.text(),
+                feedback.source(),
                 policyTimeMs,
                 feedbackTimeMs
         );
@@ -91,7 +92,7 @@ public class MentorService {
         MentorResponse response = new MentorResponse();
         response.setInteractionId(savedLog.getInteractionId());
         response.setAction(action.name());
-        response.setFeedbackText(feedbackText);
+        response.setFeedbackText(feedback.text());
         response.setErrorType(analyzer.getErrorType());
         response.setSuspiciousRegion(analyzer.getSuspiciousRegion());
         response.setCompileSuccess(analyzer.isCompileSuccess());

@@ -3,6 +3,7 @@ package com.masters.socratesai.analyzer.controller;
 import com.masters.socratesai.analyzer.dto.AnalyzerRequest;
 import com.masters.socratesai.analyzer.dto.AnalyzerResult;
 import com.masters.socratesai.analyzer.service.AnalyzerService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,7 +21,7 @@ public class AnalyzerController {
     }
 
     @PostMapping("/analyze")
-    public ResponseEntity<AnalyzerResult> analyze(@RequestBody AnalyzerRequest request) {
+    public ResponseEntity<AnalyzerResult> analyze(@Valid @RequestBody AnalyzerRequest request) {
         return ResponseEntity.ok(analyzerService.analyze(request));
     }
 }

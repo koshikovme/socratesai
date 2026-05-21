@@ -45,11 +45,14 @@ class InteractionLogServiceTransactionalTest {
                 10
         );
 
-        service.updateInteractionResult(saved.getInteractionId(), true, 900);
+        service.updateInteractionResult(saved.getInteractionId(), true, 900, true, 4, "Fixed after hint", false);
 
         InteractionLog updated = repository.findById(saved.getInteractionId()).orElseThrow();
         assertThat(updated.getResolvedAfterFeedback()).isTrue();
         assertThat(updated.getFixedAfterMs()).isEqualTo(900);
+        assertThat(updated.getFeedbackHelpful()).isTrue();
+        assertThat(updated.getFeedbackRating()).isEqualTo(4);
+        assertThat(updated.getRepeatedSameErrorAfterFeedback()).isFalse();
     }
 
     @Test
@@ -62,7 +65,7 @@ class InteractionLogServiceTransactionalTest {
                 UUID.randomUUID(), 10L, 11L, 2, "code-b", analyzerResult("OFF_BY_ONE"),
                 context(), FeedbackAction.GUIDING_QUESTION, "rule-v1", "Hint B", "template", 7, 12
         );
-        service.updateInteractionResult(resolved.getInteractionId(), true, 700);
+        service.updateInteractionResult(resolved.getInteractionId(), true, 700, true, 5, null, false);
 
         byte[] exported = service.exportPolicyDataset(true);
         String csv = new String(exported, StandardCharsets.UTF_8);

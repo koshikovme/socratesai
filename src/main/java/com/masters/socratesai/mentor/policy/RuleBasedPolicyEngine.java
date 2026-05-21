@@ -26,12 +26,20 @@ public class RuleBasedPolicyEngine implements PolicySelector {
             return FeedbackAction.CODE_HIGHLIGHT;
         }
 
-        if ("OFF_BY_ONE".equals(errorType) && sameErrorCount >= 2) {
+        if ("WRONG_LOOP_BOUNDARY".equals(errorType) && sameErrorCount == 1) {
+            return FeedbackAction.CODE_HIGHLIGHT;
+        }
+
+        if (("OFF_BY_ONE".equals(errorType) || "WRONG_LOOP_BOUNDARY".equals(errorType)) && sameErrorCount >= 2) {
             return FeedbackAction.CONCEPTUAL_HINT;
         }
 
         if ("WRONG_CONDITION".equals(errorType) && sameErrorCount >= 2) {
             return FeedbackAction.CONCEPTUAL_HINT;
+        }
+
+        if ("POSSIBLE_NULL_ACCESS".equals(errorType)) {
+            return sameErrorCount <= 1 ? FeedbackAction.CODE_HIGHLIGHT : FeedbackAction.CONCEPTUAL_HINT;
         }
 
         if ("STUCK_NO_PROGRESS".equals(errorType)) {

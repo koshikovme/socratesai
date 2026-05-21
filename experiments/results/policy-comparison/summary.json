@@ -1,0 +1,35 @@
+{
+  "RULE": {
+    "events": 100,
+    "agreement": 0.8,
+    "mean_latency_ms": 30.89,
+    "p95_latency_ms": 50,
+    "action_distribution": {
+      "CODE_HIGHLIGHT": 17,
+      "CONCEPTUAL_HINT": 58,
+      "GUIDING_QUESTION": 15,
+      "NO_FEEDBACK": 10
+    }
+  },
+  "ML": {
+    "events": 100,
+    "agreement": 0.8,
+    "mean_latency_ms": 53.77,
+    "p95_latency_ms": 78,
+    "action_distribution": {
+      "CODE_HIGHLIGHT": 17,
+      "CONCEPTUAL_HINT": 58,
+      "GUIDING_QUESTION": 15,
+      "NO_FEEDBACK": 10
+    }
+  },
+  "NO_POLICY": {
+    "events": 100,
+    "agreement": 0.43,
+    "mean_latency_ms": 47.95,
+    "p95_latency_ms": 64,
+    "action_distribution": {
+      "CONCEPTUAL_HINT": 100
+    }
+  }
+}

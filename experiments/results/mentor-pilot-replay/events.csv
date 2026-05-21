@@ -1,0 +1,571 @@
+event_index,student_id,task_id,scenario,action,error_type,compile_success,tests_passed,tests_failed,analysis_time_ms,wall_latency_ms,suspicious_region
+1,1,101,syntax_missing_semicolon_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,409,577,statement ending
+2,1,101,syntax_missing_semicolon_b,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,88,107,statement ending
+3,1,101,syntax_missing_semicolon_c,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,80,99,statement ending
+4,1,102,off_by_one_first,CODE_HIGHLIGHT,OFF_BY_ONE,true,1,2,450,472,for loop condition
+5,1,102,off_by_one_repeat_a,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,335,351,for loop condition
+6,1,102,off_by_one_repeat_b,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,315,334,for loop condition
+7,1,103,wrong_condition_first,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,299,314,while condition
+8,1,103,wrong_condition_repeat,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,305,321,while condition
+9,1,104,unfinished_todo_first,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,306,325,unfinished implementation
+10,1,104,unfinished_todo_repeat_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,75,89,"line 1, column 66"
+11,1,104,unfinished_todo_repeat_b,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,299,312,unfinished implementation
+12,1,105,complete_return_first,NO_FEEDBACK,UNKNOWN,true,3,0,287,304,logic block
+13,1,106,unknown_partial_logic,CONCEPTUAL_HINT,UNKNOWN,true,1,2,291,305,logic block
+14,1,105,complete_return_second,NO_FEEDBACK,UNKNOWN,true,3,0,297,313,logic block
+15,1,101,syntax_after_progress,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,76,90,statement ending
+16,1,102,off_by_one_after_progress,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,298,310,for loop condition
+17,1,104,unfinished_todo_after_progress,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,290,303,unfinished implementation
+18,1,103,wrong_condition_after_progress,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,292,310,while condition
+19,1,105,complete_return_final,CONCEPTUAL_HINT,UNKNOWN,true,3,0,289,303,logic block
+20,2,101,syntax_missing_semicolon_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,76,87,statement ending
+21,2,101,syntax_missing_semicolon_b,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,68,83,statement ending
+22,2,101,syntax_missing_semicolon_c,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,73,89,statement ending
+23,2,102,off_by_one_first,CODE_HIGHLIGHT,OFF_BY_ONE,true,1,2,292,306,for loop condition
+24,2,102,off_by_one_repeat_a,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,302,314,for loop condition
+25,2,102,off_by_one_repeat_b,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,320,337,for loop condition
+26,2,103,wrong_condition_first,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,300,312,while condition
+27,2,103,wrong_condition_repeat,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,302,314,while condition
+28,2,104,unfinished_todo_first,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,290,302,unfinished implementation
+29,2,104,unfinished_todo_repeat_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,73,84,"line 1, column 66"
+30,2,104,unfinished_todo_repeat_b,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,282,299,unfinished implementation
+31,2,105,complete_return_first,NO_FEEDBACK,UNKNOWN,true,3,0,286,300,logic block
+32,2,106,unknown_partial_logic,CONCEPTUAL_HINT,UNKNOWN,true,1,2,286,301,logic block
+33,2,105,complete_return_second,NO_FEEDBACK,UNKNOWN,true,3,0,284,297,logic block
+34,2,101,syntax_after_progress,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,71,83,statement ending
+35,2,102,off_by_one_after_progress,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,288,300,for loop condition
+36,2,104,unfinished_todo_after_progress,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,295,313,unfinished implementation
+37,2,103,wrong_condition_after_progress,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,300,311,while condition
+38,2,105,complete_return_final,CONCEPTUAL_HINT,UNKNOWN,true,3,0,290,304,logic block
+39,3,101,syntax_missing_semicolon_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,67,81,statement ending
+40,3,101,syntax_missing_semicolon_b,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,69,83,statement ending
+41,3,101,syntax_missing_semicolon_c,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,73,83,statement ending
+42,3,102,off_by_one_first,CODE_HIGHLIGHT,OFF_BY_ONE,true,1,2,289,301,for loop condition
+43,3,102,off_by_one_repeat_a,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,290,304,for loop condition
+44,3,102,off_by_one_repeat_b,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,281,291,for loop condition
+45,3,103,wrong_condition_first,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,282,293,while condition
+46,3,103,wrong_condition_repeat,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,280,294,while condition
+47,3,104,unfinished_todo_first,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,277,287,unfinished implementation
+48,3,104,unfinished_todo_repeat_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,74,85,"line 1, column 66"
+49,3,104,unfinished_todo_repeat_b,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,279,291,unfinished implementation
+50,3,105,complete_return_first,NO_FEEDBACK,UNKNOWN,true,3,0,279,290,logic block
+51,3,106,unknown_partial_logic,CONCEPTUAL_HINT,UNKNOWN,true,1,2,281,294,logic block
+52,3,105,complete_return_second,NO_FEEDBACK,UNKNOWN,true,3,0,283,295,logic block
+53,3,101,syntax_after_progress,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,68,79,statement ending
+54,3,102,off_by_one_after_progress,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,280,295,for loop condition
+55,3,104,unfinished_todo_after_progress,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,283,299,unfinished implementation
+56,3,103,wrong_condition_after_progress,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,285,300,while condition
+57,3,105,complete_return_final,CONCEPTUAL_HINT,UNKNOWN,true,3,0,278,290,logic block
+58,4,101,syntax_missing_semicolon_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,70,85,statement ending
+59,4,101,syntax_missing_semicolon_b,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,70,82,statement ending
+60,4,101,syntax_missing_semicolon_c,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,72,83,statement ending
+61,4,102,off_by_one_first,CODE_HIGHLIGHT,OFF_BY_ONE,true,1,2,281,295,for loop condition
+62,4,102,off_by_one_repeat_a,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,283,297,for loop condition
+63,4,102,off_by_one_repeat_b,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,282,293,for loop condition
+64,4,103,wrong_condition_first,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,301,320,while condition
+65,4,103,wrong_condition_repeat,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,296,308,while condition
+66,4,104,unfinished_todo_first,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,296,307,unfinished implementation
+67,4,104,unfinished_todo_repeat_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,72,80,"line 1, column 66"
+68,4,104,unfinished_todo_repeat_b,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,276,285,unfinished implementation
+69,4,105,complete_return_first,NO_FEEDBACK,UNKNOWN,true,3,0,274,285,logic block
+70,4,106,unknown_partial_logic,CONCEPTUAL_HINT,UNKNOWN,true,1,2,284,298,logic block
+71,4,105,complete_return_second,NO_FEEDBACK,UNKNOWN,true,3,0,274,282,logic block
+72,4,101,syntax_after_progress,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,68,79,statement ending
+73,4,102,off_by_one_after_progress,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,284,296,for loop condition
+74,4,104,unfinished_todo_after_progress,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,276,288,unfinished implementation
+75,4,103,wrong_condition_after_progress,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,276,284,while condition
+76,4,105,complete_return_final,CONCEPTUAL_HINT,UNKNOWN,true,3,0,282,292,logic block
+77,5,101,syntax_missing_semicolon_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,71,85,statement ending
+78,5,101,syntax_missing_semicolon_b,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,73,82,statement ending
+79,5,101,syntax_missing_semicolon_c,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,69,77,statement ending
+80,5,102,off_by_one_first,CODE_HIGHLIGHT,OFF_BY_ONE,true,1,2,281,295,for loop condition
+81,5,102,off_by_one_repeat_a,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,280,290,for loop condition
+82,5,102,off_by_one_repeat_b,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,278,288,for loop condition
+83,5,103,wrong_condition_first,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,282,290,while condition
+84,5,103,wrong_condition_repeat,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,277,286,while condition
+85,5,104,unfinished_todo_first,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,280,294,unfinished implementation
+86,5,104,unfinished_todo_repeat_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,75,86,"line 1, column 66"
+87,5,104,unfinished_todo_repeat_b,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,280,291,unfinished implementation
+88,5,105,complete_return_first,NO_FEEDBACK,UNKNOWN,true,3,0,286,299,logic block
+89,5,106,unknown_partial_logic,CONCEPTUAL_HINT,UNKNOWN,true,1,2,281,290,logic block
+90,5,105,complete_return_second,NO_FEEDBACK,UNKNOWN,true,3,0,278,288,logic block
+91,5,101,syntax_after_progress,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,71,83,statement ending
+92,5,102,off_by_one_after_progress,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,286,295,for loop condition
+93,5,104,unfinished_todo_after_progress,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,276,287,unfinished implementation
+94,5,103,wrong_condition_after_progress,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,282,290,while condition
+95,5,105,complete_return_final,CONCEPTUAL_HINT,UNKNOWN,true,3,0,272,279,logic block
+96,6,101,syntax_missing_semicolon_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,70,80,statement ending
+97,6,101,syntax_missing_semicolon_b,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,71,80,statement ending
+98,6,101,syntax_missing_semicolon_c,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,68,76,statement ending
+99,6,102,off_by_one_first,CODE_HIGHLIGHT,OFF_BY_ONE,true,1,2,279,290,for loop condition
+100,6,102,off_by_one_repeat_a,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,272,280,for loop condition
+101,6,102,off_by_one_repeat_b,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,277,285,for loop condition
+102,6,103,wrong_condition_first,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,276,290,while condition
+103,6,103,wrong_condition_repeat,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,279,290,while condition
+104,6,104,unfinished_todo_first,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,273,282,unfinished implementation
+105,6,104,unfinished_todo_repeat_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,68,78,"line 1, column 66"
+106,6,104,unfinished_todo_repeat_b,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,282,289,unfinished implementation
+107,6,105,complete_return_first,NO_FEEDBACK,UNKNOWN,true,3,0,274,285,logic block
+108,6,106,unknown_partial_logic,CONCEPTUAL_HINT,UNKNOWN,true,1,2,279,290,logic block
+109,6,105,complete_return_second,NO_FEEDBACK,UNKNOWN,true,3,0,273,283,logic block
+110,6,101,syntax_after_progress,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,69,80,statement ending
+111,6,102,off_by_one_after_progress,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,276,284,for loop condition
+112,6,104,unfinished_todo_after_progress,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,278,286,unfinished implementation
+113,6,103,wrong_condition_after_progress,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,274,281,while condition
+114,6,105,complete_return_final,CONCEPTUAL_HINT,UNKNOWN,true,3,0,282,291,logic block
+115,7,101,syntax_missing_semicolon_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,67,78,statement ending
+116,7,101,syntax_missing_semicolon_b,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,70,79,statement ending
+117,7,101,syntax_missing_semicolon_c,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,70,79,statement ending
+118,7,102,off_by_one_first,CODE_HIGHLIGHT,OFF_BY_ONE,true,1,2,281,291,for loop condition
+119,7,102,off_by_one_repeat_a,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,279,287,for loop condition
+120,7,102,off_by_one_repeat_b,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,279,289,for loop condition
+121,7,103,wrong_condition_first,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,282,290,while condition
+122,7,103,wrong_condition_repeat,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,275,282,while condition
+123,7,104,unfinished_todo_first,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,279,290,unfinished implementation
+124,7,104,unfinished_todo_repeat_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,72,79,"line 1, column 66"
+125,7,104,unfinished_todo_repeat_b,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,279,287,unfinished implementation
+126,7,105,complete_return_first,NO_FEEDBACK,UNKNOWN,true,3,0,279,289,logic block
+127,7,106,unknown_partial_logic,CONCEPTUAL_HINT,UNKNOWN,true,1,2,275,285,logic block
+128,7,105,complete_return_second,NO_FEEDBACK,UNKNOWN,true,3,0,285,303,logic block
+129,7,101,syntax_after_progress,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,74,84,statement ending
+130,7,102,off_by_one_after_progress,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,275,281,for loop condition
+131,7,104,unfinished_todo_after_progress,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,279,288,unfinished implementation
+132,7,103,wrong_condition_after_progress,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,288,295,while condition
+133,7,105,complete_return_final,CONCEPTUAL_HINT,UNKNOWN,true,3,0,291,297,logic block
+134,8,101,syntax_missing_semicolon_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,69,79,statement ending
+135,8,101,syntax_missing_semicolon_b,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,72,77,statement ending
+136,8,101,syntax_missing_semicolon_c,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,71,78,statement ending
+137,8,102,off_by_one_first,CODE_HIGHLIGHT,OFF_BY_ONE,true,1,2,278,291,for loop condition
+138,8,102,off_by_one_repeat_a,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,278,284,for loop condition
+139,8,102,off_by_one_repeat_b,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,278,285,for loop condition
+140,8,103,wrong_condition_first,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,273,282,while condition
+141,8,103,wrong_condition_repeat,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,278,287,while condition
+142,8,104,unfinished_todo_first,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,273,280,unfinished implementation
+143,8,104,unfinished_todo_repeat_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,68,75,"line 1, column 66"
+144,8,104,unfinished_todo_repeat_b,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,275,285,unfinished implementation
+145,8,105,complete_return_first,NO_FEEDBACK,UNKNOWN,true,3,0,279,287,logic block
+146,8,106,unknown_partial_logic,CONCEPTUAL_HINT,UNKNOWN,true,1,2,282,290,logic block
+147,8,105,complete_return_second,NO_FEEDBACK,UNKNOWN,true,3,0,274,280,logic block
+148,8,101,syntax_after_progress,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,71,78,statement ending
+149,8,102,off_by_one_after_progress,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,275,283,for loop condition
+150,8,104,unfinished_todo_after_progress,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,275,281,unfinished implementation
+151,8,103,wrong_condition_after_progress,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,275,283,while condition
+152,8,105,complete_return_final,CONCEPTUAL_HINT,UNKNOWN,true,3,0,279,286,logic block
+153,9,101,syntax_missing_semicolon_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,68,76,statement ending
+154,9,101,syntax_missing_semicolon_b,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,71,78,statement ending
+155,9,101,syntax_missing_semicolon_c,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,68,75,statement ending
+156,9,102,off_by_one_first,CODE_HIGHLIGHT,OFF_BY_ONE,true,1,2,276,283,for loop condition
+157,9,102,off_by_one_repeat_a,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,282,288,for loop condition
+158,9,102,off_by_one_repeat_b,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,280,287,for loop condition
+159,9,103,wrong_condition_first,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,284,293,while condition
+160,9,103,wrong_condition_repeat,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,274,282,while condition
+161,9,104,unfinished_todo_first,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,279,287,unfinished implementation
+162,9,104,unfinished_todo_repeat_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,70,77,"line 1, column 66"
+163,9,104,unfinished_todo_repeat_b,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,281,288,unfinished implementation
+164,9,105,complete_return_first,NO_FEEDBACK,UNKNOWN,true,3,0,275,284,logic block
+165,9,106,unknown_partial_logic,CONCEPTUAL_HINT,UNKNOWN,true,1,2,279,291,logic block
+166,9,105,complete_return_second,NO_FEEDBACK,UNKNOWN,true,3,0,276,282,logic block
+167,9,101,syntax_after_progress,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,74,82,statement ending
+168,9,102,off_by_one_after_progress,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,277,285,for loop condition
+169,9,104,unfinished_todo_after_progress,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,279,285,unfinished implementation
+170,9,103,wrong_condition_after_progress,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,281,287,while condition
+171,9,105,complete_return_final,CONCEPTUAL_HINT,UNKNOWN,true,3,0,275,282,logic block
+172,10,101,syntax_missing_semicolon_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,68,78,statement ending
+173,10,101,syntax_missing_semicolon_b,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,70,76,statement ending
+174,10,101,syntax_missing_semicolon_c,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,70,76,statement ending
+175,10,102,off_by_one_first,CODE_HIGHLIGHT,OFF_BY_ONE,true,1,2,278,284,for loop condition
+176,10,102,off_by_one_repeat_a,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,282,290,for loop condition
+177,10,102,off_by_one_repeat_b,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,280,287,for loop condition
+178,10,103,wrong_condition_first,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,280,286,while condition
+179,10,103,wrong_condition_repeat,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,309,323,while condition
+180,10,104,unfinished_todo_first,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,299,309,unfinished implementation
+181,10,104,unfinished_todo_repeat_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,66,72,"line 1, column 66"
+182,10,104,unfinished_todo_repeat_b,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,284,289,unfinished implementation
+183,10,105,complete_return_first,NO_FEEDBACK,UNKNOWN,true,3,0,283,289,logic block
+184,10,106,unknown_partial_logic,CONCEPTUAL_HINT,UNKNOWN,true,1,2,277,284,logic block
+185,10,105,complete_return_second,NO_FEEDBACK,UNKNOWN,true,3,0,276,284,logic block
+186,10,101,syntax_after_progress,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,69,76,statement ending
+187,10,102,off_by_one_after_progress,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,273,279,for loop condition
+188,10,104,unfinished_todo_after_progress,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,278,285,unfinished implementation
+189,10,103,wrong_condition_after_progress,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,271,278,while condition
+190,10,105,complete_return_final,CONCEPTUAL_HINT,UNKNOWN,true,3,0,273,283,logic block
+191,11,101,syntax_missing_semicolon_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,69,79,statement ending
+192,11,101,syntax_missing_semicolon_b,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,69,78,statement ending
+193,11,101,syntax_missing_semicolon_c,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,69,77,statement ending
+194,11,102,off_by_one_first,CODE_HIGHLIGHT,OFF_BY_ONE,true,1,2,287,297,for loop condition
+195,11,102,off_by_one_repeat_a,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,279,286,for loop condition
+196,11,102,off_by_one_repeat_b,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,276,283,for loop condition
+197,11,103,wrong_condition_first,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,277,282,while condition
+198,11,103,wrong_condition_repeat,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,278,286,while condition
+199,11,104,unfinished_todo_first,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,277,283,unfinished implementation
+200,11,104,unfinished_todo_repeat_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,70,76,"line 1, column 66"
+201,11,104,unfinished_todo_repeat_b,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,277,284,unfinished implementation
+202,11,105,complete_return_first,NO_FEEDBACK,UNKNOWN,true,3,0,273,282,logic block
+203,11,106,unknown_partial_logic,CONCEPTUAL_HINT,UNKNOWN,true,1,2,287,294,logic block
+204,11,105,complete_return_second,NO_FEEDBACK,UNKNOWN,true,3,0,278,285,logic block
+205,11,101,syntax_after_progress,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,70,77,statement ending
+206,11,102,off_by_one_after_progress,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,273,278,for loop condition
+207,11,104,unfinished_todo_after_progress,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,273,279,unfinished implementation
+208,11,103,wrong_condition_after_progress,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,275,283,while condition
+209,11,105,complete_return_final,CONCEPTUAL_HINT,UNKNOWN,true,3,0,271,278,logic block
+210,12,101,syntax_missing_semicolon_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,68,73,statement ending
+211,12,101,syntax_missing_semicolon_b,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,67,72,statement ending
+212,12,101,syntax_missing_semicolon_c,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,70,76,statement ending
+213,12,102,off_by_one_first,CODE_HIGHLIGHT,OFF_BY_ONE,true,1,2,275,283,for loop condition
+214,12,102,off_by_one_repeat_a,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,273,281,for loop condition
+215,12,102,off_by_one_repeat_b,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,272,277,for loop condition
+216,12,103,wrong_condition_first,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,274,278,while condition
+217,12,103,wrong_condition_repeat,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,274,281,while condition
+218,12,104,unfinished_todo_first,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,278,283,unfinished implementation
+219,12,104,unfinished_todo_repeat_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,67,74,"line 1, column 66"
+220,12,104,unfinished_todo_repeat_b,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,274,283,unfinished implementation
+221,12,105,complete_return_first,NO_FEEDBACK,UNKNOWN,true,3,0,275,285,logic block
+222,12,106,unknown_partial_logic,CONCEPTUAL_HINT,UNKNOWN,true,1,2,275,283,logic block
+223,12,105,complete_return_second,NO_FEEDBACK,UNKNOWN,true,3,0,279,286,logic block
+224,12,101,syntax_after_progress,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,69,77,statement ending
+225,12,102,off_by_one_after_progress,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,277,283,for loop condition
+226,12,104,unfinished_todo_after_progress,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,272,278,unfinished implementation
+227,12,103,wrong_condition_after_progress,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,276,282,while condition
+228,12,105,complete_return_final,CONCEPTUAL_HINT,UNKNOWN,true,3,0,281,286,logic block
+229,13,101,syntax_missing_semicolon_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,68,73,statement ending
+230,13,101,syntax_missing_semicolon_b,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,68,73,statement ending
+231,13,101,syntax_missing_semicolon_c,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,69,75,statement ending
+232,13,102,off_by_one_first,CODE_HIGHLIGHT,OFF_BY_ONE,true,1,2,271,277,for loop condition
+233,13,102,off_by_one_repeat_a,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,276,282,for loop condition
+234,13,102,off_by_one_repeat_b,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,326,334,for loop condition
+235,13,103,wrong_condition_first,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,296,305,while condition
+236,13,103,wrong_condition_repeat,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,296,302,while condition
+237,13,104,unfinished_todo_first,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,302,308,unfinished implementation
+238,13,104,unfinished_todo_repeat_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,75,82,"line 1, column 66"
+239,13,104,unfinished_todo_repeat_b,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,295,304,unfinished implementation
+240,13,105,complete_return_first,NO_FEEDBACK,UNKNOWN,true,3,0,274,281,logic block
+241,13,106,unknown_partial_logic,CONCEPTUAL_HINT,UNKNOWN,true,1,2,275,283,logic block
+242,13,105,complete_return_second,NO_FEEDBACK,UNKNOWN,true,3,0,282,291,logic block
+243,13,101,syntax_after_progress,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,74,81,statement ending
+244,13,102,off_by_one_after_progress,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,300,307,for loop condition
+245,13,104,unfinished_todo_after_progress,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,283,289,unfinished implementation
+246,13,103,wrong_condition_after_progress,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,274,282,while condition
+247,13,105,complete_return_final,CONCEPTUAL_HINT,UNKNOWN,true,3,0,283,290,logic block
+248,14,101,syntax_missing_semicolon_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,70,76,statement ending
+249,14,101,syntax_missing_semicolon_b,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,68,73,statement ending
+250,14,101,syntax_missing_semicolon_c,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,71,80,statement ending
+251,14,102,off_by_one_first,CODE_HIGHLIGHT,OFF_BY_ONE,true,1,2,277,283,for loop condition
+252,14,102,off_by_one_repeat_a,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,275,280,for loop condition
+253,14,102,off_by_one_repeat_b,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,281,288,for loop condition
+254,14,103,wrong_condition_first,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,273,281,while condition
+255,14,103,wrong_condition_repeat,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,287,296,while condition
+256,14,104,unfinished_todo_first,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,284,294,unfinished implementation
+257,14,104,unfinished_todo_repeat_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,69,76,"line 1, column 66"
+258,14,104,unfinished_todo_repeat_b,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,276,281,unfinished implementation
+259,14,105,complete_return_first,NO_FEEDBACK,UNKNOWN,true,3,0,273,279,logic block
+260,14,106,unknown_partial_logic,CONCEPTUAL_HINT,UNKNOWN,true,1,2,274,282,logic block
+261,14,105,complete_return_second,NO_FEEDBACK,UNKNOWN,true,3,0,278,284,logic block
+262,14,101,syntax_after_progress,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,68,73,statement ending
+263,14,102,off_by_one_after_progress,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,274,280,for loop condition
+264,14,104,unfinished_todo_after_progress,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,273,280,unfinished implementation
+265,14,103,wrong_condition_after_progress,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,279,285,while condition
+266,14,105,complete_return_final,CONCEPTUAL_HINT,UNKNOWN,true,3,0,282,287,logic block
+267,15,101,syntax_missing_semicolon_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,69,77,statement ending
+268,15,101,syntax_missing_semicolon_b,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,70,77,statement ending
+269,15,101,syntax_missing_semicolon_c,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,68,75,statement ending
+270,15,102,off_by_one_first,CODE_HIGHLIGHT,OFF_BY_ONE,true,1,2,275,282,for loop condition
+271,15,102,off_by_one_repeat_a,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,280,286,for loop condition
+272,15,102,off_by_one_repeat_b,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,275,280,for loop condition
+273,15,103,wrong_condition_first,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,277,283,while condition
+274,15,103,wrong_condition_repeat,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,277,283,while condition
+275,15,104,unfinished_todo_first,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,275,281,unfinished implementation
+276,15,104,unfinished_todo_repeat_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,70,78,"line 1, column 66"
+277,15,104,unfinished_todo_repeat_b,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,273,278,unfinished implementation
+278,15,105,complete_return_first,NO_FEEDBACK,UNKNOWN,true,3,0,282,289,logic block
+279,15,106,unknown_partial_logic,CONCEPTUAL_HINT,UNKNOWN,true,1,2,270,277,logic block
+280,15,105,complete_return_second,NO_FEEDBACK,UNKNOWN,true,3,0,271,277,logic block
+281,15,101,syntax_after_progress,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,71,76,statement ending
+282,15,102,off_by_one_after_progress,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,285,290,for loop condition
+283,15,104,unfinished_todo_after_progress,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,272,277,unfinished implementation
+284,15,103,wrong_condition_after_progress,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,270,274,while condition
+285,15,105,complete_return_final,CONCEPTUAL_HINT,UNKNOWN,true,3,0,278,284,logic block
+286,16,101,syntax_missing_semicolon_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,69,77,statement ending
+287,16,101,syntax_missing_semicolon_b,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,68,73,statement ending
+288,16,101,syntax_missing_semicolon_c,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,73,80,statement ending
+289,16,102,off_by_one_first,CODE_HIGHLIGHT,OFF_BY_ONE,true,1,2,274,281,for loop condition
+290,16,102,off_by_one_repeat_a,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,273,279,for loop condition
+291,16,102,off_by_one_repeat_b,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,276,283,for loop condition
+292,16,103,wrong_condition_first,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,274,282,while condition
+293,16,103,wrong_condition_repeat,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,272,279,while condition
+294,16,104,unfinished_todo_first,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,278,285,unfinished implementation
+295,16,104,unfinished_todo_repeat_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,69,74,"line 1, column 66"
+296,16,104,unfinished_todo_repeat_b,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,271,277,unfinished implementation
+297,16,105,complete_return_first,NO_FEEDBACK,UNKNOWN,true,3,0,278,285,logic block
+298,16,106,unknown_partial_logic,CONCEPTUAL_HINT,UNKNOWN,true,1,2,273,279,logic block
+299,16,105,complete_return_second,NO_FEEDBACK,UNKNOWN,true,3,0,278,283,logic block
+300,16,101,syntax_after_progress,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,68,73,statement ending
+301,16,102,off_by_one_after_progress,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,281,287,for loop condition
+302,16,104,unfinished_todo_after_progress,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,280,286,unfinished implementation
+303,16,103,wrong_condition_after_progress,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,281,288,while condition
+304,16,105,complete_return_final,CONCEPTUAL_HINT,UNKNOWN,true,3,0,285,291,logic block
+305,17,101,syntax_missing_semicolon_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,66,72,statement ending
+306,17,101,syntax_missing_semicolon_b,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,70,74,statement ending
+307,17,101,syntax_missing_semicolon_c,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,69,74,statement ending
+308,17,102,off_by_one_first,CODE_HIGHLIGHT,OFF_BY_ONE,true,1,2,276,282,for loop condition
+309,17,102,off_by_one_repeat_a,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,277,283,for loop condition
+310,17,102,off_by_one_repeat_b,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,270,275,for loop condition
+311,17,103,wrong_condition_first,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,274,280,while condition
+312,17,103,wrong_condition_repeat,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,277,283,while condition
+313,17,104,unfinished_todo_first,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,280,285,unfinished implementation
+314,17,104,unfinished_todo_repeat_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,68,73,"line 1, column 66"
+315,17,104,unfinished_todo_repeat_b,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,278,283,unfinished implementation
+316,17,105,complete_return_first,NO_FEEDBACK,UNKNOWN,true,3,0,274,280,logic block
+317,17,106,unknown_partial_logic,CONCEPTUAL_HINT,UNKNOWN,true,1,2,270,276,logic block
+318,17,105,complete_return_second,NO_FEEDBACK,UNKNOWN,true,3,0,283,289,logic block
+319,17,101,syntax_after_progress,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,69,75,statement ending
+320,17,102,off_by_one_after_progress,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,273,282,for loop condition
+321,17,104,unfinished_todo_after_progress,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,279,285,unfinished implementation
+322,17,103,wrong_condition_after_progress,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,276,281,while condition
+323,17,105,complete_return_final,CONCEPTUAL_HINT,UNKNOWN,true,3,0,276,280,logic block
+324,18,101,syntax_missing_semicolon_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,70,75,statement ending
+325,18,101,syntax_missing_semicolon_b,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,69,74,statement ending
+326,18,101,syntax_missing_semicolon_c,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,69,74,statement ending
+327,18,102,off_by_one_first,CODE_HIGHLIGHT,OFF_BY_ONE,true,1,2,270,276,for loop condition
+328,18,102,off_by_one_repeat_a,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,273,280,for loop condition
+329,18,102,off_by_one_repeat_b,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,277,281,for loop condition
+330,18,103,wrong_condition_first,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,272,276,while condition
+331,18,103,wrong_condition_repeat,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,275,282,while condition
+332,18,104,unfinished_todo_first,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,275,282,unfinished implementation
+333,18,104,unfinished_todo_repeat_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,68,73,"line 1, column 66"
+334,18,104,unfinished_todo_repeat_b,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,276,281,unfinished implementation
+335,18,105,complete_return_first,NO_FEEDBACK,UNKNOWN,true,3,0,275,282,logic block
+336,18,106,unknown_partial_logic,CONCEPTUAL_HINT,UNKNOWN,true,1,2,272,279,logic block
+337,18,105,complete_return_second,NO_FEEDBACK,UNKNOWN,true,3,0,280,286,logic block
+338,18,101,syntax_after_progress,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,71,78,statement ending
+339,18,102,off_by_one_after_progress,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,275,280,for loop condition
+340,18,104,unfinished_todo_after_progress,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,277,283,unfinished implementation
+341,18,103,wrong_condition_after_progress,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,273,281,while condition
+342,18,105,complete_return_final,CONCEPTUAL_HINT,UNKNOWN,true,3,0,274,282,logic block
+343,19,101,syntax_missing_semicolon_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,70,76,statement ending
+344,19,101,syntax_missing_semicolon_b,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,69,74,statement ending
+345,19,101,syntax_missing_semicolon_c,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,73,79,statement ending
+346,19,102,off_by_one_first,CODE_HIGHLIGHT,OFF_BY_ONE,true,1,2,273,279,for loop condition
+347,19,102,off_by_one_repeat_a,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,275,280,for loop condition
+348,19,102,off_by_one_repeat_b,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,279,285,for loop condition
+349,19,103,wrong_condition_first,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,277,281,while condition
+350,19,103,wrong_condition_repeat,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,277,282,while condition
+351,19,104,unfinished_todo_first,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,274,280,unfinished implementation
+352,19,104,unfinished_todo_repeat_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,69,74,"line 1, column 66"
+353,19,104,unfinished_todo_repeat_b,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,277,281,unfinished implementation
+354,19,105,complete_return_first,NO_FEEDBACK,UNKNOWN,true,3,0,280,286,logic block
+355,19,106,unknown_partial_logic,CONCEPTUAL_HINT,UNKNOWN,true,1,2,276,285,logic block
+356,19,105,complete_return_second,NO_FEEDBACK,UNKNOWN,true,3,0,277,283,logic block
+357,19,101,syntax_after_progress,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,68,73,statement ending
+358,19,102,off_by_one_after_progress,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,270,277,for loop condition
+359,19,104,unfinished_todo_after_progress,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,278,282,unfinished implementation
+360,19,103,wrong_condition_after_progress,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,273,280,while condition
+361,19,105,complete_return_final,CONCEPTUAL_HINT,UNKNOWN,true,3,0,281,287,logic block
+362,20,101,syntax_missing_semicolon_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,69,74,statement ending
+363,20,101,syntax_missing_semicolon_b,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,69,74,statement ending
+364,20,101,syntax_missing_semicolon_c,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,69,73,statement ending
+365,20,102,off_by_one_first,CODE_HIGHLIGHT,OFF_BY_ONE,true,1,2,288,295,for loop condition
+366,20,102,off_by_one_repeat_a,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,272,275,for loop condition
+367,20,102,off_by_one_repeat_b,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,278,283,for loop condition
+368,20,103,wrong_condition_first,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,279,286,while condition
+369,20,103,wrong_condition_repeat,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,277,281,while condition
+370,20,104,unfinished_todo_first,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,277,281,unfinished implementation
+371,20,104,unfinished_todo_repeat_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,72,76,"line 1, column 66"
+372,20,104,unfinished_todo_repeat_b,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,273,279,unfinished implementation
+373,20,105,complete_return_first,NO_FEEDBACK,UNKNOWN,true,3,0,276,280,logic block
+374,20,106,unknown_partial_logic,CONCEPTUAL_HINT,UNKNOWN,true,1,2,274,280,logic block
+375,20,105,complete_return_second,NO_FEEDBACK,UNKNOWN,true,3,0,277,284,logic block
+376,20,101,syntax_after_progress,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,71,78,statement ending
+377,20,102,off_by_one_after_progress,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,277,284,for loop condition
+378,20,104,unfinished_todo_after_progress,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,274,281,unfinished implementation
+379,20,103,wrong_condition_after_progress,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,278,284,while condition
+380,20,105,complete_return_final,CONCEPTUAL_HINT,UNKNOWN,true,3,0,280,285,logic block
+381,21,101,syntax_missing_semicolon_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,68,74,statement ending
+382,21,101,syntax_missing_semicolon_b,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,68,75,statement ending
+383,21,101,syntax_missing_semicolon_c,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,68,78,statement ending
+384,21,102,off_by_one_first,CODE_HIGHLIGHT,OFF_BY_ONE,true,1,2,279,293,for loop condition
+385,21,102,off_by_one_repeat_a,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,286,294,for loop condition
+386,21,102,off_by_one_repeat_b,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,280,285,for loop condition
+387,21,103,wrong_condition_first,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,276,281,while condition
+388,21,103,wrong_condition_repeat,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,312,324,while condition
+389,21,104,unfinished_todo_first,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,283,294,unfinished implementation
+390,21,104,unfinished_todo_repeat_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,71,76,"line 1, column 66"
+391,21,104,unfinished_todo_repeat_b,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,291,294,unfinished implementation
+392,21,105,complete_return_first,NO_FEEDBACK,UNKNOWN,true,3,0,286,292,logic block
+393,21,106,unknown_partial_logic,CONCEPTUAL_HINT,UNKNOWN,true,1,2,281,286,logic block
+394,21,105,complete_return_second,NO_FEEDBACK,UNKNOWN,true,3,0,272,276,logic block
+395,21,101,syntax_after_progress,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,68,72,statement ending
+396,21,102,off_by_one_after_progress,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,273,278,for loop condition
+397,21,104,unfinished_todo_after_progress,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,272,276,unfinished implementation
+398,21,103,wrong_condition_after_progress,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,283,289,while condition
+399,21,105,complete_return_final,CONCEPTUAL_HINT,UNKNOWN,true,3,0,273,280,logic block
+400,22,101,syntax_missing_semicolon_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,71,77,statement ending
+401,22,101,syntax_missing_semicolon_b,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,70,74,statement ending
+402,22,101,syntax_missing_semicolon_c,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,68,72,statement ending
+403,22,102,off_by_one_first,CODE_HIGHLIGHT,OFF_BY_ONE,true,1,2,270,275,for loop condition
+404,22,102,off_by_one_repeat_a,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,269,274,for loop condition
+405,22,102,off_by_one_repeat_b,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,280,284,for loop condition
+406,22,103,wrong_condition_first,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,274,280,while condition
+407,22,103,wrong_condition_repeat,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,273,279,while condition
+408,22,104,unfinished_todo_first,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,271,279,unfinished implementation
+409,22,104,unfinished_todo_repeat_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,69,74,"line 1, column 66"
+410,22,104,unfinished_todo_repeat_b,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,274,279,unfinished implementation
+411,22,105,complete_return_first,NO_FEEDBACK,UNKNOWN,true,3,0,283,288,logic block
+412,22,106,unknown_partial_logic,CONCEPTUAL_HINT,UNKNOWN,true,1,2,272,278,logic block
+413,22,105,complete_return_second,NO_FEEDBACK,UNKNOWN,true,3,0,277,283,logic block
+414,22,101,syntax_after_progress,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,69,75,statement ending
+415,22,102,off_by_one_after_progress,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,271,277,for loop condition
+416,22,104,unfinished_todo_after_progress,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,277,282,unfinished implementation
+417,22,103,wrong_condition_after_progress,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,277,282,while condition
+418,22,105,complete_return_final,CONCEPTUAL_HINT,UNKNOWN,true,3,0,271,275,logic block
+419,23,101,syntax_missing_semicolon_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,67,72,statement ending
+420,23,101,syntax_missing_semicolon_b,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,69,74,statement ending
+421,23,101,syntax_missing_semicolon_c,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,66,72,statement ending
+422,23,102,off_by_one_first,CODE_HIGHLIGHT,OFF_BY_ONE,true,1,2,272,276,for loop condition
+423,23,102,off_by_one_repeat_a,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,273,277,for loop condition
+424,23,102,off_by_one_repeat_b,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,271,274,for loop condition
+425,23,103,wrong_condition_first,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,278,284,while condition
+426,23,103,wrong_condition_repeat,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,274,280,while condition
+427,23,104,unfinished_todo_first,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,275,280,unfinished implementation
+428,23,104,unfinished_todo_repeat_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,67,71,"line 1, column 66"
+429,23,104,unfinished_todo_repeat_b,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,278,284,unfinished implementation
+430,23,105,complete_return_first,NO_FEEDBACK,UNKNOWN,true,3,0,272,277,logic block
+431,23,106,unknown_partial_logic,CONCEPTUAL_HINT,UNKNOWN,true,1,2,280,284,logic block
+432,23,105,complete_return_second,NO_FEEDBACK,UNKNOWN,true,3,0,272,278,logic block
+433,23,101,syntax_after_progress,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,68,73,statement ending
+434,23,102,off_by_one_after_progress,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,272,277,for loop condition
+435,23,104,unfinished_todo_after_progress,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,272,276,unfinished implementation
+436,23,103,wrong_condition_after_progress,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,273,279,while condition
+437,23,105,complete_return_final,CONCEPTUAL_HINT,UNKNOWN,true,3,0,281,286,logic block
+438,24,101,syntax_missing_semicolon_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,68,72,statement ending
+439,24,101,syntax_missing_semicolon_b,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,68,72,statement ending
+440,24,101,syntax_missing_semicolon_c,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,68,74,statement ending
+441,24,102,off_by_one_first,CODE_HIGHLIGHT,OFF_BY_ONE,true,1,2,273,280,for loop condition
+442,24,102,off_by_one_repeat_a,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,278,283,for loop condition
+443,24,102,off_by_one_repeat_b,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,278,285,for loop condition
+444,24,103,wrong_condition_first,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,277,283,while condition
+445,24,103,wrong_condition_repeat,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,281,287,while condition
+446,24,104,unfinished_todo_first,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,272,279,unfinished implementation
+447,24,104,unfinished_todo_repeat_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,69,75,"line 1, column 66"
+448,24,104,unfinished_todo_repeat_b,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,271,277,unfinished implementation
+449,24,105,complete_return_first,NO_FEEDBACK,UNKNOWN,true,3,0,272,279,logic block
+450,24,106,unknown_partial_logic,CONCEPTUAL_HINT,UNKNOWN,true,1,2,278,284,logic block
+451,24,105,complete_return_second,NO_FEEDBACK,UNKNOWN,true,3,0,276,281,logic block
+452,24,101,syntax_after_progress,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,68,72,statement ending
+453,24,102,off_by_one_after_progress,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,271,275,for loop condition
+454,24,104,unfinished_todo_after_progress,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,270,273,unfinished implementation
+455,24,103,wrong_condition_after_progress,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,273,278,while condition
+456,24,105,complete_return_final,CONCEPTUAL_HINT,UNKNOWN,true,3,0,270,275,logic block
+457,25,101,syntax_missing_semicolon_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,74,80,statement ending
+458,25,101,syntax_missing_semicolon_b,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,69,73,statement ending
+459,25,101,syntax_missing_semicolon_c,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,67,71,statement ending
+460,25,102,off_by_one_first,CODE_HIGHLIGHT,OFF_BY_ONE,true,1,2,274,278,for loop condition
+461,25,102,off_by_one_repeat_a,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,275,279,for loop condition
+462,25,102,off_by_one_repeat_b,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,276,281,for loop condition
+463,25,103,wrong_condition_first,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,275,281,while condition
+464,25,103,wrong_condition_repeat,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,278,284,while condition
+465,25,104,unfinished_todo_first,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,276,281,unfinished implementation
+466,25,104,unfinished_todo_repeat_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,67,72,"line 1, column 66"
+467,25,104,unfinished_todo_repeat_b,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,272,277,unfinished implementation
+468,25,105,complete_return_first,NO_FEEDBACK,UNKNOWN,true,3,0,270,274,logic block
+469,25,106,unknown_partial_logic,CONCEPTUAL_HINT,UNKNOWN,true,1,2,270,276,logic block
+470,25,105,complete_return_second,NO_FEEDBACK,UNKNOWN,true,3,0,278,282,logic block
+471,25,101,syntax_after_progress,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,68,73,statement ending
+472,25,102,off_by_one_after_progress,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,268,272,for loop condition
+473,25,104,unfinished_todo_after_progress,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,273,280,unfinished implementation
+474,25,103,wrong_condition_after_progress,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,274,280,while condition
+475,25,105,complete_return_final,CONCEPTUAL_HINT,UNKNOWN,true,3,0,271,275,logic block
+476,26,101,syntax_missing_semicolon_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,69,73,statement ending
+477,26,101,syntax_missing_semicolon_b,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,67,71,statement ending
+478,26,101,syntax_missing_semicolon_c,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,73,77,statement ending
+479,26,102,off_by_one_first,CODE_HIGHLIGHT,OFF_BY_ONE,true,1,2,275,280,for loop condition
+480,26,102,off_by_one_repeat_a,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,272,276,for loop condition
+481,26,102,off_by_one_repeat_b,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,272,276,for loop condition
+482,26,103,wrong_condition_first,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,272,277,while condition
+483,26,103,wrong_condition_repeat,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,276,279,while condition
+484,26,104,unfinished_todo_first,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,273,277,unfinished implementation
+485,26,104,unfinished_todo_repeat_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,67,71,"line 1, column 66"
+486,26,104,unfinished_todo_repeat_b,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,273,277,unfinished implementation
+487,26,105,complete_return_first,NO_FEEDBACK,UNKNOWN,true,3,0,273,278,logic block
+488,26,106,unknown_partial_logic,CONCEPTUAL_HINT,UNKNOWN,true,1,2,270,277,logic block
+489,26,105,complete_return_second,NO_FEEDBACK,UNKNOWN,true,3,0,280,285,logic block
+490,26,101,syntax_after_progress,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,67,71,statement ending
+491,26,102,off_by_one_after_progress,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,272,276,for loop condition
+492,26,104,unfinished_todo_after_progress,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,273,277,unfinished implementation
+493,26,103,wrong_condition_after_progress,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,272,277,while condition
+494,26,105,complete_return_final,CONCEPTUAL_HINT,UNKNOWN,true,3,0,274,278,logic block
+495,27,101,syntax_missing_semicolon_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,75,79,statement ending
+496,27,101,syntax_missing_semicolon_b,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,74,79,statement ending
+497,27,101,syntax_missing_semicolon_c,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,68,72,statement ending
+498,27,102,off_by_one_first,CODE_HIGHLIGHT,OFF_BY_ONE,true,1,2,275,280,for loop condition
+499,27,102,off_by_one_repeat_a,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,275,280,for loop condition
+500,27,102,off_by_one_repeat_b,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,272,276,for loop condition
+501,27,103,wrong_condition_first,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,272,276,while condition
+502,27,103,wrong_condition_repeat,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,279,286,while condition
+503,27,104,unfinished_todo_first,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,273,281,unfinished implementation
+504,27,104,unfinished_todo_repeat_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,69,74,"line 1, column 66"
+505,27,104,unfinished_todo_repeat_b,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,271,275,unfinished implementation
+506,27,105,complete_return_first,NO_FEEDBACK,UNKNOWN,true,3,0,273,278,logic block
+507,27,106,unknown_partial_logic,CONCEPTUAL_HINT,UNKNOWN,true,1,2,269,273,logic block
+508,27,105,complete_return_second,NO_FEEDBACK,UNKNOWN,true,3,0,275,279,logic block
+509,27,101,syntax_after_progress,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,67,73,statement ending
+510,27,102,off_by_one_after_progress,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,270,275,for loop condition
+511,27,104,unfinished_todo_after_progress,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,273,284,unfinished implementation
+512,27,103,wrong_condition_after_progress,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,272,279,while condition
+513,27,105,complete_return_final,CONCEPTUAL_HINT,UNKNOWN,true,3,0,277,285,logic block
+514,28,101,syntax_missing_semicolon_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,66,70,statement ending
+515,28,101,syntax_missing_semicolon_b,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,65,70,statement ending
+516,28,101,syntax_missing_semicolon_c,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,67,72,statement ending
+517,28,102,off_by_one_first,CODE_HIGHLIGHT,OFF_BY_ONE,true,1,2,274,278,for loop condition
+518,28,102,off_by_one_repeat_a,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,270,275,for loop condition
+519,28,102,off_by_one_repeat_b,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,274,278,for loop condition
+520,28,103,wrong_condition_first,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,277,281,while condition
+521,28,103,wrong_condition_repeat,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,268,274,while condition
+522,28,104,unfinished_todo_first,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,278,284,unfinished implementation
+523,28,104,unfinished_todo_repeat_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,70,73,"line 1, column 66"
+524,28,104,unfinished_todo_repeat_b,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,279,283,unfinished implementation
+525,28,105,complete_return_first,NO_FEEDBACK,UNKNOWN,true,3,0,277,281,logic block
+526,28,106,unknown_partial_logic,CONCEPTUAL_HINT,UNKNOWN,true,1,2,279,283,logic block
+527,28,105,complete_return_second,NO_FEEDBACK,UNKNOWN,true,3,0,275,280,logic block
+528,28,101,syntax_after_progress,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,67,72,statement ending
+529,28,102,off_by_one_after_progress,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,272,277,for loop condition
+530,28,104,unfinished_todo_after_progress,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,274,279,unfinished implementation
+531,28,103,wrong_condition_after_progress,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,279,282,while condition
+532,28,105,complete_return_final,CONCEPTUAL_HINT,UNKNOWN,true,3,0,272,276,logic block
+533,29,101,syntax_missing_semicolon_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,70,77,statement ending
+534,29,101,syntax_missing_semicolon_b,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,71,75,statement ending
+535,29,101,syntax_missing_semicolon_c,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,68,72,statement ending
+536,29,102,off_by_one_first,CODE_HIGHLIGHT,OFF_BY_ONE,true,1,2,271,275,for loop condition
+537,29,102,off_by_one_repeat_a,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,272,276,for loop condition
+538,29,102,off_by_one_repeat_b,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,278,283,for loop condition
+539,29,103,wrong_condition_first,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,276,280,while condition
+540,29,103,wrong_condition_repeat,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,272,276,while condition
+541,29,104,unfinished_todo_first,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,275,282,unfinished implementation
+542,29,104,unfinished_todo_repeat_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,70,75,"line 1, column 66"
+543,29,104,unfinished_todo_repeat_b,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,276,281,unfinished implementation
+544,29,105,complete_return_first,NO_FEEDBACK,UNKNOWN,true,3,0,271,278,logic block
+545,29,106,unknown_partial_logic,CONCEPTUAL_HINT,UNKNOWN,true,1,2,275,280,logic block
+546,29,105,complete_return_second,NO_FEEDBACK,UNKNOWN,true,3,0,274,278,logic block
+547,29,101,syntax_after_progress,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,69,72,statement ending
+548,29,102,off_by_one_after_progress,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,292,295,for loop condition
+549,29,104,unfinished_todo_after_progress,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,295,301,unfinished implementation
+550,29,103,wrong_condition_after_progress,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,314,320,while condition
+551,29,105,complete_return_final,CONCEPTUAL_HINT,UNKNOWN,true,3,0,303,308,logic block
+552,30,101,syntax_missing_semicolon_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,75,81,statement ending
+553,30,101,syntax_missing_semicolon_b,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,70,75,statement ending
+554,30,101,syntax_missing_semicolon_c,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,76,79,statement ending
+555,30,102,off_by_one_first,CODE_HIGHLIGHT,OFF_BY_ONE,true,1,2,291,296,for loop condition
+556,30,102,off_by_one_repeat_a,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,279,283,for loop condition
+557,30,102,off_by_one_repeat_b,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,284,289,for loop condition
+558,30,103,wrong_condition_first,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,281,286,while condition
+559,30,103,wrong_condition_repeat,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,309,318,while condition
+560,30,104,unfinished_todo_first,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,291,297,unfinished implementation
+561,30,104,unfinished_todo_repeat_a,CODE_HIGHLIGHT,SYNTAX_ERROR,false,0,0,73,77,"line 1, column 66"
+562,30,104,unfinished_todo_repeat_b,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,287,293,unfinished implementation
+563,30,105,complete_return_first,NO_FEEDBACK,UNKNOWN,true,3,0,286,291,logic block
+564,30,106,unknown_partial_logic,CONCEPTUAL_HINT,UNKNOWN,true,1,2,292,297,logic block
+565,30,105,complete_return_second,NO_FEEDBACK,UNKNOWN,true,3,0,277,283,logic block
+566,30,101,syntax_after_progress,CONCEPTUAL_HINT,SYNTAX_ERROR,false,0,0,66,72,statement ending
+567,30,102,off_by_one_after_progress,CONCEPTUAL_HINT,OFF_BY_ONE,true,1,2,272,277,for loop condition
+568,30,104,unfinished_todo_after_progress,GUIDING_QUESTION,STUCK_NO_PROGRESS,true,0,3,271,275,unfinished implementation
+569,30,103,wrong_condition_after_progress,CONCEPTUAL_HINT,WRONG_CONDITION,true,1,2,278,282,while condition
+570,30,105,complete_return_final,CONCEPTUAL_HINT,UNKNOWN,true,3,0,280,284,logic block

@@ -1,0 +1,49 @@
+# Mentor Policy Model Metrics
+
+- Dataset: `ml\policy_dataset.csv`
+- Dataset rows: 9130
+- Train rows: 7353
+- Test rows: 1777
+- Target column: `feedback_action`
+- Split strategy: `student_holdout`
+- Group column: `student_id`
+- Accuracy: 1.0000
+- Macro F1: 1.0000
+
+## Target Distribution
+
+| Label | Dataset | Train | Test |
+|---|---:|---:|---:|
+| `CODE_HIGHLIGHT` | 2105 | 1693 | 412 |
+| `CONCEPTUAL_HINT` | 2808 | 2260 | 548 |
+| `GUIDING_QUESTION` | 1409 | 1121 | 288 |
+| `NO_FEEDBACK` | 2808 | 2279 | 529 |
+
+## Per-Class Metrics
+
+| Label | Precision | Recall | F1 | Support |
+|---|---:|---:|---:|---:|
+| `CODE_HIGHLIGHT` | 1.0000 | 1.0000 | 1.0000 | 412 |
+| `CONCEPTUAL_HINT` | 1.0000 | 1.0000 | 1.0000 | 548 |
+| `GUIDING_QUESTION` | 1.0000 | 1.0000 | 1.0000 | 288 |
+| `NO_FEEDBACK` | 1.0000 | 1.0000 | 1.0000 | 529 |
+
+## Confusion Matrix
+
+Rows are true labels; columns are predicted labels.
+
+| True \ Predicted | `CODE_HIGHLIGHT` | `CONCEPTUAL_HINT` | `GUIDING_QUESTION` | `NO_FEEDBACK` |
+|---|---:|---:|---:|---:|
+| `CODE_HIGHLIGHT` | 412 | 0 | 0 | 0 |
+| `CONCEPTUAL_HINT` | 0 | 548 | 0 | 0 |
+| `GUIDING_QUESTION` | 0 | 0 | 288 | 0 |
+| `NO_FEEDBACK` | 0 | 0 | 0 | 529 |
+
+## Held-Out Groups
+
+- Train groups: 1, 100, 101, 102, 103, 104, 106, 107, 108, 109, 11, 110, 111, 112, 113, 114, 115, 117, 118, 119, 12, 120, 121, 122, 123, 124, 127, 128, 13, 130, 131, 132, 134, 135, 137, 139, 14, 140, 141, 142, 143, 144, 145, 146, 147, 148, 15, 150, 152, 154, 155, 156, 157, 158, 160, 161, 162, 163, 164, 167, 168, 169, 170, 172, 173, 174, 176, 177, 179, 18, 180, 181, 182, 184, 185, 186, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 2, 20, 200, 21, 22, 23, 24, 25, 26, 27, 28, 29, 3, 30, 32, 33, 34, 35, 36, 37, 38, 39, 4, 40, 41, 42, 43, 44, 45, 47, 48, 49, 5, 50, 51, 52, 53, 54, 55, 58, 59, 6, 60, 62, 63, 64, 65, 7, 71, 72, 73, 74, 75, 78, 8, 80, 81, 82, 84, 86, 87, 88, 89, 9, 90, 91, 92, 93, 95, 97, 98, 99
+- Test groups: 10, 105, 116, 125, 126, 129, 133, 136, 138, 149, 151, 153, 159, 16, 165, 166, 17, 171, 175, 178, 183, 187, 19, 31, 46, 56, 57, 61, 66, 67, 68, 69, 70, 76, 77, 79, 83, 85, 94, 96
+
+## Interpretation Boundary
+
+These metrics evaluate action-label prediction for the policy selector. If the target is `feedback_action`, the model is imitating the current rule policy. If the target is `target_feedback_action`, the model is evaluated against reviewed or rubric labels. Neither setting by itself proves classroom learning gain.

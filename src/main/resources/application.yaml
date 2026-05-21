@@ -3,9 +3,9 @@ spring:
     name: socratesai
 
   datasource:
-    url: jdbc:postgresql://localhost:5433/socratesdb
-    username: postgres
-    password: postgres
+    url: ${APP_DATASOURCE_URL:jdbc:postgresql://localhost:5433/socratesdb}
+    username: ${APP_DATASOURCE_USERNAME:postgres}
+    password: ${APP_DATASOURCE_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
 
   flyway:
@@ -15,38 +15,53 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
-    show-sql: true
+    show-sql: ${APP_SHOW_SQL:false}
     open-in-view: false
     properties:
       hibernate:
-        format_sql: true
+        format_sql: ${APP_FORMAT_SQL:false}
 
 logging:
   level:
-    org.hibernate.SQL: debug
-    org.hibernate.orm.jdbc.bind: trace
+    org.hibernate.SQL: ${APP_HIBERNATE_SQL_LOG_LEVEL:info}
+    org.hibernate.orm.jdbc.bind: ${APP_HIBERNATE_BIND_LOG_LEVEL:info}
     liquibase: info
 
 app:
   jwt:
-    secret: 1c52ae5f47a7d4e3cbbeb1665a959fbfc1ec1f07fb1e4063009c482cd89738c49440d48e1ef489b7ae08529a08dac64420a747c72bf31f89b786d8cf586025bc
-    expiration-ms: 86400000
+    secret: ${APP_JWT_SECRET:c29jcmF0ZXNhaS1sb2NhbC1kZXYtand0LXNlY3JldC1taW5pbXVtLTY0LWJ5dGVzLWNoYW5nZS1tZS0yMDI2}
+    expiration-ms: ${APP_JWT_EXPIRATION_MS:86400000}
   gemini:
-    enabled: true
-    api-key: AIzaSyBT5CdgGRtwwlN4Nvem5ItislQBoceMPio
-    model: gemini-2.5-flash
-    base-url: https://generativelanguage.googleapis.com/v1beta
+    enabled: ${APP_GEMINI_ENABLED:false}
+    api-key: ${GEMINI_API_KEY:}
+    model: ${APP_GEMINI_MODEL:gemini-2.5-flash}
+    base-url: ${APP_GEMINI_BASE_URL:https://generativelanguage.googleapis.com/v1beta}
+  openai:
+    enabled: ${APP_OPENAI_ENABLED:false}
+    api-key: ${OPENAI_API_KEY:}
+    model: ${APP_OPENAI_MODEL:gpt-4.1-mini}
+    base-url: ${APP_OPENAI_BASE_URL:https://api.openai.com/v1}
 
   policy:
-    mode: ml
-    rule-version: rule-v1
-    guardrail-version: guardrails-v1
+    mode: ${APP_POLICY_MODE:rule}
+    rule-version: ${APP_POLICY_RULE_VERSION:rule-v1}
+    guardrail-version: ${APP_POLICY_GUARDRAIL_VERSION:guardrails-v1}
     ml:
-      enabled: true
-      version: ml-v1
-      base-url: http://localhost:8001
-      predict-path: /predict
-      fallback-to-rule: true
+      enabled: ${APP_POLICY_ML_ENABLED:false}
+      version: ${APP_POLICY_ML_VERSION:ml-v1}
+      base-url: ${APP_POLICY_ML_BASE_URL:http://localhost:8001}
+      predict-path: ${APP_POLICY_ML_PREDICT_PATH:/predict}
+      fallback-to-rule: ${APP_POLICY_ML_FALLBACK_TO_RULE:true}
 
   websocket:
-    allowed-origins: "http://localhost:3000,http://localhost:5173"
+    allowed-origins: ${APP_WEBSOCKET_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      probes:
+        enabled: true

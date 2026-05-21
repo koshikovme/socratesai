@@ -1,0 +1,67 @@
+{
+  "generated_at": "2026-05-15T18:17:38.384552+00:00",
+  "mode": "RULE",
+  "environment": "Real HTTP Spring Boot process, PostgreSQL 16.11 Docker Compose database",
+  "replay": {
+    "requests": 100,
+    "successful": 100,
+    "errors": 0,
+    "wall_ms": 3092,
+    "throughput_rps": 32.34,
+    "latency_ms": {
+      "mean": 30.89,
+      "median": 26.5,
+      "p95": 50,
+      "p99": 52,
+      "min": 18,
+      "max": 52
+    },
+    "analysis_time_ms": {
+      "mean": 5.33,
+      "median": 6.0,
+      "p95": 9,
+      "p99": 11,
+      "min": 0,
+      "max": 11
+    },
+    "action_distribution": {
+      "CODE_HIGHLIGHT": 17,
+      "CONCEPTUAL_HINT": 58,
+      "GUIDING_QUESTION": 15,
+      "NO_FEEDBACK": 10
+    },
+    "error_type_distribution": {
+      "OFF_BY_ONE": 22,
+      "STUCK_NO_PROGRESS": 15,
+      "SYNTAX_ERROR": 28,
+      "UNKNOWN": 20,
+      "WRONG_CONDITION": 15
+    }
+  },
+  "stress": {
+    "requests": 0,
+    "successful": 0,
+    "errors": 0,
+    "wall_ms": 0,
+    "throughput_rps": 0,
+    "latency_ms": {
+      "mean": 0,
+      "median": 0,
+      "p95": 0,
+      "p99": 0,
+      "min": 0,
+      "max": 0
+    },
+    "analysis_time_ms": {
+      "mean": 0,
+      "median": 0,
+      "p95": 0,
+      "p99": 0,
+      "min": 0,
+      "max": 0
+    },
+    "action_distribution": {},
+    "error_type_distribution": {}
+  },
+  "stress_concurrency": 8
+}

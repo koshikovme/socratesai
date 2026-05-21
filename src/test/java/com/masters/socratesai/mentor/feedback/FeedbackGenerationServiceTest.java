@@ -31,10 +31,10 @@ class FeedbackGenerationServiceTest {
                 "task"
         )).thenReturn("Gemini answer");
 
-        String result = service.generate(FeedbackAction.CONCEPTUAL_HINT, analyzer, "code", "task");
+        GeneratedFeedback result = service.generateWithMetadata(FeedbackAction.CONCEPTUAL_HINT, analyzer, "code", "task");
 
-        assertThat(result).isEqualTo("Gemini answer");
-        assertThat(service.getSource()).isEqualTo("gemini");
+        assertThat(result.text()).isEqualTo("Gemini answer");
+        assertThat(result.source()).isEqualTo("gemini");
     }
 
     @Test
@@ -50,10 +50,10 @@ class FeedbackGenerationServiceTest {
         )).thenThrow(new IllegalStateException("provider error"));
         when(templateService.generate(FeedbackAction.CODE_HIGHLIGHT, analyzer)).thenReturn("Template fallback");
 
-        String result = service.generate(FeedbackAction.CODE_HIGHLIGHT, analyzer, "code", "task");
+        GeneratedFeedback result = service.generateWithMetadata(FeedbackAction.CODE_HIGHLIGHT, analyzer, "code", "task");
 
-        assertThat(result).isEqualTo("Template fallback");
-        assertThat(service.getSource()).isEqualTo("template");
+        assertThat(result.text()).isEqualTo("Template fallback");
+        assertThat(result.source()).isEqualTo("template");
     }
 
     @Test
@@ -63,10 +63,10 @@ class FeedbackGenerationServiceTest {
         when(geminiFeedbackService.isEnabled()).thenReturn(false);
         when(templateService.generate(FeedbackAction.GUIDING_QUESTION, analyzer)).thenReturn("Template only");
 
-        String result = service.generate(FeedbackAction.GUIDING_QUESTION, analyzer, "code", "task");
+        GeneratedFeedback result = service.generateWithMetadata(FeedbackAction.GUIDING_QUESTION, analyzer, "code", "task");
 
-        assertThat(result).isEqualTo("Template only");
-        assertThat(service.getSource()).isEqualTo("template");
+        assertThat(result.text()).isEqualTo("Template only");
+        assertThat(result.source()).isEqualTo("template");
     }
 
     private AnalyzerResult analyzer() {

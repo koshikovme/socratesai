@@ -31,6 +31,10 @@ public class MentorPolicyService {
 
     public PolicyDecision decide(AnalyzerResult analyzer, StudentContextDto context, Integer attemptNo) {
         PolicyFeatures features = PolicyFeatures.from(analyzer, context, attemptNo);
+        if (properties.getMode() == PolicyMode.NO_POLICY) {
+            return new PolicyDecision(FeedbackAction.CONCEPTUAL_HINT, "no-policy-v1");
+        }
+
         PolicySelector selector = resolveSelector();
 
         FeedbackAction rawAction;

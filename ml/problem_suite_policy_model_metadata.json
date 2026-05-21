@@ -1,0 +1,25 @@
+{
+  "feature_columns": [
+    "error_type",
+    "severity",
+    "compile_success",
+    "tests_passed",
+    "tests_failed",
+    "same_error_count",
+    "total_errors_seen",
+    "attempt_no",
+    "last_feedback_action",
+    "last_feedback_success",
+    "has_suspicious_region",
+    "code_lines",
+    "total_feedback_count_in_session"
+  ],
+  "target_column": "target_feedback_action",
+  "labels": [
+    "CODE_HIGHLIGHT",
+    "CONCEPTUAL_HINT",
+    "GUIDING_QUESTION",
+    "NO_FEEDBACK"
+  ],
+  "model_path": "ml\\problem_suite_policy_model.joblib"
+}

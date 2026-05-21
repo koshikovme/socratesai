@@ -1,0 +1,140 @@
+{
+  "RULE": {
+    "events": 288,
+    "successful": 288,
+    "errors": 0,
+    "agreement": 0.875,
+    "macro_f1": 0.859,
+    "mean_latency_ms": 47.66,
+    "p95_latency_ms": 62,
+    "action_distribution": {
+      "CODE_HIGHLIGHT": 80,
+      "CONCEPTUAL_HINT": 116,
+      "GUIDING_QUESTION": 48,
+      "NO_FEEDBACK": 44
+    },
+    "per_class": {
+      "CODE_HIGHLIGHT": {
+        "precision": 0.95,
+        "recall": 0.95,
+        "f1": 0.95,
+        "support": 80
+      },
+      "CONCEPTUAL_HINT": {
+        "precision": 0.8621,
+        "recall": 0.8929,
+        "f1": 0.8772,
+        "support": 112
+      },
+      "GUIDING_QUESTION": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 48
+      },
+      "NO_FEEDBACK": {
+        "precision": 0.6364,
+        "recall": 0.5833,
+        "f1": 0.6087,
+        "support": 48
+      },
+      "_macro_f1": 0.859
+    },
+    "per_difficulty_agreement": {
+      "easy": 0.9074,
+      "hard": 0.8333,
+      "medium": 0.75
+    }
+  },
+  "ML": {
+    "events": 288,
+    "successful": 288,
+    "errors": 0,
+    "agreement": 0.875,
+    "macro_f1": 0.859,
+    "mean_latency_ms": 48.19,
+    "p95_latency_ms": 65,
+    "action_distribution": {
+      "CODE_HIGHLIGHT": 80,
+      "CONCEPTUAL_HINT": 116,
+      "GUIDING_QUESTION": 48,
+      "NO_FEEDBACK": 44
+    },
+    "per_class": {
+      "CODE_HIGHLIGHT": {
+        "precision": 0.95,
+        "recall": 0.95,
+        "f1": 0.95,
+        "support": 80
+      },
+      "CONCEPTUAL_HINT": {
+        "precision": 0.8621,
+        "recall": 0.8929,
+        "f1": 0.8772,
+        "support": 112
+      },
+      "GUIDING_QUESTION": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 48
+      },
+      "NO_FEEDBACK": {
+        "precision": 0.6364,
+        "recall": 0.5833,
+        "f1": 0.6087,
+        "support": 48
+      },
+      "_macro_f1": 0.859
+    },
+    "per_difficulty_agreement": {
+      "easy": 0.9074,
+      "hard": 0.8333,
+      "medium": 0.75
+    }
+  },
+  "NO_POLICY": {
+    "events": 288,
+    "successful": 288,
+    "errors": 0,
+    "agreement": 0.3889,
+    "macro_f1": 0.14,
+    "mean_latency_ms": 47.34,
+    "p95_latency_ms": 63,
+    "action_distribution": {
+      "CONCEPTUAL_HINT": 288
+    },
+    "per_class": {
+      "CODE_HIGHLIGHT": {
+        "precision": 0,
+        "recall": 0.0,
+        "f1": 0,
+        "support": 80
+      },
+      "CONCEPTUAL_HINT": {
+        "precision": 0.3889,
+        "recall": 1.0,
+        "f1": 0.56,
+        "support": 112
+      },
+      "GUIDING_QUESTION": {
+        "precision": 0,
+        "recall": 0.0,
+        "f1": 0,
+        "support": 48
+      },
+      "NO_FEEDBACK": {
+        "precision": 0,
+        "recall": 0.0,
+        "f1": 0,
+        "support": 48
+      },
+      "_macro_f1": 0.14
+    },
+    "per_difficulty_agreement": {
+      "easy": 0.3704,
+      "hard": 0.5,
+      "medium": 0.4167
+    }
+  }
+}

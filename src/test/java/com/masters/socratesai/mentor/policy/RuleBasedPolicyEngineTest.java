@@ -32,6 +32,20 @@ class RuleBasedPolicyEngineTest {
     }
 
     @Test
+    void shouldReturnCodeHighlightForFirstWrongLoopBoundary() {
+        PolicyFeatures features = new PolicyFeatures("WRONG_LOOP_BOUNDARY", "MEDIUM", true, 1, 2, 1, 1, 1, null, null, true, 20, 0);
+
+        assertThat(engine.decide(features)).isEqualTo(FeedbackAction.CODE_HIGHLIGHT);
+    }
+
+    @Test
+    void shouldReturnConceptualHintForRepeatedNullAccessRisk() {
+        PolicyFeatures features = new PolicyFeatures("POSSIBLE_NULL_ACCESS", "MEDIUM", true, 1, 2, 2, 2, 2, "CODE_HIGHLIGHT", false, true, 20, 1);
+
+        assertThat(engine.decide(features)).isEqualTo(FeedbackAction.CONCEPTUAL_HINT);
+    }
+
+    @Test
     void shouldReturnGuidingQuestionForStuckNoProgress() {
         PolicyFeatures features = new PolicyFeatures("STUCK_NO_PROGRESS", "MEDIUM", true, 0, 1, 1, 1, 1, null, null, true, 15, 0);
 

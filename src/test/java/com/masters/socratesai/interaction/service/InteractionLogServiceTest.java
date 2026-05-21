@@ -140,6 +140,9 @@ class InteractionLogServiceTest {
                 .feedbackAction("CONCEPTUAL_HINT")
                 .resolvedAfterFeedback(false)
                 .fixedAfterMs(1500)
+                .feedbackHelpful(true)
+                .feedbackRating(4)
+                .repeatedSameErrorAfterFeedback(false)
                 .suspiciousRegion("line 4, token \"if\"")
                 .build();
         row.prePersist();
@@ -150,6 +153,7 @@ class InteractionLogServiceTest {
         String csv = new String(bytes, StandardCharsets.UTF_8);
 
         assertThat(csv).contains("interaction_id,student_id,task_id");
+        assertThat(csv).contains("feedback_helpful,feedback_rating,repeated_same_error_after_feedback");
         assertThat(csv).contains("\"line 4, token \"\"if\"\"\"");
     }
 
@@ -164,10 +168,22 @@ class InteractionLogServiceTest {
 
         when(repository.findById(interactionId)).thenReturn(Optional.of(log));
 
-        InteractionResultResponse response = service.updateInteractionResult(interactionId, true, 900);
+        InteractionResultResponse response = service.updateInteractionResult(
+                interactionId,
+                true,
+                900,
+                true,
+                5,
+                "The hint made the missing guard obvious.",
+                false
+        );
 
         assertThat(response.getInteractionId()).isEqualTo(interactionId);
         assertThat(response.getResolvedAfterFeedback()).isTrue();
         assertThat(response.getFixedAfterMs()).isEqualTo(900);
+        assertThat(response.getFeedbackHelpful()).isTrue();
+        assertThat(response.getFeedbackRating()).isEqualTo(5);
+        assertThat(response.getStudentComment()).isEqualTo("The hint made the missing guard obvious.");
+        assertThat(response.getRepeatedSameErrorAfterFeedback()).isFalse();
     }
 }

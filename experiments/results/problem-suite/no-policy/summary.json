@@ -1,0 +1,129 @@
+{
+  "generated_at": "2026-05-18T05:59:46.839870+00:00",
+  "mode": "NO_POLICY",
+  "environment": "Real HTTP Spring Boot process, PostgreSQL 16.11 Docker Compose database, fixed no-policy baseline, 12-problem programming suite",
+  "cohorts": 4,
+  "problems": 12,
+  "events": 288,
+  "successful": 288,
+  "errors": 0,
+  "wall_ms": 13638,
+  "throughput_rps": 21.12,
+  "agreement": 0.3889,
+  "latency_ms": {
+    "mean": 47.34,
+    "median": 46.0,
+    "p95": 63,
+    "p99": 91,
+    "min": 22,
+    "max": 294
+  },
+  "analysis_time_ms": {
+    "mean": 8.45,
+    "median": 7.0,
+    "p95": 14,
+    "p99": 34,
+    "min": 2,
+    "max": 162
+  },
+  "action_distribution": {
+    "CONCEPTUAL_HINT": 288
+  },
+  "expected_distribution": {
+    "CODE_HIGHLIGHT": 80,
+    "CONCEPTUAL_HINT": 112,
+    "GUIDING_QUESTION": 48,
+    "NO_FEEDBACK": 48
+  },
+  "error_type_distribution": {
+    "OFF_BY_ONE": 44,
+    "POSSIBLE_NULL_ACCESS": 8,
+    "STUCK_NO_PROGRESS": 48,
+    "SYNTAX_ERROR": 48,
+    "UNKNOWN": 104,
+    "WRONG_CONDITION": 28,
+    "WRONG_LOOP_BOUNDARY": 8
+  },
+  "difficulty_distribution": {
+    "easy": 216,
+    "hard": 24,
+    "medium": 48
+  },
+  "per_problem": {
+    "binary-search": {
+      "events": 24,
+      "agreement": 0.3333
+    },
+    "climbing-stairs": {
+      "events": 24,
+      "agreement": 0.5
+    },
+    "longest-substring": {
+      "events": 24,
+      "agreement": 0.3333
+    },
+    "lru-cache": {
+      "events": 24,
+      "agreement": 0.5
+    },
+    "matrix-diagonal-sum": {
+      "events": 24,
+      "agreement": 0.3333
+    },
+    "merge-sorted-array": {
+      "events": 24,
+      "agreement": 0.3333
+    },
+    "palindrome": {
+      "events": 24,
+      "agreement": 0.3333
+    },
+    "reverse-linked-list": {
+      "events": 24,
+      "agreement": 0.5
+    },
+    "roman-to-integer": {
+      "events": 24,
+      "agreement": 0.3333
+    },
+    "trapping-rain-water": {
+      "events": 24,
+      "agreement": 0.5
+    },
+    "two-sum": {
+      "events": 24,
+      "agreement": 0.3333
+    },
+    "valid-parentheses": {
+      "events": 24,
+      "agreement": 0.3333
+    }
+  },
+  "per_class": {
+    "CODE_HIGHLIGHT": {
+      "precision": 0,
+      "recall": 0.0,
+      "f1": 0,
+      "support": 80
+    },
+    "CONCEPTUAL_HINT": {
+      "precision": 0.3889,
+      "recall": 1.0,
+      "f1": 0.56,
+      "support": 112
+    },
+    "GUIDING_QUESTION": {
+      "precision": 0,
+      "recall": 0.0,
+      "f1": 0,
+      "support": 48
+    },
+    "NO_FEEDBACK": {
+      "precision": 0,
+      "recall": 0.0,
+      "f1": 0,
+      "support": 48
+    },
+    "_macro_f1": 0.14
+  }
+}

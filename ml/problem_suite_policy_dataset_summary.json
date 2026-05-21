@@ -1,0 +1,49 @@
+{
+  "generated_at": "2026-05-19T11:42:26.807504+00:00",
+  "source_files": [
+    "experiments\\results\\problem-suite-1080\\rule\\events.csv"
+  ],
+  "rows": 1080,
+  "sessions": 180,
+  "problems": 12,
+  "agreement_with_rubric": 0.875,
+  "target_distribution": {
+    "CODE_HIGHLIGHT": 300,
+    "CONCEPTUAL_HINT": 420,
+    "GUIDING_QUESTION": 180,
+    "NO_FEEDBACK": 180
+  },
+  "actual_distribution": {
+    "CODE_HIGHLIGHT": 300,
+    "CONCEPTUAL_HINT": 435,
+    "GUIDING_QUESTION": 180,
+    "NO_FEEDBACK": 165
+  },
+  "problem_distribution": {
+    "binary-search": 90,
+    "climbing-stairs": 90,
+    "longest-substring": 90,
+    "lru-cache": 90,
+    "matrix-diagonal-sum": 90,
+    "merge-sorted-array": 90,
+    "palindrome": 90,
+    "reverse-linked-list": 90,
+    "roman-to-integer": 90,
+    "trapping-rain-water": 90,
+    "two-sum": 90,
+    "valid-parentheses": 90
+  },
+  "stage_distribution": {
+    "first_conceptual_error": 180,
+    "local_completion": 180,
+    "partial_logic": 180,
+    "planning": 180,
+    "repeated_conceptual_error": 180,
+    "syntax": 180
+  },
+  "notes": [
+    "target_feedback_action comes from the explicit problem-suite review rubric.",
+    "feedback_action is the action returned by the running application.",
+    "last_feedback_success uses previous event rubric agreement as an offline proxy because classroom outcome labels are not available in this controlled suite."
+  ]
+}

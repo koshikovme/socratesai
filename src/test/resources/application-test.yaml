@@ -19,7 +19,7 @@ spring:
 
 app:
   jwt:
-    secret: 1c52ae5f47a7d4e3cbbeb1665a959fbfc1ec1f07fb1e4063009c482cd89738c49440d48e1ef489b7ae08529a08dac64420a747c72bf31f89b786d8cf586025bc
+    secret: c29jcmF0ZXNhaS10ZXN0LWp3dC1zZWNyZXQtbWluaW11bS02NC1ieXRlcy1vbmx5LWZvci10ZXN0cy0yMDI2
     expiration-ms: 86400000
   gemini:
     enabled: false

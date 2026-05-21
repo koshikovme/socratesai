@@ -44,14 +44,29 @@ class InteractionControllerTest {
                 .interactionId(interactionId)
                 .resolvedAfterFeedback(true)
                 .fixedAfterMs(1500)
+                .feedbackHelpful(true)
+                .feedbackRating(5)
+                .repeatedSameErrorAfterFeedback(false)
                 .message("Interaction result updated successfully")
                 .build();
 
-        when(interactionLogService.updateInteractionResult(eq(interactionId), eq(true), eq(1500))).thenReturn(response);
+        when(interactionLogService.updateInteractionResult(
+                eq(interactionId),
+                eq(true),
+                eq(1500),
+                eq(true),
+                eq(5),
+                eq("Useful hint"),
+                eq(false)
+        )).thenReturn(response);
 
         InteractionResultUpdateRequest request = new InteractionResultUpdateRequest();
         request.setResolvedAfterFeedback(true);
         request.setFixedAfterMs(1500);
+        request.setFeedbackHelpful(true);
+        request.setFeedbackRating(5);
+        request.setStudentComment("Useful hint");
+        request.setRepeatedSameErrorAfterFeedback(false);
 
         mockMvc.perform(post("/api/interactions/{interactionId}/result", interactionId)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -59,7 +74,10 @@ class InteractionControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.interactionId").value(interactionId.toString()))
                 .andExpect(jsonPath("$.resolvedAfterFeedback").value(true))
-                .andExpect(jsonPath("$.fixedAfterMs").value(1500));
+                .andExpect(jsonPath("$.fixedAfterMs").value(1500))
+                .andExpect(jsonPath("$.feedbackHelpful").value(true))
+                .andExpect(jsonPath("$.feedbackRating").value(5))
+                .andExpect(jsonPath("$.repeatedSameErrorAfterFeedback").value(false));
     }
 
     @Test

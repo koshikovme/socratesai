@@ -1,0 +1,67 @@
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-socratesdb}
+      POSTGRES_USER: ${POSTGRES_USER:-socrates}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  policy-api:
+    build:
+      context: ./ml
+    restart: unless-stopped
+    environment:
+      POLICY_MODEL_PATH: ${POLICY_MODEL_PATH:-/app/problem_suite_policy_model.joblib}
+    expose:
+      - "8001"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8001/health', timeout=3)\""
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+
+  backend:
+    build:
+      context: .
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      policy-api:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      APP_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-socratesdb}
+      APP_DATASOURCE_USERNAME: ${POSTGRES_USER:-socrates}
+      APP_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-change-me}
+      APP_JWT_SECRET: ${APP_JWT_SECRET:-c29jcmF0ZXNhaS1sb2NhbC1kZXYtand0LXNlY3JldC1taW5pbXVtLTY0LWJ5dGVzLWNoYW5nZS1tZS0yMDI2}
+      APP_JWT_EXPIRATION_MS: ${APP_JWT_EXPIRATION_MS:-3600000}
+      APP_POLICY_MODE: ${APP_POLICY_MODE:-ml}
+      APP_POLICY_ML_ENABLED: ${APP_POLICY_ML_ENABLED:-true}
+      APP_POLICY_ML_BASE_URL: http://policy-api:8001
+      APP_POLICY_ML_FALLBACK_TO_RULE: ${APP_POLICY_ML_FALLBACK_TO_RULE:-true}
+      APP_OPENAPI_ENABLED: ${APP_OPENAPI_ENABLED:-false}
+      APP_SWAGGER_ENABLED: ${APP_SWAGGER_ENABLED:-false}
+      APP_WEBSOCKET_ALLOWED_ORIGINS: ${APP_WEBSOCKET_ALLOWED_ORIGINS:-https://example.com}
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/actuator/health || exit 1"]
+      interval: 20s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:

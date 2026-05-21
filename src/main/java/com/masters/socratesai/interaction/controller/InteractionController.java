@@ -31,7 +31,11 @@ public class InteractionController {
                 interactionLogService.updateInteractionResult(
                         interactionId,
                         request.getResolvedAfterFeedback(),
-                        request.getFixedAfterMs()
+                        request.getFixedAfterMs(),
+                        request.getFeedbackHelpful(),
+                        request.getFeedbackRating(),
+                        request.getStudentComment(),
+                        request.getRepeatedSameErrorAfterFeedback()
                 )
         );
     }

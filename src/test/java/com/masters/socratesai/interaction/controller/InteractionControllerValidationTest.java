@@ -42,4 +42,16 @@ class InteractionControllerValidationTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    void shouldRejectInvalidFeedbackRating() throws Exception {
+        InteractionResultUpdateRequest request = new InteractionResultUpdateRequest();
+        request.setResolvedAfterFeedback(true);
+        request.setFeedbackRating(6);
+
+        mockMvc.perform(post("/api/interactions/{interactionId}/result", UUID.randomUUID())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
 }

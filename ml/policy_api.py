@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 import joblib
@@ -7,7 +8,11 @@ import pandas as pd
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-MODEL_PATH = Path("mentor_policy_model.joblib")
+BASE_DIR = Path(__file__).resolve().parent
+MODEL_PATH = Path(os.getenv("POLICY_MODEL_PATH", str(BASE_DIR / "mentor_policy_model.joblib")))
+if not MODEL_PATH.is_absolute():
+    cwd_path = Path.cwd() / MODEL_PATH
+    MODEL_PATH = cwd_path if cwd_path.exists() else BASE_DIR / MODEL_PATH
 
 app = FastAPI(title="Socrates Policy API")
 model = None

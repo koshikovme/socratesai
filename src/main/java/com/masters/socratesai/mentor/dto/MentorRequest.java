@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.util.UUID;
@@ -20,6 +21,7 @@ public class MentorRequest {
     @Min(1)
     private Integer attemptNo;
     @NotBlank
+    @Size(max = 20000)
     private String code;
     @Valid
     @NotNull

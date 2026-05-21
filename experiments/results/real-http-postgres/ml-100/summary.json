@@ -1,0 +1,67 @@
+{
+  "generated_at": "2026-05-15T18:18:54.971613+00:00",
+  "mode": "ML",
+  "environment": "Real HTTP Spring Boot process, PostgreSQL 16.11 Docker Compose database, FastAPI ML policy service",
+  "replay": {
+    "requests": 100,
+    "successful": 100,
+    "errors": 0,
+    "wall_ms": 5380,
+    "throughput_rps": 18.59,
+    "latency_ms": {
+      "mean": 53.77,
+      "median": 50.5,
+      "p95": 78,
+      "p99": 344,
+      "min": 27,
+      "max": 344
+    },
+    "analysis_time_ms": {
+      "mean": 9.85,
+      "median": 8.0,
+      "p95": 13,
+      "p99": 155,
+      "min": 0,
+      "max": 155
+    },
+    "action_distribution": {
+      "CODE_HIGHLIGHT": 17,
+      "CONCEPTUAL_HINT": 58,
+      "GUIDING_QUESTION": 15,
+      "NO_FEEDBACK": 10
+    },
+    "error_type_distribution": {
+      "OFF_BY_ONE": 22,
+      "STUCK_NO_PROGRESS": 15,
+      "SYNTAX_ERROR": 28,
+      "UNKNOWN": 20,
+      "WRONG_CONDITION": 15
+    }
+  },
+  "stress": {
+    "requests": 0,
+    "successful": 0,
+    "errors": 0,
+    "wall_ms": 0,
+    "throughput_rps": 0,
+    "latency_ms": {
+      "mean": 0,
+      "median": 0,
+      "p95": 0,
+      "p99": 0,
+      "min": 0,
+      "max": 0
+    },
+    "analysis_time_ms": {
+      "mean": 0,
+      "median": 0,
+      "p95": 0,
+      "p99": 0,
+      "min": 0,
+      "max": 0
+    },
+    "action_distribution": {},
+    "error_type_distribution": {}
+  },
+  "stress_concurrency": 8
+}

@@ -80,18 +80,30 @@ public class InteractionLogService {
     public InteractionResultResponse updateInteractionResult(
             UUID interactionId,
             Boolean resolvedAfterFeedback,
-            Integer fixedAfterMs
+            Integer fixedAfterMs,
+            Boolean feedbackHelpful,
+            Integer feedbackRating,
+            String studentComment,
+            Boolean repeatedSameErrorAfterFeedback
     ) {
         InteractionLog log = repository.findById(interactionId)
                 .orElseThrow(() -> new IllegalArgumentException("Interaction not found: " + interactionId));
 
         log.setResolvedAfterFeedback(resolvedAfterFeedback);
         log.setFixedAfterMs(fixedAfterMs);
+        log.setFeedbackHelpful(feedbackHelpful);
+        log.setFeedbackRating(feedbackRating);
+        log.setStudentComment(studentComment);
+        log.setRepeatedSameErrorAfterFeedback(repeatedSameErrorAfterFeedback);
 
         return InteractionResultResponse.builder()
                 .interactionId(log.getInteractionId())
                 .resolvedAfterFeedback(log.getResolvedAfterFeedback())
                 .fixedAfterMs(log.getFixedAfterMs())
+                .feedbackHelpful(log.getFeedbackHelpful())
+                .feedbackRating(log.getFeedbackRating())
+                .studentComment(log.getStudentComment())
+                .repeatedSameErrorAfterFeedback(log.getRepeatedSameErrorAfterFeedback())
                 .message("Interaction result updated successfully")
                 .build();
     }
@@ -152,9 +164,16 @@ public class InteractionLogService {
                 "has_suspicious_region",
                 "code_lines",
                 "total_feedback_count_in_session",
+                "analysis_time_ms",
+                "policy_time_ms",
+                "feedback_time_ms",
+                "total_latency_ms",
                 "feedback_action",
                 "resolved_after_feedback",
                 "fixed_after_ms",
+                "feedback_helpful",
+                "feedback_rating",
+                "repeated_same_error_after_feedback",
                 "suspicious_region"
         )).append('\n');
 
@@ -200,9 +219,16 @@ public class InteractionLogService {
                 escape(row.getHasSuspiciousRegion()),
                 escape(row.getCodeLines()),
                 escape(row.getTotalFeedbackCountInSession()),
+                escape(row.getAnalysisTimeMs()),
+                escape(row.getPolicyTimeMs()),
+                escape(row.getFeedbackTimeMs()),
+                escape(row.getTotalLatencyMs()),
                 escape(row.getFeedbackAction()),
                 escape(row.getResolvedAfterFeedback()),
                 escape(row.getFixedAfterMs()),
+                escape(row.getFeedbackHelpful()),
+                escape(row.getFeedbackRating()),
+                escape(row.getRepeatedSameErrorAfterFeedback()),
                 escape(row.getSuspiciousRegion())
         );
     }

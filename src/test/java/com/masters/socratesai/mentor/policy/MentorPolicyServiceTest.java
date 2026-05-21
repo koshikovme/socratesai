@@ -63,6 +63,16 @@ class MentorPolicyServiceTest {
                 .hasMessageContaining("predictor down");
     }
 
+    @Test
+    void shouldUseConceptualHintForNoPolicyBaseline() {
+        properties.setMode(PolicyMode.NO_POLICY);
+
+        PolicyDecision decision = service.decide(analyzer("SYNTAX_ERROR", false, 0, 0), context(1, 1, null, null, 0), 1);
+
+        assertThat(decision.action()).isEqualTo(FeedbackAction.CONCEPTUAL_HINT);
+        assertThat(decision.policyVersion()).isEqualTo("no-policy-v1");
+    }
+
     private AnalyzerResult analyzer(String errorType, boolean compileSuccess, int testsPassed, int testsFailed) {
         AnalyzerResult result = new AnalyzerResult();
         result.setErrorType(errorType);

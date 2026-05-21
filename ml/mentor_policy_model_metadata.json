@@ -20,5 +20,6 @@
     "CONCEPTUAL_HINT",
     "GUIDING_QUESTION",
     "NO_FEEDBACK"
-  ]
+  ],
+  "model_path": "ml\\mentor_policy_model.joblib"
 }

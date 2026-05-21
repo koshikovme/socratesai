@@ -1,0 +1,132 @@
+{
+  "generated_at": "2026-05-18T05:57:09.807202+00:00",
+  "mode": "RULE",
+  "environment": "Real HTTP Spring Boot process, PostgreSQL 16.11 Docker Compose database, 12-problem programming suite",
+  "cohorts": 4,
+  "problems": 12,
+  "events": 288,
+  "successful": 288,
+  "errors": 0,
+  "wall_ms": 13733,
+  "throughput_rps": 20.97,
+  "agreement": 0.875,
+  "latency_ms": {
+    "mean": 47.66,
+    "median": 46.5,
+    "p95": 62,
+    "p99": 80,
+    "min": 23,
+    "max": 305
+  },
+  "analysis_time_ms": {
+    "mean": 8.62,
+    "median": 7.0,
+    "p95": 15,
+    "p99": 31,
+    "min": 3,
+    "max": 162
+  },
+  "action_distribution": {
+    "CODE_HIGHLIGHT": 80,
+    "CONCEPTUAL_HINT": 116,
+    "GUIDING_QUESTION": 48,
+    "NO_FEEDBACK": 44
+  },
+  "expected_distribution": {
+    "CODE_HIGHLIGHT": 80,
+    "CONCEPTUAL_HINT": 112,
+    "GUIDING_QUESTION": 48,
+    "NO_FEEDBACK": 48
+  },
+  "error_type_distribution": {
+    "OFF_BY_ONE": 44,
+    "POSSIBLE_NULL_ACCESS": 8,
+    "STUCK_NO_PROGRESS": 48,
+    "SYNTAX_ERROR": 48,
+    "UNKNOWN": 104,
+    "WRONG_CONDITION": 28,
+    "WRONG_LOOP_BOUNDARY": 8
+  },
+  "difficulty_distribution": {
+    "easy": 216,
+    "hard": 24,
+    "medium": 48
+  },
+  "per_problem": {
+    "binary-search": {
+      "events": 24,
+      "agreement": 1.0
+    },
+    "climbing-stairs": {
+      "events": 24,
+      "agreement": 0.8333
+    },
+    "longest-substring": {
+      "events": 24,
+      "agreement": 1.0
+    },
+    "lru-cache": {
+      "events": 24,
+      "agreement": 0.5
+    },
+    "matrix-diagonal-sum": {
+      "events": 24,
+      "agreement": 1.0
+    },
+    "merge-sorted-array": {
+      "events": 24,
+      "agreement": 1.0
+    },
+    "palindrome": {
+      "events": 24,
+      "agreement": 0.8333
+    },
+    "reverse-linked-list": {
+      "events": 24,
+      "agreement": 1.0
+    },
+    "roman-to-integer": {
+      "events": 24,
+      "agreement": 1.0
+    },
+    "trapping-rain-water": {
+      "events": 24,
+      "agreement": 0.8333
+    },
+    "two-sum": {
+      "events": 24,
+      "agreement": 1.0
+    },
+    "valid-parentheses": {
+      "events": 24,
+      "agreement": 0.5
+    }
+  },
+  "per_class": {
+    "CODE_HIGHLIGHT": {
+      "precision": 0.95,
+      "recall": 0.95,
+      "f1": 0.95,
+      "support": 80
+    },
+    "CONCEPTUAL_HINT": {
+      "precision": 0.8621,
+      "recall": 0.8929,
+      "f1": 0.8772,
+      "support": 112
+    },
+    "GUIDING_QUESTION": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 48
+    },
+    "NO_FEEDBACK": {
+      "precision": 0.6364,
+      "recall": 0.5833,
+      "f1": 0.6087,
+      "support": 48
+    },
+    "_macro_f1": 0.859
+  }
+}

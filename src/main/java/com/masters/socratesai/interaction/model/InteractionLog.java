@@ -94,6 +94,18 @@ public class InteractionLog {
     @Column(name = "resolved_after_feedback")
     private Boolean resolvedAfterFeedback;
 
+    @Column(name = "feedback_helpful")
+    private Boolean feedbackHelpful;
+
+    @Column(name = "feedback_rating")
+    private Integer feedbackRating;
+
+    @Column(name = "student_comment", columnDefinition = "TEXT")
+    private String studentComment;
+
+    @Column(name = "repeated_same_error_after_feedback")
+    private Boolean repeatedSameErrorAfterFeedback;
+
     @Column(name = "direct_solution_violation", nullable = false)
     private Boolean directSolutionViolation;
 

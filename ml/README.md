@@ -21,6 +21,15 @@ python train_policy_model.py
 This creates:
 - `mentor_policy_model.joblib`
 - `mentor_policy_model_metadata.json`
+- `mentor_policy_model_metrics.json`
+- `mentor_policy_model_report.md`
+- `mentor_policy_model_confusion_matrix.png`
+
+You can also train from a specific dataset and keep the output separate:
+
+```bash
+python train_policy_model.py --input problem_suite_policy_dataset.csv --output-prefix problem_suite_policy_model --target-column target_feedback_action --group-column problem_slug
+```
 
 ## Run predictor
 
@@ -29,6 +38,62 @@ uvicorn policy_api:app --host 0.0.0.0 --port 8001
 ```
 
 Spring is configured to call `http://localhost:8001/predict`.
+
+To run the predictor with a non-default model:
+
+```bash
+POLICY_MODEL_PATH=problem_suite_policy_model.joblib uvicorn policy_api:app --host 0.0.0.0 --port 8001
+```
+
+On PowerShell:
+
+```powershell
+$env:POLICY_MODEL_PATH = ".\problem_suite_policy_model.joblib"
+uvicorn policy_api:app --host 0.0.0.0 --port 8001
+```
+
+## Problem-suite logs -> supervised policy dataset
+
+The controlled problem-suite benchmark writes real HTTP mentor events to:
+
+```text
+experiments/results/problem-suite-1080/rule/events.csv
+```
+
+Generate the 1,080-event log with 15 cohorts:
+
+```bash
+python ../experiments/problem_suite_http_benchmark.py --base-url http://localhost:18080 --mode RULE --cohorts 15 --student-offset 500000 --output-dir ../experiments/results/problem-suite-1080/rule
+```
+
+Build a supervised policy CSV from that event log:
+
+```bash
+python build_problem_suite_policy_dataset.py --events ../experiments/results/problem-suite-1080/rule/events.csv --output problem_suite_policy_dataset.csv
+```
+
+Then train with problem-level holdout:
+
+```bash
+python train_policy_model.py --input problem_suite_policy_dataset.csv --output-prefix problem_suite_policy_model --target-column target_feedback_action --group-column problem_slug
+```
+
+Run the model comparison and ablation study:
+
+```bash
+python run_policy_model_study.py --input problem_suite_policy_dataset.csv --output-prefix policy_model_study --target-column target_feedback_action --group-column problem_slug
+```
+
+Current generated artifacts:
+- `problem_suite_policy_dataset.csv` - 1,080 rows from 12 programming problems
+- `problem_suite_policy_model.joblib`
+- `problem_suite_policy_model_metrics.json`
+- `problem_suite_policy_model_report.md`
+- `problem_suite_policy_model_confusion_matrix.png`
+- `policy_model_study_results.json`
+- `policy_model_study_report.md`
+
+For a supervisor demo, see `ML_RESULTS.md`.
 
 ## Public code corpus -> synthetic policy dataset
 

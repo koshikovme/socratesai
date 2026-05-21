@@ -41,6 +41,39 @@ class PatternDetectionEngineTest {
     }
 
     @Test
+    void shouldDetectBinarySearchBoundaryMistake() {
+        PatternDetectionResult result = engine.detect(
+                "int mid = (left + right) / 2; while (left < right) { return mid; }",
+                1L
+        );
+
+        assertThat(result.getErrorType()).isEqualTo(ErrorType.WRONG_LOOP_BOUNDARY);
+        assertThat(result.getSeverity()).isEqualTo("MEDIUM");
+        assertThat(result.getSuspiciousRegion()).isEqualTo("binary search loop boundary");
+        assertThat(result.getSignals()).containsEntry("binarySearchBoundarySuspicious", true);
+    }
+
+    @Test
+    void shouldDetectMissingNullOrEmptyGuard() {
+        PatternDetectionResult result = engine.detect("return value.equals(target);", 1L);
+
+        assertThat(result.getErrorType()).isEqualTo(ErrorType.POSSIBLE_NULL_ACCESS);
+        assertThat(result.getSeverity()).isEqualTo("MEDIUM");
+        assertThat(result.getSuspiciousRegion()).isEqualTo("missing null or empty guard");
+        assertThat(result.getSignals()).containsEntry("missingGuard", true);
+    }
+
+    @Test
+    void shouldDetectUnfinishedImplementationAsStuckNoProgress() {
+        PatternDetectionResult result = engine.detect("// TODO\nint x = 0;", 1L);
+
+        assertThat(result.getErrorType()).isEqualTo(ErrorType.STUCK_NO_PROGRESS);
+        assertThat(result.getSeverity()).isEqualTo("MEDIUM");
+        assertThat(result.getSuspiciousRegion()).isEqualTo("unfinished implementation");
+        assertThat(result.getSignals()).containsEntry("unfinishedImplementation", true);
+    }
+
+    @Test
     void shouldReturnUnknownWhenNoPatternMatches() {
         PatternDetectionResult result = engine.detect("return value;", 1L);
 

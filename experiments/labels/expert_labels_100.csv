@@ -1,0 +1,101 @@
+event_index,scenario,error_type,system_action,expert_action,agreement,label_source,rationale
+1,syntax_missing_semicolon_a,SYNTAX_ERROR,CODE_HIGHLIGHT,CODE_HIGHLIGHT,true,pedagogical_rubric_v1,First syntax mistake: location cue is enough.
+2,syntax_missing_semicolon_b,SYNTAX_ERROR,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Repeated syntax issue: add a short syntax reminder.
+3,syntax_missing_semicolon_c,SYNTAX_ERROR,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Repeated syntax issue: add a short syntax reminder.
+4,off_by_one_first,OFF_BY_ONE,CODE_HIGHLIGHT,CODE_HIGHLIGHT,true,pedagogical_rubric_v1,First boundary issue: point to loop condition.
+5,off_by_one_repeat_a,OFF_BY_ONE,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Repeated boundary issue: explain loop boundary concept.
+6,off_by_one_repeat_b,OFF_BY_ONE,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Repeated boundary issue: explain loop boundary concept.
+7,wrong_condition_first,WRONG_CONDITION,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Condition mistake needs conceptual guidance.
+8,wrong_condition_repeat,WRONG_CONDITION,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Repeated condition mistake still needs conceptual guidance.
+9,unfinished_todo_first,STUCK_NO_PROGRESS,GUIDING_QUESTION,GUIDING_QUESTION,true,pedagogical_rubric_v1,Unfinished implementation should prompt planning.
+10,unfinished_todo_repeat_a,SYNTAX_ERROR,CODE_HIGHLIGHT,GUIDING_QUESTION,false,pedagogical_rubric_v1,Repeated unfinished state should prompt reasoning.
+11,unfinished_todo_repeat_b,STUCK_NO_PROGRESS,GUIDING_QUESTION,GUIDING_QUESTION,true,pedagogical_rubric_v1,Unsupported placeholder should prompt next-step reasoning.
+12,complete_return_first,UNKNOWN,NO_FEEDBACK,NO_FEEDBACK,true,pedagogical_rubric_v1,Locally complete state should not be interrupted.
+13,unknown_partial_logic,UNKNOWN,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Unknown partial logic benefits from a general comparison hint.
+14,complete_return_second,UNKNOWN,NO_FEEDBACK,NO_FEEDBACK,true,pedagogical_rubric_v1,Locally complete state should not be interrupted.
+15,syntax_after_progress,SYNTAX_ERROR,CONCEPTUAL_HINT,CODE_HIGHLIGHT,false,pedagogical_rubric_v1,New syntax issue after progress: location cue is enough.
+16,off_by_one_after_progress,OFF_BY_ONE,CONCEPTUAL_HINT,CODE_HIGHLIGHT,false,pedagogical_rubric_v1,New boundary issue after progress: point to condition.
+17,unfinished_todo_after_progress,STUCK_NO_PROGRESS,GUIDING_QUESTION,GUIDING_QUESTION,true,pedagogical_rubric_v1,Unfinished retry should prompt planning.
+18,wrong_condition_after_progress,WRONG_CONDITION,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Condition mistake needs conceptual guidance.
+19,complete_return_final,UNKNOWN,CONCEPTUAL_HINT,NO_FEEDBACK,false,pedagogical_rubric_v1,Locally complete state should not be interrupted.
+20,syntax_missing_semicolon_a,SYNTAX_ERROR,CODE_HIGHLIGHT,CODE_HIGHLIGHT,true,pedagogical_rubric_v1,First syntax mistake: location cue is enough.
+21,syntax_missing_semicolon_b,SYNTAX_ERROR,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Repeated syntax issue: add a short syntax reminder.
+22,syntax_missing_semicolon_c,SYNTAX_ERROR,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Repeated syntax issue: add a short syntax reminder.
+23,off_by_one_first,OFF_BY_ONE,CODE_HIGHLIGHT,CODE_HIGHLIGHT,true,pedagogical_rubric_v1,First boundary issue: point to loop condition.
+24,off_by_one_repeat_a,OFF_BY_ONE,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Repeated boundary issue: explain loop boundary concept.
+25,off_by_one_repeat_b,OFF_BY_ONE,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Repeated boundary issue: explain loop boundary concept.
+26,wrong_condition_first,WRONG_CONDITION,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Condition mistake needs conceptual guidance.
+27,wrong_condition_repeat,WRONG_CONDITION,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Repeated condition mistake still needs conceptual guidance.
+28,unfinished_todo_first,STUCK_NO_PROGRESS,GUIDING_QUESTION,GUIDING_QUESTION,true,pedagogical_rubric_v1,Unfinished implementation should prompt planning.
+29,unfinished_todo_repeat_a,SYNTAX_ERROR,CODE_HIGHLIGHT,GUIDING_QUESTION,false,pedagogical_rubric_v1,Repeated unfinished state should prompt reasoning.
+30,unfinished_todo_repeat_b,STUCK_NO_PROGRESS,GUIDING_QUESTION,GUIDING_QUESTION,true,pedagogical_rubric_v1,Unsupported placeholder should prompt next-step reasoning.
+31,complete_return_first,UNKNOWN,NO_FEEDBACK,NO_FEEDBACK,true,pedagogical_rubric_v1,Locally complete state should not be interrupted.
+32,unknown_partial_logic,UNKNOWN,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Unknown partial logic benefits from a general comparison hint.
+33,complete_return_second,UNKNOWN,NO_FEEDBACK,NO_FEEDBACK,true,pedagogical_rubric_v1,Locally complete state should not be interrupted.
+34,syntax_after_progress,SYNTAX_ERROR,CONCEPTUAL_HINT,CODE_HIGHLIGHT,false,pedagogical_rubric_v1,New syntax issue after progress: location cue is enough.
+35,off_by_one_after_progress,OFF_BY_ONE,CONCEPTUAL_HINT,CODE_HIGHLIGHT,false,pedagogical_rubric_v1,New boundary issue after progress: point to condition.
+36,unfinished_todo_after_progress,STUCK_NO_PROGRESS,GUIDING_QUESTION,GUIDING_QUESTION,true,pedagogical_rubric_v1,Unfinished retry should prompt planning.
+37,wrong_condition_after_progress,WRONG_CONDITION,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Condition mistake needs conceptual guidance.
+38,complete_return_final,UNKNOWN,CONCEPTUAL_HINT,NO_FEEDBACK,false,pedagogical_rubric_v1,Locally complete state should not be interrupted.
+39,syntax_missing_semicolon_a,SYNTAX_ERROR,CODE_HIGHLIGHT,CODE_HIGHLIGHT,true,pedagogical_rubric_v1,First syntax mistake: location cue is enough.
+40,syntax_missing_semicolon_b,SYNTAX_ERROR,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Repeated syntax issue: add a short syntax reminder.
+41,syntax_missing_semicolon_c,SYNTAX_ERROR,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Repeated syntax issue: add a short syntax reminder.
+42,off_by_one_first,OFF_BY_ONE,CODE_HIGHLIGHT,CODE_HIGHLIGHT,true,pedagogical_rubric_v1,First boundary issue: point to loop condition.
+43,off_by_one_repeat_a,OFF_BY_ONE,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Repeated boundary issue: explain loop boundary concept.
+44,off_by_one_repeat_b,OFF_BY_ONE,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Repeated boundary issue: explain loop boundary concept.
+45,wrong_condition_first,WRONG_CONDITION,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Condition mistake needs conceptual guidance.
+46,wrong_condition_repeat,WRONG_CONDITION,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Repeated condition mistake still needs conceptual guidance.
+47,unfinished_todo_first,STUCK_NO_PROGRESS,GUIDING_QUESTION,GUIDING_QUESTION,true,pedagogical_rubric_v1,Unfinished implementation should prompt planning.
+48,unfinished_todo_repeat_a,SYNTAX_ERROR,CODE_HIGHLIGHT,GUIDING_QUESTION,false,pedagogical_rubric_v1,Repeated unfinished state should prompt reasoning.
+49,unfinished_todo_repeat_b,STUCK_NO_PROGRESS,GUIDING_QUESTION,GUIDING_QUESTION,true,pedagogical_rubric_v1,Unsupported placeholder should prompt next-step reasoning.
+50,complete_return_first,UNKNOWN,NO_FEEDBACK,NO_FEEDBACK,true,pedagogical_rubric_v1,Locally complete state should not be interrupted.
+51,unknown_partial_logic,UNKNOWN,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Unknown partial logic benefits from a general comparison hint.
+52,complete_return_second,UNKNOWN,NO_FEEDBACK,NO_FEEDBACK,true,pedagogical_rubric_v1,Locally complete state should not be interrupted.
+53,syntax_after_progress,SYNTAX_ERROR,CONCEPTUAL_HINT,CODE_HIGHLIGHT,false,pedagogical_rubric_v1,New syntax issue after progress: location cue is enough.
+54,off_by_one_after_progress,OFF_BY_ONE,CONCEPTUAL_HINT,CODE_HIGHLIGHT,false,pedagogical_rubric_v1,New boundary issue after progress: point to condition.
+55,unfinished_todo_after_progress,STUCK_NO_PROGRESS,GUIDING_QUESTION,GUIDING_QUESTION,true,pedagogical_rubric_v1,Unfinished retry should prompt planning.
+56,wrong_condition_after_progress,WRONG_CONDITION,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Condition mistake needs conceptual guidance.
+57,complete_return_final,UNKNOWN,CONCEPTUAL_HINT,NO_FEEDBACK,false,pedagogical_rubric_v1,Locally complete state should not be interrupted.
+58,syntax_missing_semicolon_a,SYNTAX_ERROR,CODE_HIGHLIGHT,CODE_HIGHLIGHT,true,pedagogical_rubric_v1,First syntax mistake: location cue is enough.
+59,syntax_missing_semicolon_b,SYNTAX_ERROR,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Repeated syntax issue: add a short syntax reminder.
+60,syntax_missing_semicolon_c,SYNTAX_ERROR,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Repeated syntax issue: add a short syntax reminder.
+61,off_by_one_first,OFF_BY_ONE,CODE_HIGHLIGHT,CODE_HIGHLIGHT,true,pedagogical_rubric_v1,First boundary issue: point to loop condition.
+62,off_by_one_repeat_a,OFF_BY_ONE,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Repeated boundary issue: explain loop boundary concept.
+63,off_by_one_repeat_b,OFF_BY_ONE,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Repeated boundary issue: explain loop boundary concept.
+64,wrong_condition_first,WRONG_CONDITION,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Condition mistake needs conceptual guidance.
+65,wrong_condition_repeat,WRONG_CONDITION,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Repeated condition mistake still needs conceptual guidance.
+66,unfinished_todo_first,STUCK_NO_PROGRESS,GUIDING_QUESTION,GUIDING_QUESTION,true,pedagogical_rubric_v1,Unfinished implementation should prompt planning.
+67,unfinished_todo_repeat_a,SYNTAX_ERROR,CODE_HIGHLIGHT,GUIDING_QUESTION,false,pedagogical_rubric_v1,Repeated unfinished state should prompt reasoning.
+68,unfinished_todo_repeat_b,STUCK_NO_PROGRESS,GUIDING_QUESTION,GUIDING_QUESTION,true,pedagogical_rubric_v1,Unsupported placeholder should prompt next-step reasoning.
+69,complete_return_first,UNKNOWN,NO_FEEDBACK,NO_FEEDBACK,true,pedagogical_rubric_v1,Locally complete state should not be interrupted.
+70,unknown_partial_logic,UNKNOWN,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Unknown partial logic benefits from a general comparison hint.
+71,complete_return_second,UNKNOWN,NO_FEEDBACK,NO_FEEDBACK,true,pedagogical_rubric_v1,Locally complete state should not be interrupted.
+72,syntax_after_progress,SYNTAX_ERROR,CONCEPTUAL_HINT,CODE_HIGHLIGHT,false,pedagogical_rubric_v1,New syntax issue after progress: location cue is enough.
+73,off_by_one_after_progress,OFF_BY_ONE,CONCEPTUAL_HINT,CODE_HIGHLIGHT,false,pedagogical_rubric_v1,New boundary issue after progress: point to condition.
+74,unfinished_todo_after_progress,STUCK_NO_PROGRESS,GUIDING_QUESTION,GUIDING_QUESTION,true,pedagogical_rubric_v1,Unfinished retry should prompt planning.
+75,wrong_condition_after_progress,WRONG_CONDITION,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Condition mistake needs conceptual guidance.
+76,complete_return_final,UNKNOWN,CONCEPTUAL_HINT,NO_FEEDBACK,false,pedagogical_rubric_v1,Locally complete state should not be interrupted.
+77,syntax_missing_semicolon_a,SYNTAX_ERROR,CODE_HIGHLIGHT,CODE_HIGHLIGHT,true,pedagogical_rubric_v1,First syntax mistake: location cue is enough.
+78,syntax_missing_semicolon_b,SYNTAX_ERROR,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Repeated syntax issue: add a short syntax reminder.
+79,syntax_missing_semicolon_c,SYNTAX_ERROR,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Repeated syntax issue: add a short syntax reminder.
+80,off_by_one_first,OFF_BY_ONE,CODE_HIGHLIGHT,CODE_HIGHLIGHT,true,pedagogical_rubric_v1,First boundary issue: point to loop condition.
+81,off_by_one_repeat_a,OFF_BY_ONE,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Repeated boundary issue: explain loop boundary concept.
+82,off_by_one_repeat_b,OFF_BY_ONE,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Repeated boundary issue: explain loop boundary concept.
+83,wrong_condition_first,WRONG_CONDITION,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Condition mistake needs conceptual guidance.
+84,wrong_condition_repeat,WRONG_CONDITION,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Repeated condition mistake still needs conceptual guidance.
+85,unfinished_todo_first,STUCK_NO_PROGRESS,GUIDING_QUESTION,GUIDING_QUESTION,true,pedagogical_rubric_v1,Unfinished implementation should prompt planning.
+86,unfinished_todo_repeat_a,SYNTAX_ERROR,CODE_HIGHLIGHT,GUIDING_QUESTION,false,pedagogical_rubric_v1,Repeated unfinished state should prompt reasoning.
+87,unfinished_todo_repeat_b,STUCK_NO_PROGRESS,GUIDING_QUESTION,GUIDING_QUESTION,true,pedagogical_rubric_v1,Unsupported placeholder should prompt next-step reasoning.
+88,complete_return_first,UNKNOWN,NO_FEEDBACK,NO_FEEDBACK,true,pedagogical_rubric_v1,Locally complete state should not be interrupted.
+89,unknown_partial_logic,UNKNOWN,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Unknown partial logic benefits from a general comparison hint.
+90,complete_return_second,UNKNOWN,NO_FEEDBACK,NO_FEEDBACK,true,pedagogical_rubric_v1,Locally complete state should not be interrupted.
+91,syntax_after_progress,SYNTAX_ERROR,CONCEPTUAL_HINT,CODE_HIGHLIGHT,false,pedagogical_rubric_v1,New syntax issue after progress: location cue is enough.
+92,off_by_one_after_progress,OFF_BY_ONE,CONCEPTUAL_HINT,CODE_HIGHLIGHT,false,pedagogical_rubric_v1,New boundary issue after progress: point to condition.
+93,unfinished_todo_after_progress,STUCK_NO_PROGRESS,GUIDING_QUESTION,GUIDING_QUESTION,true,pedagogical_rubric_v1,Unfinished retry should prompt planning.
+94,wrong_condition_after_progress,WRONG_CONDITION,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Condition mistake needs conceptual guidance.
+95,complete_return_final,UNKNOWN,CONCEPTUAL_HINT,NO_FEEDBACK,false,pedagogical_rubric_v1,Locally complete state should not be interrupted.
+96,syntax_missing_semicolon_a,SYNTAX_ERROR,CODE_HIGHLIGHT,CODE_HIGHLIGHT,true,pedagogical_rubric_v1,First syntax mistake: location cue is enough.
+97,syntax_missing_semicolon_b,SYNTAX_ERROR,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Repeated syntax issue: add a short syntax reminder.
+98,syntax_missing_semicolon_c,SYNTAX_ERROR,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Repeated syntax issue: add a short syntax reminder.
+99,off_by_one_first,OFF_BY_ONE,CODE_HIGHLIGHT,CODE_HIGHLIGHT,true,pedagogical_rubric_v1,First boundary issue: point to loop condition.
+100,off_by_one_repeat_a,OFF_BY_ONE,CONCEPTUAL_HINT,CONCEPTUAL_HINT,true,pedagogical_rubric_v1,Repeated boundary issue: explain loop boundary concept.

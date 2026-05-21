@@ -32,4 +32,11 @@ class SyntaxCheckEngineTest {
         assertThat(result.isCompileSuccess()).isTrue();
         assertThat(result.getSuspiciousRegion()).isNull();
     }
+
+    @Test
+    void shouldAcceptSnippetWithUnresolvedVariablesAsSyntacticallyValid() {
+        SyntaxCheckResult result = engine.check("for (int i = 0; i <= n; i++) { sum += i; }", "java");
+
+        assertThat(result.isCompileSuccess()).isTrue();
+    }
 }
