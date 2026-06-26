@@ -43,7 +43,7 @@ public class GeminiFeedbackService {
                 - Do not reveal the full solution.
                 - Do not provide complete corrected code.
                 - Keep it supportive and concise.
-                - Maximum 2 sentences.
+                - If a student's response is actually correct, just congratulate him/her instead of providing useless optimization proposals and unnecessary hints
 
                 Pedagogical action: %s
                 Error type: %s
@@ -55,7 +55,6 @@ public class GeminiFeedbackService {
                 Task summary: %s
 
                 Return only the feedback text.
-                If a response is correct, then you can praise student/provide some recommendations about better solution
                 """.formatted(
                 action.name(),
                 safe(analyzer.getErrorType()),

@@ -1,0 +1,41 @@
+{
+  "output": "C:\\Users\\Koshikov\\Desktop\\socratesai\\ml\\codeforces_policy_dataset.csv",
+  "rows": 60564,
+  "source_rows": {
+    "selected_accepted": 42467,
+    "selected_incorrect": 18097
+  },
+  "problem_count": 9183,
+  "language_count": 18,
+  "verdict_distribution": {
+    "OK": 42467,
+    "WRONG_ANSWER": 8961,
+    "TIME_LIMIT_EXCEEDED": 6276,
+    "RUNTIME_ERROR": 1672,
+    "SKIPPED": 715,
+    "MEMORY_LIMIT_EXCEEDED": 404,
+    "COMPILATION_ERROR": 34,
+    "CHALLENGED": 25,
+    "IDLENESS_LIMIT_EXCEEDED": 9,
+    "CRASHED": 1
+  },
+  "target_distribution": {
+    "NO_FEEDBACK": 42467,
+    "CONCEPTUAL_HINT": 15016,
+    "CODE_HIGHLIGHT": 2111,
+    "GUIDING_QUESTION": 970
+  },
+  "language_distribution_top10": {
+    "GNU C++": 9955,
+    "Python 3": 9761,
+    "C++20 (GCC 11-64)": 9751,
+    "GNU C++11": 8723,
+    "C++14 (GCC 6-32)": 5854,
+    "C++17 (GCC 7-32)": 4979,
+    "PyPy 3": 3716,
+    "PyPy 3-64": 3173,
+    "C++20 (GCC 13-64)": 2366,
+    "C++17 (GCC 9-64)": 666
+  },
+  "interpretation": "This is an auxiliary verdict-derived policy dataset. It uses real human programming submissions, but its target actions are weak labels derived from judge verdicts and passed-test counts, not instructor feedback labels."
+}

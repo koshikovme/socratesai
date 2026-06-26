@@ -2,6 +2,37 @@
 
 Runtime features come from Spring `PolicyFeatures` and are exported from `interaction_logs`.
 
+## Codeforces mentor-state model now used by the project
+
+The project now has two ML paths:
+
+- `/predict` keeps the older action-selection model trained from `interaction_logs`-style policy features.
+- `/predict-mentor-state` serves the new Codeforces-trained mentor-state model from `codeforces_feedback_need/source_code_model.joblib`.
+
+Spring Boot is configured to call `/predict-mentor-state` when ML policy mode is enabled. The Python service predicts a mentor state such as `semantic_debug`, `syntax_repair`, or `efficiency_review`, maps it to the current `FeedbackAction`, and returns both the action and model confidence. If the confidence is below `APP_POLICY_ML_MIN_CONFIDENCE`, Spring keeps the predicted mentor state for logging but uses the rule selector for the final action. This keeps the ML model connected to the product without letting an uncertain prediction drive feedback.
+
+Run the ML service:
+
+```powershell
+cd C:\Users\Koshikov\Desktop\socratesai\ml
+$env:MENTOR_STATE_MODEL_PATH = ".\codeforces_feedback_need\source_code_model.joblib"
+uvicorn policy_api:app --host 0.0.0.0 --port 8001
+```
+
+Run Spring with ML enabled:
+
+```powershell
+$env:APP_POLICY_MODE = "ml"
+$env:APP_POLICY_ML_ENABLED = "true"
+$env:APP_POLICY_ML_PREDICT_PATH = "/predict-mentor-state"
+$env:APP_POLICY_ML_MIN_CONFIDENCE = "0.35"
+mvn spring-boot:run
+```
+
+`interaction_logs` is not replaced by Codeforces. Codeforces is the large external pretraining/evidence dataset. `interaction_logs` is the real SocratesAI domain dataset: it records what the model predicted, what feedback action was used, and whether the student later marked the feedback as useful or resolved. New columns `mentor_state` and `mentor_state_confidence` keep the Codeforces-model prediction inside the same table, so future work can evaluate and adapt the model on actual first-year student usage.
+
+`train_codeforces_feedback_need_model.py` saves every trained feature-set model in `ml/codeforces_feedback_need`. The default runtime model is still `source_code_model.joblib` because it can work while a student is editing. After collecting reliable run-result fields, the service can be pointed to `execution_enriched_model.joblib` with `MENTOR_STATE_MODEL_PATH` to use code plus test-run evidence.
+
 ## Train
 
 1. Export a CSV from Postgres using `export_policy_dataset.sql`.
@@ -107,9 +138,25 @@ you can build a synthetic weak-label dataset for the policy model:
 
 ```bash
 python build_synthetic_policy_dataset_from_code_corpus.py --input train.csv --output policy_dataset.csv --max-problems 1000 --solutions-per-problem 3
-Copy-Item policy_dataset.csv policy_dataset.csv
 python train_policy_model.py
 ```
+
+Expanded paper-support dataset:
+
+```bash
+python build_synthetic_policy_dataset_from_code_corpus.py --input train.csv --output policy_dataset_expanded.csv --max-problems 3000 --solutions-per-problem 5
+python train_policy_model.py --input policy_dataset_expanded.csv --output-prefix mentor_policy_model_expanded --target-column feedback_action --group-column problem_id
+python run_policy_model_study.py --input policy_dataset_expanded.csv --output-prefix policy_model_study_expanded --target-column feedback_action --group-column problem_id
+```
+
+Current expanded artifacts:
+- `policy_dataset_expanded.csv` - 42,861 weak-label rows from 13,188 synthetic coding sessions
+- `mentor_policy_model_expanded.joblib`
+- `mentor_policy_model_expanded_metrics.json`
+- `mentor_policy_model_expanded_report.md`
+- `mentor_policy_model_expanded_confusion_matrix.png`
+- `policy_model_study_expanded_results.json`
+- `policy_model_study_expanded_report.md`
 
 What this script does:
 - takes accepted solutions from a public code corpus

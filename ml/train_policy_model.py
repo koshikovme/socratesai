@@ -417,8 +417,8 @@ def build_markdown_report(metrics: dict) -> str:
             "",
             "## Held-Out Groups",
             "",
-            f"- Train groups: {', '.join(metrics['train_groups'])}",
-            f"- Test groups: {', '.join(metrics['test_groups'])}",
+            f"- Train groups: {format_group_preview(metrics['train_groups'])}",
+            f"- Test groups: {format_group_preview(metrics['test_groups'])}",
         ])
 
     lines.extend([
@@ -432,6 +432,16 @@ def build_markdown_report(metrics: dict) -> str:
         "",
     ])
     return "\n".join(lines)
+
+
+def format_group_preview(groups: list[str], limit: int = 20) -> str:
+    if not groups:
+        return "none"
+    preview = ", ".join(groups[:limit])
+    remaining = len(groups) - limit
+    if remaining <= 0:
+        return preview
+    return f"{preview}, ... ({len(groups)} total; {remaining} more omitted)"
 
 
 def write_confusion_matrix_figure(matrix, labels: list[str], path: Path) -> None:

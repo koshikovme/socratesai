@@ -19,10 +19,15 @@ public record PolicyFeatures(
         Boolean lastFeedbackSuccess,
         boolean hasSuspiciousRegion,
         int codeLines,
-        int totalFeedbackCountInSession
+        int totalFeedbackCountInSession,
+        String code
 ) {
 
     public static PolicyFeatures from(AnalyzerResult analyzer, StudentContextDto context, Integer attemptNo) {
+        return from(analyzer, context, attemptNo, null);
+    }
+
+    public static PolicyFeatures from(AnalyzerResult analyzer, StudentContextDto context, Integer attemptNo, String code) {
         return new PolicyFeatures(
                 analyzer.getErrorType(),
                 analyzer.getSeverity(),
@@ -36,7 +41,41 @@ public record PolicyFeatures(
                 context.getLastFeedbackSuccess(),
                 hasText(analyzer.getSuspiciousRegion()),
                 analyzer.getCodeLines(),
-                context.getTotalFeedbackCountInSession()
+                context.getTotalFeedbackCountInSession(),
+                code
+        );
+    }
+
+    public PolicyFeatures(
+            String errorType,
+            String severity,
+            boolean compileSuccess,
+            int testsPassed,
+            int testsFailed,
+            int sameErrorCount,
+            int totalErrorsSeen,
+            int attemptNo,
+            String lastFeedbackAction,
+            Boolean lastFeedbackSuccess,
+            boolean hasSuspiciousRegion,
+            int codeLines,
+            int totalFeedbackCountInSession
+    ) {
+        this(
+                errorType,
+                severity,
+                compileSuccess,
+                testsPassed,
+                testsFailed,
+                sameErrorCount,
+                totalErrorsSeen,
+                attemptNo,
+                lastFeedbackAction,
+                lastFeedbackSuccess,
+                hasSuspiciousRegion,
+                codeLines,
+                totalFeedbackCountInSession,
+                null
         );
     }
 

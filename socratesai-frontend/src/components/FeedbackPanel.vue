@@ -115,8 +115,9 @@ const actionLabel = computed(() => {
 })
 
 const sourceLabel = computed(() => {
-  if (!props.feedback?.transport) return 'Manual'
-  return props.feedback.transport === 'WS' ? 'Realtime' : 'Manual'
+  const transport = props.feedback?.transport === 'WS' ? 'Realtime' : 'Manual'
+  if (!props.feedback?.feedbackSource) return transport
+  return `${transport} / ${props.feedback.feedbackSource}`
 })
 
 const canReview = computed(() => Boolean(props.feedback?.interactionId))

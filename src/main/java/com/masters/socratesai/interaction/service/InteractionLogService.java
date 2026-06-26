@@ -39,6 +39,42 @@ public class InteractionLogService {
             int policyTimeMs,
             int feedbackTimeMs
     ) {
+        return saveInteraction(
+                sessionId,
+                studentId,
+                taskId,
+                attemptNo,
+                code,
+                analyzerResult,
+                context,
+                action,
+                policyVersion,
+                feedbackText,
+                feedbackSource,
+                policyTimeMs,
+                feedbackTimeMs,
+                null,
+                null
+        );
+    }
+
+    public InteractionLog saveInteraction(
+            UUID sessionId,
+            Long studentId,
+            Long taskId,
+            Integer attemptNo,
+            String code,
+            AnalyzerResult analyzerResult,
+            StudentContextDto context,
+            FeedbackAction action,
+            String policyVersion,
+            String feedbackText,
+            String feedbackSource,
+            int policyTimeMs,
+            int feedbackTimeMs,
+            String mentorState,
+            Double mentorStateConfidence
+    ) {
         int totalLatency = analyzerResult.getAnalysisTimeMs() + policyTimeMs + feedbackTimeMs;
 
         InteractionLog log = InteractionLog.builder()
@@ -60,6 +96,8 @@ public class InteractionLogService {
                 .feedbackText(feedbackText)
                 .feedbackSource(feedbackSource)
                 .policyVersion(policyVersion)
+                .mentorState(mentorState)
+                .mentorStateConfidence(mentorStateConfidence)
                 .feedbackVersion("template-v1")
                 .analysisTimeMs(analyzerResult.getAnalysisTimeMs())
                 .policyTimeMs(policyTimeMs)
@@ -168,6 +206,8 @@ public class InteractionLogService {
                 "policy_time_ms",
                 "feedback_time_ms",
                 "total_latency_ms",
+                "mentor_state",
+                "mentor_state_confidence",
                 "feedback_action",
                 "resolved_after_feedback",
                 "fixed_after_ms",
@@ -223,6 +263,8 @@ public class InteractionLogService {
                 escape(row.getPolicyTimeMs()),
                 escape(row.getFeedbackTimeMs()),
                 escape(row.getTotalLatencyMs()),
+                escape(row.getMentorState()),
+                escape(row.getMentorStateConfidence()),
                 escape(row.getFeedbackAction()),
                 escape(row.getResolvedAfterFeedback()),
                 escape(row.getFixedAfterMs()),

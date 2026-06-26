@@ -28,6 +28,7 @@ describe('auth store', () => {
     test('logout clears reactive state and local storage', () => {
         const store = useAuthStore()
         localStorage.setItem('token', 'jwt-token')
+        localStorage.setItem('socrates-theme', 'dark')
         store.token = 'jwt-token'
         store.email = 'student@example.com'
 
@@ -36,5 +37,6 @@ describe('auth store', () => {
         expect(store.token).toBe('')
         expect(store.email).toBe('')
         expect(localStorage.getItem('token')).toBeNull()
+        expect(localStorage.getItem('socrates-theme')).toBe('dark')
     })
 })

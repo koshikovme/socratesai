@@ -28,7 +28,11 @@ export const useAuthStore = defineStore('auth', {
             this.email = ''
             this.fullName = ''
             this.role = ''
-            localStorage.clear()
+            localStorage.removeItem('token')
+            localStorage.removeItem('userId')
+            localStorage.removeItem('email')
+            localStorage.removeItem('fullName')
+            localStorage.removeItem('role')
         }
     }
 })

@@ -326,6 +326,8 @@ def send_mentor_request(
         "status": status,
         "action": actual_action,
         "agreement": str(actual_action == attempt["expected_action"]).lower() if status == 200 else "false",
+        "feedback_source": body.get("feedbackSource", ""),
+        "feedback_text": body.get("feedbackText", ""),
         "error_type": body.get("errorType", ""),
         "compile_success": body.get("compileSuccess", ""),
         "tests_passed": body.get("testsPassed", ""),

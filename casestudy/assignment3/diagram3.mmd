@@ -1,0 +1,99 @@
+classDiagram
+    class User {
+        -Long id
+        -String email
+        -String passwordHash
+        -String fullName
+        -UserRole role
+        -UserSettings settings
+        -LocalDateTime createdAt
+    }
+    class UserSettings {
+        -Boolean darkMode
+        -Boolean emailNotifications
+        -String preferredLanguage
+    }
+    class Task {
+        -Long id
+        -String title
+        -String topic
+        -TaskDifficulty difficulty
+        -String language
+        -String description
+        -String starterCode
+        -Boolean published
+    }
+    class TaskTest {
+        -Long id
+        -String inputData
+        -String expectedOutput
+        -Boolean hidden
+    }
+    class StudentTaskSession {
+        -UUID sessionId
+        -Long studentId
+        -Long taskId
+        -OffsetDateTime startedAt
+        -OffsetDateTime endedAt
+        -String finalStatus
+        -Integer totalAttempts
+        -Integer totalFeedbackCount
+        +prePersist() void
+    }
+    class InteractionLog {
+        -UUID interactionId
+        -UUID sessionId
+        -Long studentId
+        -Long taskId
+        -Integer attemptNo
+        -String errorType
+        -String severity
+        -String feedbackAction
+        -String feedbackText
+        -Integer totalLatencyMs
+        -Boolean resolvedAfterFeedback
+        +prePersist() void
+    }
+    class AnalyzerService {
+        +analyze(request: AnalyzerRequest) AnalyzerResult
+    }
+    class MentorWorkflowService {
+        +analyzeAndMentor(request: MentorAnalyzeRequest) MentorResponse
+        +analyzeAndMentor(request: MentorAnalyzeRequest, countAsAttempt: boolean) MentorResponse
+    }
+    class MentorService {
+        +mentor(request: MentorRequest) MentorResponse
+    }
+    class MentorPolicyService {
+        +decide(analyzer: AnalyzerResult, context: StudentContextDto, attemptNo: Integer) PolicyDecision
+    }
+    class RuleBasedPolicyEngine {
+        +decide(features: PolicyFeatures) FeedbackAction
+        +policyVersion() String
+    }
+    class MlPolicySelector {
+        +decide(features: PolicyFeatures) FeedbackAction
+        +policyVersion() String
+    }
+    class FeedbackGenerationService {
+        +generate(action: FeedbackAction, analyzer: AnalyzerResult, code: String, taskSummary: String) String
+        +getSource() String
+    }
+    class InteractionLogService {
+        +saveInteraction(...) InteractionLog
+        +updateInteractionResult(id: UUID, resolved: Boolean, fixedAfterMs: Integer) InteractionResultResponse
+        +exportPolicyDataset(resolvedOnly: boolean) byte[]
+    }
+
+    User "1" *-- "1" UserSettings : embeds
+    Task "1" *-- "0..*" TaskTest : contains
+    StudentTaskSession "1" o-- "0..*" InteractionLog : groups
+    User "1" --> "0..*" StudentTaskSession : starts
+    Task "1" --> "0..*" StudentTaskSession : assigned task
+    MentorWorkflowService --> AnalyzerService : calls
+    MentorWorkflowService --> MentorService : delegates
+    MentorService --> MentorPolicyService : selects action
+    MentorService --> FeedbackGenerationService : generates text
+    MentorService --> InteractionLogService : saves log
+    MentorPolicyService --> RuleBasedPolicyEngine : rule/fallback
+    MentorPolicyService --> MlPolicySelector : ml mode

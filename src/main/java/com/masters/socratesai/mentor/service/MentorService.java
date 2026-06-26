@@ -58,7 +58,7 @@ public class MentorService {
         );
 
         long policyStart = System.currentTimeMillis();
-        PolicyDecision policyDecision = mentorPolicyService.decide(analyzer, context, request.getAttemptNo());
+        PolicyDecision policyDecision = mentorPolicyService.decide(analyzer, context, request.getAttemptNo(), request.getCode());
         FeedbackAction action = policyDecision.action();
         int policyTimeMs = (int) (System.currentTimeMillis() - policyStart);
 
@@ -84,7 +84,9 @@ public class MentorService {
                 feedback.text(),
                 feedback.source(),
                 policyTimeMs,
-                feedbackTimeMs
+                feedbackTimeMs,
+                policyDecision.mentorState(),
+                policyDecision.confidence()
         );
 
         sessionService.incrementFeedbackCount(sessionId);
@@ -93,6 +95,7 @@ public class MentorService {
         response.setInteractionId(savedLog.getInteractionId());
         response.setAction(action.name());
         response.setFeedbackText(feedback.text());
+        response.setFeedbackSource(feedback.source());
         response.setErrorType(analyzer.getErrorType());
         response.setSuspiciousRegion(analyzer.getSuspiciousRegion());
         response.setCompileSuccess(analyzer.isCompileSuccess());
@@ -100,6 +103,8 @@ public class MentorService {
         response.setTestsFailed(analyzer.getTestsFailed());
         response.setAnalysisTimeMs(analyzer.getAnalysisTimeMs());
         response.setSessionId(sessionId);
+        response.setMentorState(policyDecision.mentorState());
+        response.setMentorStateConfidence(policyDecision.confidence());
 
         return response;
     }

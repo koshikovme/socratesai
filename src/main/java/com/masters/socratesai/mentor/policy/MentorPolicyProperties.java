@@ -44,6 +44,7 @@ public class MentorPolicyProperties {
         private String baseUrl = "http://localhost:8001";
         private String predictPath = "/predict";
         private boolean fallbackToRule = true;
+        private double minConfidence = 0.0;
 
         public boolean isEnabled() {
             return enabled;
@@ -83,6 +84,14 @@ public class MentorPolicyProperties {
 
         public void setFallbackToRule(boolean fallbackToRule) {
             this.fallbackToRule = fallbackToRule;
+        }
+
+        public double getMinConfidence() {
+            return minConfidence;
+        }
+
+        public void setMinConfidence(double minConfidence) {
+            this.minConfidence = minConfidence;
         }
     }
 }

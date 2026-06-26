@@ -1,4 +1,7 @@
 spring:
+  config:
+    import: optional:file:.env[.properties]
+
   application:
     name: socratesai
 
@@ -29,29 +32,30 @@ logging:
 
 app:
   jwt:
-    secret: ${APP_JWT_SECRET:c29jcmF0ZXNhaS1sb2NhbC1kZXYtand0LXNlY3JldC1taW5pbXVtLTY0LWJ5dGVzLWNoYW5nZS1tZS0yMDI2}
+    secret: ${APP_JWT_SECRET:c29jcmF0ZXNhaS1sb2NhbC1kZXYtand0LXNlY3JldC1taW5pbXVtLTY0LWJ5dGVzLWNoYW5nZS1tZS0yMDI2IQ==}
     expiration-ms: ${APP_JWT_EXPIRATION_MS:86400000}
   gemini:
-    enabled: ${APP_GEMINI_ENABLED:false}
+    enabled: ${APP_GEMINI_ENABLED:true}
     api-key: ${GEMINI_API_KEY:}
-    model: ${APP_GEMINI_MODEL:gemini-2.5-flash}
+    model: ${APP_GEMINI_MODEL:gemini-2.5-flash-lite}
     base-url: ${APP_GEMINI_BASE_URL:https://generativelanguage.googleapis.com/v1beta}
   openai:
     enabled: ${APP_OPENAI_ENABLED:false}
     api-key: ${OPENAI_API_KEY:}
-    model: ${APP_OPENAI_MODEL:gpt-4.1-mini}
+    model: ${APP_OPENAI_MODEL:}
     base-url: ${APP_OPENAI_BASE_URL:https://api.openai.com/v1}
 
   policy:
-    mode: ${APP_POLICY_MODE:rule}
+    mode: ${APP_POLICY_MODE:ml}
     rule-version: ${APP_POLICY_RULE_VERSION:rule-v1}
     guardrail-version: ${APP_POLICY_GUARDRAIL_VERSION:guardrails-v1}
     ml:
       enabled: ${APP_POLICY_ML_ENABLED:false}
-      version: ${APP_POLICY_ML_VERSION:ml-v1}
+      version: ${APP_POLICY_ML_VERSION:codeforces-source-v1}
       base-url: ${APP_POLICY_ML_BASE_URL:http://localhost:8001}
-      predict-path: ${APP_POLICY_ML_PREDICT_PATH:/predict}
+      predict-path: ${APP_POLICY_ML_PREDICT_PATH:/predict-mentor-state}
       fallback-to-rule: ${APP_POLICY_ML_FALLBACK_TO_RULE:true}
+      min-confidence: 0.35
 
   websocket:
     allowed-origins: ${APP_WEBSOCKET_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173}

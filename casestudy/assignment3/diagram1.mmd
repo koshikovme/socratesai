@@ -1,0 +1,22 @@
+flowchart LR
+    student([Student<br/>First-year programming learner])
+    teacher([Teacher/Admin<br/>Creates tasks and manages content])
+    system["Socrates AI<br/>Virtual Mentor System<br/>Analyzes code, selects feedback, logs interactions"]
+    leetcode["LeetCode GraphQL API<br/>Optional task source"]
+    gemini["Gemini API<br/>Optional LLM feedback phrasing"]
+    openai["OpenAI API<br/>Optional LLM feedback phrasing"]
+    ml["Policy ML Service<br/>Optional feedback-action predictor"]
+
+    student -->|Uses web IDE, submits code, receives feedback| system
+    teacher -->|Creates and manages programming tasks| system
+    system -->|HTTPS/GraphQL task query| leetcode
+    system -->|HTTPS/JSON prompt request| gemini
+    system -->|HTTPS/JSON prompt request| openai
+    system -->|HTTP/JSON policy features| ml
+
+    classDef user fill:#e8f1ff,stroke:#2f6fed,color:#111;
+    classDef core fill:#e9f7ec,stroke:#2e8b57,color:#111;
+    classDef external fill:#eeeeee,stroke:#777,color:#111;
+    class student,teacher user;
+    class system core;
+    class leetcode,gemini,openai,ml external;

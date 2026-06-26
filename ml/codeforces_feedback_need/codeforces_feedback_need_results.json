@@ -1,0 +1,748 @@
+{
+  "study_name": "Codeforces Python verdict-supervised feedback-need model",
+  "dataset": {
+    "source": "datasets/Codeforces-Python-Submissions",
+    "eligible_rows_after_filtering": 490357,
+    "modeled_rows": 178414,
+    "rating_max": 1200,
+    "max_rows_per_class": 50000,
+    "max_code_chars": 5000,
+    "hash_features": 65536,
+    "sgd_epochs": 60,
+    "problem_count_eligible": 881,
+    "problem_count_modeled": 872,
+    "class_distribution_eligible": {
+      "accepted": 246958,
+      "semantic_debug": 164985,
+      "execution_safety": 41375,
+      "efficiency_review": 22805,
+      "syntax_repair": 14234
+    },
+    "class_distribution_modeled": {
+      "semantic_debug": 50000,
+      "accepted": 50000,
+      "execution_safety": 41375,
+      "efficiency_review": 22805,
+      "syntax_repair": 14234
+    },
+    "verdict_distribution_eligible": {
+      "OK": 246958,
+      "WRONG_ANSWER": 164278,
+      "RUNTIME_ERROR": 40505,
+      "TIME_LIMIT_EXCEEDED": 22780,
+      "COMPILATION_ERROR": 14234,
+      "MEMORY_LIMIT_EXCEEDED": 865,
+      "CHALLENGED": 495,
+      "SKIPPED": 206,
+      "IDLENESS_LIMIT_EXCEEDED": 25,
+      "PARTIAL": 5,
+      "CRASHED": 5,
+      "FAILED": 1
+    },
+    "language_distribution_modeled": {
+      "Python 3": 129701,
+      "PyPy 3": 25251,
+      "PyPy 3-64": 23462
+    }
+  },
+  "split": {
+    "strategy": "problem-level GroupShuffleSplit",
+    "test_size": 0.25,
+    "train_rows": 135752,
+    "test_rows": 42662,
+    "train_problem_count": 654,
+    "test_problem_count": 218,
+    "problem_overlap": 0,
+    "train_class_distribution": {
+      "semantic_debug": 38411,
+      "accepted": 38364,
+      "execution_safety": 31798,
+      "efficiency_review": 16351,
+      "syntax_repair": 10828
+    },
+    "test_class_distribution": {
+      "accepted": 11636,
+      "semantic_debug": 11589,
+      "execution_safety": 9577,
+      "efficiency_review": 6454,
+      "syntax_repair": 3406
+    }
+  },
+  "models": {
+    "dummy_majority": {
+      "accuracy": 0.27164689887956495,
+      "balanced_accuracy": 0.2,
+      "macro_f1": 0.08544727286132975,
+      "weighted_f1": 0.11605743345248119,
+      "classification_report": {
+        "Accepted": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 11636.0
+        },
+        "Semantic debug": {
+          "precision": 0.27164689887956495,
+          "recall": 1.0,
+          "f1-score": 0.42723636430664874,
+          "support": 11589.0
+        },
+        "Execution safety": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 9577.0
+        },
+        "Efficiency review": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 6454.0
+        },
+        "Syntax repair": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 3406.0
+        },
+        "accuracy": 0.27164689887956495,
+        "macro avg": {
+          "precision": 0.05432937977591299,
+          "recall": 0.2,
+          "f1-score": 0.08544727286132975,
+          "support": 42662.0
+        },
+        "weighted avg": {
+          "precision": 0.07379203767088459,
+          "recall": 0.27164689887956495,
+          "f1-score": 0.11605743345248119,
+          "support": 42662.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          0,
+          11636,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          11589,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          9577,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          6454,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          3406,
+          0,
+          0,
+          0
+        ]
+      ],
+      "confusion_matrix_normalized": [
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "prediction_distribution": {
+        "semantic_debug": 42662
+      }
+    },
+    "context_metrics": {
+      "accuracy": 0.3341615489194131,
+      "balanced_accuracy": 0.3482638522013327,
+      "macro_f1": 0.3102456722842715,
+      "weighted_f1": 0.3039777089262191,
+      "classification_report": {
+        "Accepted": {
+          "precision": 0.32491273194929265,
+          "recall": 0.303970436576143,
+          "f1-score": 0.31409288695497734,
+          "support": 11636.0
+        },
+        "Semantic debug": {
+          "precision": 0.36191631291691934,
+          "recall": 0.5149710932781085,
+          "f1-score": 0.4250863634744827,
+          "support": 11589.0
+        },
+        "Execution safety": {
+          "precision": 0.24680377987770985,
+          "recall": 0.04636107340503289,
+          "f1-score": 0.07805907172995781,
+          "support": 9577.0
+        },
+        "Efficiency review": {
+          "precision": 0.3283337239278181,
+          "recall": 0.434149364735048,
+          "f1-score": 0.37389911929543634,
+          "support": 6454.0
+        },
+        "Syntax repair": {
+          "precision": 0.3038562487381385,
+          "recall": 0.4418672930123312,
+          "f1-score": 0.36009091996650316,
+          "support": 3406.0
+        },
+        "accuracy": 0.3341615489194131,
+        "macro avg": {
+          "precision": 0.3131645594819757,
+          "recall": 0.3482638522013327,
+          "f1-score": 0.3102456722842715,
+          "support": 42662.0
+        },
+        "weighted avg": {
+          "precision": 0.31626676519331526,
+          "recall": 0.3341615489194131,
+          "f1-score": 0.3039777089262191,
+          "support": 42662.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          3537,
+          4487,
+          634,
+          1872,
+          1106
+        ],
+        [
+          2598,
+          5968,
+          446,
+          1709,
+          868
+        ],
+        [
+          2802,
+          3628,
+          444,
+          1846,
+          857
+        ],
+        [
+          1415,
+          1440,
+          180,
+          2802,
+          617
+        ],
+        [
+          534,
+          967,
+          95,
+          305,
+          1505
+        ]
+      ],
+      "confusion_matrix_normalized": [
+        [
+          0.303970436576143,
+          0.3856136129254039,
+          0.05448607768992781,
+          0.1608800275008594,
+          0.09504984530766586
+        ],
+        [
+          0.22417809992234014,
+          0.5149710932781085,
+          0.0384847700405557,
+          0.14746742600742083,
+          0.07489861075157477
+        ],
+        [
+          0.29257596324527513,
+          0.37882426647175527,
+          0.04636107340503289,
+          0.19275347185966377,
+          0.08948522501827294
+        ],
+        [
+          0.21924387976448714,
+          0.22311744654477844,
+          0.027889680818097305,
+          0.434149364735048,
+          0.0955996281375891
+        ],
+        [
+          0.15678214914856137,
+          0.28391074574280684,
+          0.027891955372871403,
+          0.08954785672342924,
+          0.4418672930123312
+        ]
+      ],
+      "prediction_distribution": {
+        "semantic_debug": 16490,
+        "accepted": 10886,
+        "efficiency_review": 8534,
+        "syntax_repair": 4953,
+        "execution_safety": 1799
+      },
+      "description": "Problem context and source-code metrics, without raw source text."
+    },
+    "source_code": {
+      "accuracy": 0.4050911818480146,
+      "balanced_accuracy": 0.42478557433059516,
+      "macro_f1": 0.42615328260514185,
+      "weighted_f1": 0.4044882242357168,
+      "classification_report": {
+        "Accepted": {
+          "precision": 0.40343099460292986,
+          "recall": 0.3597456170505328,
+          "f1-score": 0.3803379974559331,
+          "support": 11636.0
+        },
+        "Semantic debug": {
+          "precision": 0.4065499242296683,
+          "recall": 0.41668823884718265,
+          "f1-score": 0.4115566540248008,
+          "support": 11589.0
+        },
+        "Execution safety": {
+          "precision": 0.36598701446634013,
+          "recall": 0.33549128119452853,
+          "f1-score": 0.3500762693397254,
+          "support": 9577.0
+        },
+        "Efficiency review": {
+          "precision": 0.37727272727272726,
+          "recall": 0.5272699101332508,
+          "f1-score": 0.4398345611994313,
+          "support": 6454.0
+        },
+        "Syntax repair": {
+          "precision": 0.6328095055576849,
+          "recall": 0.4847328244274809,
+          "f1-score": 0.5489609310058188,
+          "support": 3406.0
+        },
+        "accuracy": 0.4050911818480146,
+        "macro avg": {
+          "precision": 0.4372100332258701,
+          "recall": 0.42478557433059516,
+          "f1-score": 0.4261532826051419,
+          "support": 42662.0
+        },
+        "weighted avg": {
+          "precision": 0.4102281918426026,
+          "recall": 0.4050911818480146,
+          "f1-score": 0.4044882242357168,
+          "support": 42662.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          4186,
+          3249,
+          2004,
+          1930,
+          267
+        ],
+        [
+          2780,
+          4829,
+          1975,
+          1730,
+          275
+        ],
+        [
+          1984,
+          2327,
+          3213,
+          1699,
+          354
+        ],
+        [
+          1037,
+          881,
+          1071,
+          3403,
+          62
+        ],
+        [
+          389,
+          592,
+          516,
+          258,
+          1651
+        ]
+      ],
+      "confusion_matrix_normalized": [
+        [
+          0.3597456170505328,
+          0.2792196631144723,
+          0.17222413200412512,
+          0.16586455826744587,
+          0.022946029563423856
+        ],
+        [
+          0.23988264733799292,
+          0.41668823884718265,
+          0.1704202260764518,
+          0.1492794891707654,
+          0.023729398567607213
+        ],
+        [
+          0.20716299467474156,
+          0.2429779680484494,
+          0.33549128119452853,
+          0.17740419755664613,
+          0.036963558525634335
+        ],
+        [
+          0.1606755500464828,
+          0.13650449333746514,
+          0.16594360086767895,
+          0.5272699101332508,
+          0.009606445615122404
+        ],
+        [
+          0.11421021726365238,
+          0.17381092190252495,
+          0.15149735760422783,
+          0.07574867880211392,
+          0.4847328244274809
+        ]
+      ],
+      "prediction_distribution": {
+        "semantic_debug": 11878,
+        "accepted": 10376,
+        "efficiency_review": 9020,
+        "execution_safety": 8779,
+        "syntax_repair": 2609
+      },
+      "description": "Hashed source-code character n-grams only."
+    },
+    "source_context": {
+      "accuracy": 0.403872298532652,
+      "balanced_accuracy": 0.423976344458742,
+      "macro_f1": 0.4120779065378321,
+      "weighted_f1": 0.39407361020096937,
+      "classification_report": {
+        "Accepted": {
+          "precision": 0.3773310023310023,
+          "recall": 0.3338776211756617,
+          "f1-score": 0.354276855735911,
+          "support": 11636.0
+        },
+        "Semantic debug": {
+          "precision": 0.3799606831306057,
+          "recall": 0.5336957459660022,
+          "f1-score": 0.443894211791725,
+          "support": 11589.0
+        },
+        "Execution safety": {
+          "precision": 0.41214917339484813,
+          "recall": 0.22386968779367233,
+          "f1-score": 0.29014141687529604,
+          "support": 9577.0
+        },
+        "Efficiency review": {
+          "precision": 0.46014648858250756,
+          "recall": 0.496436318562132,
+          "f1-score": 0.4776030409182381,
+          "support": 6454.0
+        },
+        "Syntax repair": {
+          "precision": 0.46189140963548303,
+          "recall": 0.532002348796242,
+          "f1-score": 0.4944740073679902,
+          "support": 3406.0
+        },
+        "accuracy": 0.403872298532652,
+        "macro avg": {
+          "precision": 0.41829575141488934,
+          "recall": 0.423976344458742,
+          "f1-score": 0.4120779065378321,
+          "support": 42662.0
+        },
+        "weighted avg": {
+          "precision": 0.4051410649303023,
+          "recall": 0.403872298532652,
+          "f1-score": 0.3940736102009694,
+          "support": 42662.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          3885,
+          4766,
+          1139,
+          1160,
+          686
+        ],
+        [
+          2613,
+          6185,
+          1043,
+          1216,
+          532
+        ],
+        [
+          2271,
+          3246,
+          2144,
+          1198,
+          718
+        ],
+        [
+          1146,
+          1346,
+          583,
+          3204,
+          175
+        ],
+        [
+          381,
+          735,
+          293,
+          185,
+          1812
+        ]
+      ],
+      "confusion_matrix_normalized": [
+        [
+          0.3338776211756617,
+          0.4095909247163974,
+          0.09788587143348229,
+          0.09969061533172911,
+          0.05895496734272946
+        ],
+        [
+          0.22547243075330053,
+          0.5336957459660022,
+          0.08999913711277936,
+          0.1049270860298559,
+          0.045905600138061955
+        ],
+        [
+          0.23713062545682365,
+          0.33893703665030805,
+          0.22386968779367233,
+          0.12509136472799415,
+          0.07497128537120183
+        ],
+        [
+          0.17756430120855282,
+          0.20855283545088318,
+          0.09033157731639294,
+          0.496436318562132,
+          0.027114967462039046
+        ],
+        [
+          0.11186142102172636,
+          0.21579565472695245,
+          0.08602466236054022,
+          0.05431591309453905,
+          0.532002348796242
+        ]
+      ],
+      "prediction_distribution": {
+        "semantic_debug": 16278,
+        "accepted": 10296,
+        "efficiency_review": 6963,
+        "execution_safety": 5202,
+        "syntax_repair": 3923
+      },
+      "description": "Source-code n-grams with problem context and static source metrics."
+    },
+    "execution_enriched": {
+      "accuracy": 0.7808354038722986,
+      "balanced_accuracy": 0.8207410421596016,
+      "macro_f1": 0.8136824932480817,
+      "weighted_f1": 0.7762721714527887,
+      "classification_report": {
+        "Accepted": {
+          "precision": 0.881641743557111,
+          "recall": 0.9525610175317979,
+          "f1-score": 0.9157303370786517,
+          "support": 11636.0
+        },
+        "Semantic debug": {
+          "precision": 0.6634205721241632,
+          "recall": 0.5643282422987316,
+          "f1-score": 0.609875507063925,
+          "support": 11589.0
+        },
+        "Execution safety": {
+          "precision": 0.5959746182827682,
+          "recall": 0.6276495771118304,
+          "f1-score": 0.6114021258200681,
+          "support": 9577.0
+        },
+        "Efficiency review": {
+          "precision": 0.9572610985703537,
+          "recall": 0.9855903315773163,
+          "f1-score": 0.971219177036415,
+          "support": 6454.0
+        },
+        "Syntax repair": {
+          "precision": 0.9471579548700372,
+          "recall": 0.9735760422783324,
+          "f1-score": 0.9601853192413493,
+          "support": 3406.0
+        },
+        "accuracy": 0.7808354038722986,
+        "macro avg": {
+          "precision": 0.8090911974808866,
+          "recall": 0.8207410421596016,
+          "f1-score": 0.8136824932480818,
+          "support": 42662.0
+        },
+        "weighted avg": {
+          "precision": 0.7749049829387266,
+          "recall": 0.7808354038722986,
+          "f1-score": 0.7762721714527887,
+          "support": 42662.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          11084,
+          286,
+          52,
+          213,
+          1
+        ],
+        [
+          998,
+          6540,
+          3937,
+          31,
+          83
+        ],
+        [
+          428,
+          3001,
+          6011,
+          40,
+          97
+        ],
+        [
+          54,
+          1,
+          34,
+          6361,
+          4
+        ],
+        [
+          8,
+          30,
+          52,
+          0,
+          3316
+        ]
+      ],
+      "confusion_matrix_normalized": [
+        [
+          0.9525610175317979,
+          0.024578893090409074,
+          0.00446888965280165,
+          0.018305259539360606,
+          8.594018563080097e-05
+        ],
+        [
+          0.08611614461989818,
+          0.5643282422987316,
+          0.33971869876607125,
+          0.0026749503839848133,
+          0.007161963931314177
+        ],
+        [
+          0.04469040409313981,
+          0.3133549128119453,
+          0.6276495771118304,
+          0.004176673279732693,
+          0.010128432703351781
+        ],
+        [
+          0.00836690424542919,
+          0.0001549426712116517,
+          0.005268050821196158,
+          0.9855903315773163,
+          0.0006197706848466068
+        ],
+        [
+          0.002348796241926013,
+          0.008807985907222548,
+          0.015267175572519083,
+          0.0,
+          0.9735760422783324
+        ]
+      ],
+      "prediction_distribution": {
+        "accepted": 12572,
+        "execution_safety": 10086,
+        "semantic_debug": 9858,
+        "efficiency_review": 6645,
+        "syntax_repair": 3501
+      },
+      "description": "Source, problem context, static metrics, and execution signals."
+    }
+  },
+  "best_source_model": "source_code",
+  "state_labels": [
+    "accepted",
+    "semantic_debug",
+    "execution_safety",
+    "efficiency_review",
+    "syntax_repair"
+  ],
+  "state_display": {
+    "accepted": "Accepted",
+    "semantic_debug": "Semantic debug",
+    "execution_safety": "Execution safety",
+    "efficiency_review": "Efficiency review",
+    "syntax_repair": "Syntax repair"
+  }
+}

@@ -10,6 +10,8 @@ public interface InteractionLogRepository extends JpaRepository<InteractionLog, 
 
     List<InteractionLog> findTop20BySessionIdOrderByCreatedAtDesc(UUID sessionId);
 
+    List<InteractionLog> findByStudentIdOrderByCreatedAtDesc(Long studentId);
+
     List<InteractionLog> findByStudentIdAndTaskIdOrderByCreatedAtDesc(Long studentId, Long taskId);
 
     List<InteractionLog> findAllByOrderByCreatedAtAsc();

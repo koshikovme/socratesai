@@ -1,0 +1,375 @@
+.full_screen {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100px;
+    z-index: 9999;
+}
+
+.protect {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+}
+
+.download {
+    display: inline;
+    text-align: center;
+}
+
+.allow_print {
+    display: inline;
+}
+
+.toggle_menu {
+    display: inline;
+}
+
+.bbutton {
+    margin-bottom: 10px;
+}
+
+.bbutton-bottom {
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.wp_head_example,
+.native_style,
+.powr_point_style,
+.only_excel_viewer,
+.g_slides,
+.sleek_pdf_viewer_style {
+    text-align: center;
+    margin: 0 auto;
+    padding-bottom: 20px;
+}
+
+.wp_head_example,
+.google_docs,
+.google_sheet,
+.native_style,
+.power_point_viewer,
+.only_excel,
+.word_style,
+.g_slides_styles,
+.flip_viewer_style,
+.sleek_pdf_viewer_style h3,
+.flip_viewer_style h3 {
+    text-align: center;
+}
+
+#sleek-pdf-viewer {
+    overflow: hidden;
+}
+
+#view-pdf-btn {
+    cursor: pointer;
+    padding: 10px 21px;
+    font-family: 'Arial';
+    font-size: 18px;
+    line-height: 28px;
+    color: #ededed;
+    border-radius: 5px;
+    border: 1px #404040;
+    background-color: #1473e6;
+}
+
+/* Controls */
+.document-library-wrapper .controls {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+    margin: 0 auto 40px;
+    padding: 16px 24px;
+    max-width: 940px;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    flex-direction: row;
+    backdrop-filter: blur(10px);
+    border: 1px solid #ddd;
+}
+
+.document-library-wrapper .search-container {
+    flex: 1;
+    position: relative;
+    width: 100%;
+}
+
+.document-library-wrapper .search-container::before {
+    display: none;
+}
+
+.document-library-wrapper .search-input {
+    width: 100%;
+    padding: 14px 16px 14px 44px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.25s;
+    color: #333;
+}
+
+.document-library-wrapper .search-input:focus {
+    outline: none;
+    border-color: #6a1b9a;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+}
+
+.document-library-wrapper .search-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 1.1rem;
+}
+
+.document-library-wrapper .filter-select {
+    padding: 14px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: white;
+    color: #94a3b8;
+    font-size: 1rem;
+    min-width: 160px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.document-library-wrapper .filter-select:hover,
+.document-library-wrapper .filter-select:focus {
+    border-color: #6a1b9a;
+    outline: none;
+    color: #333;
+}
+
+.document-library-wrapper .filters select {
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    font-size: 1rem;
+    min-width: 140px;
+}
+
+.document-library-wrapper .document-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.document-library-wrapper .document-card {
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+    transition: all 0.28s ease;
+    position: relative;
+}
+
+.document-library-wrapper .document-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 12px 32px rgba(124, 58, 237, 0.18);
+    border-color: #a78bfa;
+}
+
+.document-library-wrapper .card-header {
+    position: relative;
+    height: 140px;
+    display: flex;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.06) 0%, rgba(168, 85, 247, 0.04) 100%);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.document-library-wrapper .card-header .file-icon {
+    font-size: 4.2rem;
+    opacity: 0.92;
+    transition: transform 0.4s ease;
+}
+
+.document-library-wrapper .card-body {
+    padding: 24px 20px 28px;
+    text-align: center;
+}
+
+.document-library-wrapper .card-description {
+    font-size: 18px;
+    line-height: 26px;
+    color: #475569;
+    padding: 12px 0 24px;
+    margin: 0;
+}
+
+.document-library-wrapper .card-title {
+    font-size: 1.28rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #1e293b;
+    margin: 0;
+}
+
+.document-library-wrapper .file-meta {
+    position: absolute;
+    bottom: 10px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.document-library-wrapper .file-meta .meta-item {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1;
+    background: #ddd;
+    border-radius: 30px;
+    padding: 6px 8px;
+}
+
+.document-library-wrapper .card-actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.document-library-wrapper .btn {
+    padding: 10px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.96rem;
+    text-decoration: none;
+    transition: all 0.25s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.document-library-wrapper .view-btn {
+    background: #7c3aed;
+    color: white;
+}
+
+.document-library-wrapper .view-btn:hover {
+    background: #6d28d9;
+    transform: translateY(-2px);
+}
+
+.document-library-wrapper .download-btn {
+    background: #10b981;
+    color: white;
+}
+
+.document-library-wrapper .download-btn:hover {
+    background: #059669;
+    transform: translateY(-2px);
+}
+
+.document-library-wrapper  .doc-lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s;
+}
+
+.document-library-wrapper .doc-lightbox.active {
+    display: flex !important;
+    opacity: 1;
+    visibility: visible;
+}
+
+.document-library-wrapper .doc-lightbox-content {
+    background: #fff;
+    max-width: 90%;
+    max-height: 90vh;
+    width: 1000px;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.document-library-wrapper .doc-lightbox-close {
+    position: absolute;
+    top: 12px;
+    right: 20px;
+    font-size: 36px;
+    color: #333;
+    cursor: pointer;
+    z-index: 10;
+    line-height: 1;
+}
+
+.document-library-wrapper .doc-lightbox-title {
+    margin: 0;
+    padding: 15px 50px 10px 20px;
+    background: #f5f5f5;
+    border-bottom: 1px solid #ddd;
+    font-size: 1.3rem;
+}
+
+.document-library-wrapper .doc-lightbox-body {
+    padding: 0;
+    height: calc(90vh - 80px);
+    overflow: auto;
+}
+
+.document-library-wrapper .doc-lightbox-body iframe,
+.document-library-wrapper .doc-lightbox-body video,
+.document-library-wrapper .doc-lightbox-body img {
+    width: 100%;
+    height: 100%;
+    border: none;
+    object-fit: contain;
+}
+
+.pdf-js-button-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.pdf-js-button-wrapper .download-button {
+    background: #10b981;
+    color: white;
+    padding: 10px 15px;
+    display: inline-block;
+    border-radius: 5px;
+    font-size: 18px;
+    line-height: 28px;
+    font-weight: 500;
+}
+
+.pdf-js-button-wrapper .download-button:hover {
+    background: #059669;
+}
+
+.pdf-js-button-wrapper .preview-button {
+    background: #113428;
+    color: white;
+    padding: 10px 15px;
+    display: inline-block;
+    border-radius: 5px;
+    font-size: 18px;
+    line-height: 28px;
+    font-weight: 500;
+}
+
+.pdf-js-button-wrapper .preview-button:hover {
+    background: #0d3b2c;
+}

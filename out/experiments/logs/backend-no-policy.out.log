@@ -1,0 +1,56 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.5)
+
+2026-05-15T23:19:19.644+05:00  INFO 25748 --- [socratesai] [           main] c.m.socratesai.SocratesaiApplication     : Starting SocratesaiApplication v0.0.1-SNAPSHOT using Java 21.0.3 with PID 25748 (C:\Users\Koshikov\Desktop\socratesai\target\socratesai-0.0.1-SNAPSHOT.jar started by Koshikov in C:\Users\Koshikov\Desktop\socratesai)
+2026-05-15T23:19:19.648+05:00  INFO 25748 --- [socratesai] [           main] c.m.socratesai.SocratesaiApplication     : No active profile set, falling back to 1 default profile: "default"
+2026-05-15T23:19:20.564+05:00  INFO 25748 --- [socratesai] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-05-15T23:19:20.611+05:00  INFO 25748 --- [socratesai] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 37 ms. Found 5 JPA repository interfaces.
+2026-05-15T23:19:21.461+05:00  INFO 25748 --- [socratesai] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 18080 (http)
+2026-05-15T23:19:21.476+05:00  INFO 25748 --- [socratesai] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-05-15T23:19:21.476+05:00  INFO 25748 --- [socratesai] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.20]
+2026-05-15T23:19:21.508+05:00  INFO 25748 --- [socratesai] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 1803 ms
+2026-05-15T23:19:21.932+05:00  INFO 25748 --- [socratesai] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-05-15T23:19:22.096+05:00  INFO 25748 --- [socratesai] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@4db46344
+2026-05-15T23:19:22.098+05:00  INFO 25748 --- [socratesai] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-05-15T23:19:22.121+05:00  INFO 25748 --- [socratesai] [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://localhost:5433/socratesdb (PostgreSQL 16.11)
+2026-05-15T23:19:22.172+05:00  INFO 25748 --- [socratesai] [           main] o.f.core.internal.command.DbValidate     : Successfully validated 6 migrations (execution time 00:00.028s)
+2026-05-15T23:19:22.194+05:00  INFO 25748 --- [socratesai] [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "public": 6
+2026-05-15T23:19:22.198+05:00  INFO 25748 --- [socratesai] [           main] o.f.core.internal.command.DbMigrate      : Schema "public" is up to date. No migration necessary.
+2026-05-15T23:19:22.330+05:00  INFO 25748 --- [socratesai] [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-05-15T23:19:22.387+05:00  INFO 25748 --- [socratesai] [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.7.Final
+2026-05-15T23:19:22.873+05:00  INFO 25748 --- [socratesai] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-05-15T23:19:22.981+05:00  INFO 25748 --- [socratesai] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5433/socratesdb]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 16.11
+	Default catalog/schema: socratesdb/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-05-15T23:19:23.838+05:00  INFO 25748 --- [socratesai] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-15T23:19:23.893+05:00  INFO 25748 --- [socratesai] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-05-15T23:19:23.932+05:00  INFO 25748 --- [socratesai] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-05-15T23:19:24.105+05:00  INFO 25748 --- [socratesai] [           main] eAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2026-05-15T23:19:24.105+05:00  WARN 25748 --- [socratesai] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2026-05-15T23:19:25.207+05:00  INFO 25748 --- [socratesai] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 3 endpoints beneath base path '/actuator'
+2026-05-15T23:19:25.255+05:00  INFO 25748 --- [socratesai] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2026-05-15T23:19:25.255+05:00  INFO 25748 --- [socratesai] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@18de84f0]]
+2026-05-15T23:19:25.255+05:00  INFO 25748 --- [socratesai] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2026-05-15T23:19:25.270+05:00  INFO 25748 --- [socratesai] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 18080 (http) with context path '/'
+2026-05-15T23:19:25.270+05:00  INFO 25748 --- [socratesai] [           main] c.m.socratesai.SocratesaiApplication     : Started SocratesaiApplication in 6.035 seconds (process running for 6.512)
+2026-05-15T23:19:25.317+05:00  WARN 25748 --- [socratesai] [           main] o.s.core.events.SpringDocAppInitializer  : SpringDoc /v3/api-docs endpoint is enabled by default. To disable it in production, set the property 'springdoc.api-docs.enabled=false'
+2026-05-15T23:19:25.317+05:00  WARN 25748 --- [socratesai] [           main] o.s.core.events.SpringDocAppInitializer  : SpringDoc /swagger-ui.html endpoint is enabled by default. To disable it in production, set the property 'springdoc.swagger-ui.enabled=false'
+2026-05-15T23:19:25.783+05:00  INFO 25748 --- [socratesai] [io-18080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-05-15T23:19:25.784+05:00  INFO 25748 --- [socratesai] [io-18080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-05-15T23:19:25.785+05:00  INFO 25748 --- [socratesai] [io-18080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms

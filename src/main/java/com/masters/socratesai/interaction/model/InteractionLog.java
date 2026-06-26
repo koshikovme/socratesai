@@ -73,6 +73,12 @@ public class InteractionLog {
     @Column(name = "policy_version", length = 50)
     private String policyVersion;
 
+    @Column(name = "mentor_state", length = 50)
+    private String mentorState;
+
+    @Column(name = "mentor_state_confidence")
+    private Double mentorStateConfidence;
+
     @Column(name = "feedback_version", length = 50)
     private String feedbackVersion;
 

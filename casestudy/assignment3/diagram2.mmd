@@ -1,0 +1,29 @@
+flowchart TB
+    student([Student Browser])
+    teacher([Teacher/Admin Browser])
+    frontend["Web/IDE Frontend<br/>Vue 3 + Vite + Pinia + Monaco<br/>Task UI, code editor, feedback panel"]
+    backend["Socrates AI Backend API<br/>Java 21 + Spring Boot<br/>Auth, analyzer, mentor, policy, feedback, logging"]
+    db[("PostgreSQL<br/>Users, tasks, sessions, interaction logs")]
+    ml["Policy ML Service<br/>Python + FastAPI + scikit-learn"]
+    gemini["Gemini API"]
+    openai["OpenAI API"]
+    leetcode["LeetCode GraphQL API"]
+
+    student -->|HTTPS REST, WebSocket/STOMP| frontend
+    teacher -->|HTTPS REST| frontend
+    frontend -->|HTTPS/JSON REST| backend
+    frontend -->|WebSocket/STOMP| backend
+    backend -->|JDBC/JPA| db
+    backend -->|HTTP/JSON| ml
+    backend -->|HTTPS/JSON| gemini
+    backend -->|HTTPS/JSON| openai
+    backend -->|HTTPS/GraphQL| leetcode
+
+    classDef frontend fill:#e8f1ff,stroke:#2f6fed,color:#111;
+    classDef backend fill:#e9f7ec,stroke:#2e8b57,color:#111;
+    classDef database fill:#fff1d6,stroke:#d68b00,color:#111;
+    classDef external fill:#eeeeee,stroke:#777,color:#111;
+    class frontend frontend;
+    class backend backend;
+    class db database;
+    class ml,gemini,openai,leetcode external;

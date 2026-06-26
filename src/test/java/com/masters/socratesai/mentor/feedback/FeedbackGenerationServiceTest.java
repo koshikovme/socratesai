@@ -2,6 +2,7 @@ package com.masters.socratesai.mentor.feedback;
 
 import com.masters.socratesai.analyzer.dto.AnalyzerResult;
 import com.masters.socratesai.mentor.feedback.gemini.GeminiFeedbackService;
+import com.masters.socratesai.mentor.feedback.openai.OpenAiFeedbackService;
 import com.masters.socratesai.mentor.model.FeedbackAction;
 import org.junit.jupiter.api.Test;
 
@@ -13,10 +14,12 @@ class FeedbackGenerationServiceTest {
 
     private final FeedbackTemplateService templateService = mock(FeedbackTemplateService.class);
     private final GeminiFeedbackService geminiFeedbackService = mock(GeminiFeedbackService.class);
+    private final OpenAiFeedbackService openAiFeedbackService = mock(OpenAiFeedbackService.class);
 
     private final FeedbackGenerationService service = new FeedbackGenerationService(
             templateService,
-            geminiFeedbackService
+            geminiFeedbackService,
+            openAiFeedbackService
     );
 
     @Test
@@ -42,6 +45,7 @@ class FeedbackGenerationServiceTest {
         AnalyzerResult analyzer = analyzer();
 
         when(geminiFeedbackService.isEnabled()).thenReturn(true);
+        when(openAiFeedbackService.isEnabled()).thenReturn(false);
         when(geminiFeedbackService.generateWithGemini(
                 FeedbackAction.CODE_HIGHLIGHT,
                 analyzer,
@@ -57,10 +61,53 @@ class FeedbackGenerationServiceTest {
     }
 
     @Test
+    void shouldFallbackToOpenAiWhenGeminiFailsAndOpenAiEnabled() {
+        AnalyzerResult analyzer = analyzer();
+
+        when(geminiFeedbackService.isEnabled()).thenReturn(true);
+        when(openAiFeedbackService.isEnabled()).thenReturn(true);
+        when(geminiFeedbackService.generateWithGemini(
+                FeedbackAction.CODE_HIGHLIGHT,
+                analyzer,
+                "code",
+                "task"
+        )).thenThrow(new IllegalStateException("provider error"));
+        when(openAiFeedbackService.generateWithLlm(
+                FeedbackAction.CODE_HIGHLIGHT,
+                analyzer,
+                "task"
+        )).thenReturn("OpenAI fallback");
+
+        GeneratedFeedback result = service.generateWithMetadata(FeedbackAction.CODE_HIGHLIGHT, analyzer, "code", "task");
+
+        assertThat(result.text()).isEqualTo("OpenAI fallback");
+        assertThat(result.source()).isEqualTo("openai");
+    }
+
+    @Test
+    void shouldUseOpenAiWhenGeminiDisabledAndOpenAiEnabled() {
+        AnalyzerResult analyzer = analyzer();
+
+        when(geminiFeedbackService.isEnabled()).thenReturn(false);
+        when(openAiFeedbackService.isEnabled()).thenReturn(true);
+        when(openAiFeedbackService.generateWithLlm(
+                FeedbackAction.GUIDING_QUESTION,
+                analyzer,
+                "task"
+        )).thenReturn("OpenAI answer");
+
+        GeneratedFeedback result = service.generateWithMetadata(FeedbackAction.GUIDING_QUESTION, analyzer, "code", "task");
+
+        assertThat(result.text()).isEqualTo("OpenAI answer");
+        assertThat(result.source()).isEqualTo("openai");
+    }
+
+    @Test
     void shouldUseTemplateWhenGeminiDisabled() {
         AnalyzerResult analyzer = analyzer();
 
         when(geminiFeedbackService.isEnabled()).thenReturn(false);
+        when(openAiFeedbackService.isEnabled()).thenReturn(false);
         when(templateService.generate(FeedbackAction.GUIDING_QUESTION, analyzer)).thenReturn("Template only");
 
         GeneratedFeedback result = service.generateWithMetadata(FeedbackAction.GUIDING_QUESTION, analyzer, "code", "task");

@@ -21,12 +21,22 @@
 
 | Model | Feature Set | Status | Accuracy | Macro F1 | Notes |
 |---|---|---|---:|---:|---|
+| `lightgbm` | `all_features` | ok | 1.0000 | 1.0000 |  |
+| `lightgbm` | `without_analyzer_features` | ok | 1.0000 | 1.0000 |  |
+| `lightgbm` | `without_history_features` | ok | 1.0000 | 1.0000 |  |
+| `lightgbm` | `without_last_feedback_action` | ok | 1.0000 | 1.0000 |  |
+| `lightgbm` | `without_suspicious_region` | ok | 1.0000 | 1.0000 |  |
 | `logistic_regression` | `without_analyzer_features` | ok | 1.0000 | 1.0000 |  |
 | `random_forest` | `all_features` | ok | 1.0000 | 1.0000 |  |
 | `random_forest` | `without_analyzer_features` | ok | 1.0000 | 1.0000 |  |
 | `random_forest` | `without_last_feedback_action` | ok | 1.0000 | 1.0000 |  |
 | `random_forest` | `without_suspicious_region` | ok | 1.0000 | 1.0000 |  |
 | `small_neural_classifier` | `without_analyzer_features` | ok | 1.0000 | 1.0000 |  |
+| `xgboost` | `all_features` | ok | 1.0000 | 1.0000 |  |
+| `xgboost` | `without_analyzer_features` | ok | 1.0000 | 1.0000 |  |
+| `xgboost` | `without_history_features` | ok | 1.0000 | 1.0000 |  |
+| `xgboost` | `without_last_feedback_action` | ok | 1.0000 | 1.0000 |  |
+| `xgboost` | `without_suspicious_region` | ok | 1.0000 | 1.0000 |  |
 | `random_forest` | `without_history_features` | ok | 0.9963 | 0.9971 |  |
 | `small_neural_classifier` | `all_features` | ok | 0.9963 | 0.9971 |  |
 | `logistic_regression` | `without_history_features` | ok | 0.9926 | 0.9943 |  |
@@ -37,11 +47,6 @@
 | `logistic_regression` | `without_last_feedback_action` | ok | 0.9444 | 0.9556 |  |
 | `small_neural_classifier` | `without_suspicious_region` | ok | 0.9444 | 0.9556 |  |
 | `rule_baseline` | `all_features` | ok | 0.9444 | 0.9333 |  |
-
-## Optional Models
-
-- `xgboost` skipped: Python package 'xgboost' is not installed.
-- `lightgbm` skipped: Python package 'lightgbm' is not installed.
 
 ## Held-Out Groups
 

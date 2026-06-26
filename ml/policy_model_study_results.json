@@ -741,18 +741,469 @@
           "support": 270.0
         }
       }
-    }
-  ],
-  "skipped_optional_models": [
+    },
     {
       "model": "xgboost",
-      "reason": "Python package 'xgboost' is not installed."
+      "feature_set": "all_features",
+      "status": "ok",
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "classification_report": {
+        "CODE_HIGHLIGHT": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 75.0
+        },
+        "CONCEPTUAL_HINT": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 105.0
+        },
+        "GUIDING_QUESTION": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 45.0
+        },
+        "NO_FEEDBACK": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 45.0
+        },
+        "accuracy": 1.0,
+        "macro avg": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 270.0
+        },
+        "weighted avg": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 270.0
+        }
+      }
+    },
+    {
+      "model": "xgboost",
+      "feature_set": "without_history_features",
+      "status": "ok",
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "classification_report": {
+        "CODE_HIGHLIGHT": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 75.0
+        },
+        "CONCEPTUAL_HINT": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 105.0
+        },
+        "GUIDING_QUESTION": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 45.0
+        },
+        "NO_FEEDBACK": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 45.0
+        },
+        "accuracy": 1.0,
+        "macro avg": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 270.0
+        },
+        "weighted avg": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 270.0
+        }
+      }
+    },
+    {
+      "model": "xgboost",
+      "feature_set": "without_analyzer_features",
+      "status": "ok",
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "classification_report": {
+        "CODE_HIGHLIGHT": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 75.0
+        },
+        "CONCEPTUAL_HINT": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 105.0
+        },
+        "GUIDING_QUESTION": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 45.0
+        },
+        "NO_FEEDBACK": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 45.0
+        },
+        "accuracy": 1.0,
+        "macro avg": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 270.0
+        },
+        "weighted avg": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 270.0
+        }
+      }
+    },
+    {
+      "model": "xgboost",
+      "feature_set": "without_suspicious_region",
+      "status": "ok",
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "classification_report": {
+        "CODE_HIGHLIGHT": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 75.0
+        },
+        "CONCEPTUAL_HINT": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 105.0
+        },
+        "GUIDING_QUESTION": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 45.0
+        },
+        "NO_FEEDBACK": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 45.0
+        },
+        "accuracy": 1.0,
+        "macro avg": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 270.0
+        },
+        "weighted avg": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 270.0
+        }
+      }
+    },
+    {
+      "model": "xgboost",
+      "feature_set": "without_last_feedback_action",
+      "status": "ok",
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "classification_report": {
+        "CODE_HIGHLIGHT": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 75.0
+        },
+        "CONCEPTUAL_HINT": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 105.0
+        },
+        "GUIDING_QUESTION": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 45.0
+        },
+        "NO_FEEDBACK": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 45.0
+        },
+        "accuracy": 1.0,
+        "macro avg": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 270.0
+        },
+        "weighted avg": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 270.0
+        }
+      }
     },
     {
       "model": "lightgbm",
-      "reason": "Python package 'lightgbm' is not installed."
+      "feature_set": "all_features",
+      "status": "ok",
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "classification_report": {
+        "CODE_HIGHLIGHT": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 75.0
+        },
+        "CONCEPTUAL_HINT": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 105.0
+        },
+        "GUIDING_QUESTION": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 45.0
+        },
+        "NO_FEEDBACK": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 45.0
+        },
+        "accuracy": 1.0,
+        "macro avg": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 270.0
+        },
+        "weighted avg": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 270.0
+        }
+      }
+    },
+    {
+      "model": "lightgbm",
+      "feature_set": "without_history_features",
+      "status": "ok",
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "classification_report": {
+        "CODE_HIGHLIGHT": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 75.0
+        },
+        "CONCEPTUAL_HINT": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 105.0
+        },
+        "GUIDING_QUESTION": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 45.0
+        },
+        "NO_FEEDBACK": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 45.0
+        },
+        "accuracy": 1.0,
+        "macro avg": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 270.0
+        },
+        "weighted avg": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 270.0
+        }
+      }
+    },
+    {
+      "model": "lightgbm",
+      "feature_set": "without_analyzer_features",
+      "status": "ok",
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "classification_report": {
+        "CODE_HIGHLIGHT": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 75.0
+        },
+        "CONCEPTUAL_HINT": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 105.0
+        },
+        "GUIDING_QUESTION": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 45.0
+        },
+        "NO_FEEDBACK": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 45.0
+        },
+        "accuracy": 1.0,
+        "macro avg": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 270.0
+        },
+        "weighted avg": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 270.0
+        }
+      }
+    },
+    {
+      "model": "lightgbm",
+      "feature_set": "without_suspicious_region",
+      "status": "ok",
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "classification_report": {
+        "CODE_HIGHLIGHT": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 75.0
+        },
+        "CONCEPTUAL_HINT": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 105.0
+        },
+        "GUIDING_QUESTION": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 45.0
+        },
+        "NO_FEEDBACK": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 45.0
+        },
+        "accuracy": 1.0,
+        "macro avg": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 270.0
+        },
+        "weighted avg": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 270.0
+        }
+      }
+    },
+    {
+      "model": "lightgbm",
+      "feature_set": "without_last_feedback_action",
+      "status": "ok",
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "classification_report": {
+        "CODE_HIGHLIGHT": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 75.0
+        },
+        "CONCEPTUAL_HINT": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 105.0
+        },
+        "GUIDING_QUESTION": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 45.0
+        },
+        "NO_FEEDBACK": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 45.0
+        },
+        "accuracy": 1.0,
+        "macro avg": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 270.0
+        },
+        "weighted avg": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 270.0
+        }
+      }
     }
   ],
+  "skipped_optional_models": [],
   "dataset_path": "ml\\problem_suite_policy_dataset.csv",
   "dataset_rows": 1080,
   "target_column": "target_feedback_action",

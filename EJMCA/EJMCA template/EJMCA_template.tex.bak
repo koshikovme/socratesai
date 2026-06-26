@@ -1,0 +1,164 @@
+%\documentclass[twoside, 12pt]{book}
+\documentclass[twoside, 11pt]{article}
+\usepackage[english]{babel}
+\usepackage{epsfig}
+\usepackage{psfig}
+\usepackage{amssymb,amsmath,amsfonts,soul,amsthm,enumerate}
+\usepackage{graphicx}
+\usepackage[cp1251]{inputenc}
+\usepackage[T2A]{fontenc}
+\usepackage{mathrsfs}
+\textwidth=155mm
+\textheight=233mm
+\voffset=-15mm
+\oddsidemargin=12,1mm
+\evensidemargin=-9,1mm
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{thm}{Theorem}[section]
+\newtheorem*{Theorem}{Theorem}
+\newtheorem*{Definition}{Definition}
+\newtheorem{definition}{Definition}
+\newtheorem{statement}{Statement}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem*{Lemma}{Lemma}
+\newtheorem{lem}{Lemma}
+\newtheorem{fact}{Fact}[section]
+\newtheorem{exam}{Example}
+\newtheorem{example}{Example}
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{cor}{Corollary}[section]
+\newtheorem*{Corollary}{Corollary}
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{prop}{Proposition}[section]
+\newtheorem*{Proposition}{Proposition}
+\newtheorem{Remark}{Remark}[section]
+\newtheorem{remark}{Remark}
+\newtheorem{rem}{Remark}
+\newtheorem {property}{Property}
+\providecommand{\norm}[1]{\left\lVert #1\right\rVert}
+\providecommand{\abs}[1]{\left\lvert #1\right\rvert}
+\providecommand{\R}{\mathbb{R}}
+
+\pagestyle{myheadings}
+%\def\@evenhead{\raisebox{0pt}[\headheight][0pt]{%
+%\vbox{{\hbox to \textwidth{\thepage\leftmark\strut}}\hrule}}}
+\def\@evenfoot{}
+\def\@oddfoot{}
+
+\markboth{\hfill{\footnotesize\rm  Short version of authors' names }\hfill}
+{\hfill{\footnotesize\sl  A shortened title of the paper}\hfill}
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%% ????? ???? =27,5??, ?????? ???? =42,5??
+\def\@evenhead{\vbox{\hbox to \textwidth{\thepage\leftmark}\strut\newline\hrule}}
+
+\def\@oddhead{\raisebox{0pt}[\headheight][0pt]{%
+\vbox{\hbox to \textwidth{\rightmark\thepage\strut}\hrule}}}
+
+\newpage
+\normalsize
+\def\bibname{\vspace*{-30mm}{\centerline{\normalsize References}}}
+\thispagestyle{empty}
+\begin{flushleft}
+{\small {\bf EURASIAN  JOURNAL OF MATHEMATICAL \\ AND COMPUTER APPLICATIONS}\\
+ ISSN 2306--6172\\
+Volume  , Number   (20 )    --}
+\end{flushleft}
+\vskip 2 mm
+
+\centerline{\bf HERE SHOULD BE A TITLE OF THE PAPER}
+\centerline{\bf MIGHT BE CONTINUED...}
+
+\vskip 0.2cm
+\centerline{\bf Please, give here authors names   }
+%\orcidlink{0000-0000-0000-0000}
+\vskip 0.2cm
+\noindent{\bf Abstract}
+{\small The content of the abstract..........
+\vskip 0.2cm
+\noindent {\bf Key words:} please, give 4-6 keywords
+\vskip 0.2cm
+\noindent {\bf AMS Mathematics Subject Classification:}  Classification codes}
+
+\vskip 0.2cm
+\noindent {\bf DOI:}  10.32523/2306-6172-2025-13-1-4-16
+\vskip 0.3cm
+\setcounter{figure}{0}
+
+
+
+%\renewcommand{\thesection}{\large 1}
+
+\section{\large Introduction}
+
+The content of the section
+
+%\renewcommand{\thesection}{\large 2}
+\section{\large The title of the second section }
+
+The content of the section.\\
+It is preferable if the following definitions are used to write theorems, corollaries, lemmas, etc.:
+\begin{lemma}
+A formulation of the lemma
+\end{lemma}
+Proof\\
+\begin{theorem}
+A formulation of the theorem
+\end{theorem}
+Proof\\
+
+If you do not want to enumerate theorems, lemmas, propositions, etc. then the following definition would be used:
+\begin{Lemma}
+A formulation of the lemma
+\end{Lemma}
+Proof\\
+\begin{Theorem}
+A formulation of the theorem
+\end{Theorem}
+Proof\\
+
+\renewcommand{\thesection}{\large 3}
+\section{\large The title of the third section}
+
+The content of the section
+
+%\itemsep=-2pt - для списков использовать 
+
+\renewcommand{\thesection}{\large 4}
+\section{\large The title of the fourth section}
+
+etc....
+\section*{\large Acknowledgement(if need be)}
+The authors would like to thank ...etc.
+The work is supported by ....
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\thispagestyle{headings}
+\begin{thebibliography}{99}
+\thispagestyle{myheadings}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\vspace*{0mm} \itemsep=-2pt
+\footnotesize
+
+
+\bibitem{some_label1} {Authors}, {\it Title of the source}, Editors, year.
+\bibitem{some_label2} {Authors}, {\it Title of the article}, Journal's title, Vol. Issue (Year), pages.
+
+%ПРИМЕРЫ
+%\bibitem{ref15} {Romanov V.G., Karchevsky A.L.}, {\it Determination of permittivity and conductivity of medium in a vicinity of a well having complex profile}. Eurasian Journal of Mathematical and Computer Applications, 6.4 (2018), 62-72.
+%\bibitem{ref13} {Kabanikhin S.I.}, {\it Inverse and Ill-posed Problems}, Theory and Applications, Berlin, Boston: De Gruyter, 2011.
+%\bibitem{some_label4} {Perumal T., Sulaiman M.N., Leong C.Y.}, {\it Internet of Things (IoT) enabled water monitoring system}, Procced. IEEE 4th Global Conference on Consumer Electronics (GCCE 2015), Osaka, 2016, 86-87.
+\end{thebibliography}
+
+\footnotesize
+\noindent
+%ex
+%\parbox[t]{75mm}{
+%Karchevsky Andrey,\\
+%Sobolev Insritute of Mathematics SB RAS,  \\
+%pr. Akad. Koptyuga 4, 630090 Novosibirsk, Russia, \\
+%Email: {\tt karchevs@math.nsc.ru}.}
+
+\vspace{3mm}
+Received  02.09.2024 , $\> \> \> $   Accepted 15.01.2025,  $\> \> \> $    Available online 31.03.2025.
+
+\end{document}

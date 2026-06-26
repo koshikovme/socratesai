@@ -1,0 +1,132 @@
+{
+  "generated_at": "2026-05-21T08:37:25.428109+00:00",
+  "mode": "ML",
+  "environment": "Docker Compose backend, PostgreSQL, ML policy, Gemini 2.5 Flash-Lite",
+  "cohorts": 10,
+  "problems": 12,
+  "events": 720,
+  "successful": 708,
+  "errors": 12,
+  "wall_ms": 1444295,
+  "throughput_rps": 0.5,
+  "agreement": 0.9011,
+  "latency_ms": {
+    "mean": 1531.11,
+    "median": 1226.0,
+    "p95": 2873,
+    "p99": 6996,
+    "min": 434,
+    "max": 16110
+  },
+  "analysis_time_ms": {
+    "mean": 233.45,
+    "median": 262.5,
+    "p95": 300,
+    "p99": 345,
+    "min": 48,
+    "max": 458
+  },
+  "action_distribution": {
+    "CODE_HIGHLIGHT": 198,
+    "CONCEPTUAL_HINT": 266,
+    "GUIDING_QUESTION": 116,
+    "NO_FEEDBACK": 128
+  },
+  "expected_distribution": {
+    "CODE_HIGHLIGHT": 196,
+    "CONCEPTUAL_HINT": 278,
+    "GUIDING_QUESTION": 116,
+    "NO_FEEDBACK": 118
+  },
+  "error_type_distribution": {
+    "OFF_BY_ONE": 108,
+    "POSSIBLE_NULL_ACCESS": 20,
+    "STUCK_NO_PROGRESS": 116,
+    "SYNTAX_ERROR": 118,
+    "UNKNOWN": 257,
+    "WRONG_CONDITION": 69,
+    "WRONG_LOOP_BOUNDARY": 20
+  },
+  "difficulty_distribution": {
+    "easy": 534,
+    "hard": 59,
+    "medium": 115
+  },
+  "per_problem": {
+    "binary-search": {
+      "events": 60,
+      "agreement": 1.0
+    },
+    "climbing-stairs": {
+      "events": 60,
+      "agreement": 0.8333
+    },
+    "longest-substring": {
+      "events": 57,
+      "agreement": 0.9825
+    },
+    "lru-cache": {
+      "events": 58,
+      "agreement": 0.5172
+    },
+    "matrix-diagonal-sum": {
+      "events": 58,
+      "agreement": 1.0
+    },
+    "merge-sorted-array": {
+      "events": 57,
+      "agreement": 0.9825
+    },
+    "palindrome": {
+      "events": 60,
+      "agreement": 1.0
+    },
+    "reverse-linked-list": {
+      "events": 59,
+      "agreement": 1.0
+    },
+    "roman-to-integer": {
+      "events": 60,
+      "agreement": 1.0
+    },
+    "trapping-rain-water": {
+      "events": 59,
+      "agreement": 1.0
+    },
+    "two-sum": {
+      "events": 60,
+      "agreement": 1.0
+    },
+    "valid-parentheses": {
+      "events": 60,
+      "agreement": 0.5
+    }
+  },
+  "per_class": {
+    "CODE_HIGHLIGHT": {
+      "precision": 0.9394,
+      "recall": 0.949,
+      "f1": 0.9442,
+      "support": 196
+    },
+    "CONCEPTUAL_HINT": {
+      "precision": 0.9286,
+      "recall": 0.8885,
+      "f1": 0.9081,
+      "support": 278
+    },
+    "GUIDING_QUESTION": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 116
+    },
+    "NO_FEEDBACK": {
+      "precision": 0.6953,
+      "recall": 0.7542,
+      "f1": 0.7236,
+      "support": 118
+    },
+    "_macro_f1": 0.894
+  }
+}

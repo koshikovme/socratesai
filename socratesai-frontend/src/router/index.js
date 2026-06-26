@@ -3,6 +3,7 @@ import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import TaskSolveView from '../views/TaskSolveView.vue'
+import ProfileView from '../views/ProfileView.vue'
 import { useAuthStore } from '../stores/auth'
 
 const router = createRouter({
@@ -12,6 +13,7 @@ const router = createRouter({
         { path: '/login', component: LoginView },
         { path: '/register', component: RegisterView },
         { path: '/dashboard', component: DashboardView, meta: { requiresAuth: true } },
+        { path: '/profile', component: ProfileView, meta: { requiresAuth: true } },
         { path: '/tasks/:id', component: TaskSolveView, meta: { requiresAuth: true } }
     ]
 })

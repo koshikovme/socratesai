@@ -1,6 +1,7 @@
 package com.masters.socratesai.user.controller;
 
 import com.masters.socratesai.security.SecurityUserDetails;
+import com.masters.socratesai.user.dto.StudentProgressResponse;
 import com.masters.socratesai.user.dto.UpdateProfileRequest;
 import com.masters.socratesai.user.dto.UpdateSettingsRequest;
 import com.masters.socratesai.user.dto.UserProfileResponse;
@@ -20,6 +21,11 @@ public class UserController {
     @GetMapping
     public UserProfileResponse getMyProfile(@AuthenticationPrincipal SecurityUserDetails currentUser) throws ChangeSetPersister.NotFoundException {
         return userService.getMyProfile(currentUser);
+    }
+
+    @GetMapping("/progress")
+    public StudentProgressResponse getMyProgress(@AuthenticationPrincipal SecurityUserDetails currentUser) throws ChangeSetPersister.NotFoundException {
+        return userService.getMyProgress(currentUser);
     }
 
     @PutMapping("/profile")

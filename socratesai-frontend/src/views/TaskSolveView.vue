@@ -11,8 +11,11 @@
         </div>
 
         <div class="solve-hero-actions">
-          <button class="primary-btn" :disabled="loading" @click="askMentor">
+          <button class="primary-btn" :disabled="loading || submitting" @click="askMentor">
             {{ loading ? 'Analyzing...' : 'Ask Mentor' }}
+          </button>
+          <button class="primary-btn submit-code-btn" :disabled="submitting || loading" @click="submitCode">
+            {{ submitting ? 'Submitting...' : 'Submit code' }}
           </button>
           <button class="ghost-btn" @click="toggleRealtime">
             {{ realtimeEnabled ? 'Realtime On' : 'Realtime Off' }}
@@ -34,15 +37,42 @@
           <div class="card editor-note-card">
             <p class="eyebrow">Workflow</p>
             <p class="muted">
-              Manual requests count as attempts. Realtime messages are lightweight nudges and do not increment session attempts.
+              Ask Mentor is formative help. Submit code records a summative attempt and appears in your profile progress.
+              Realtime nudges do not increment session attempts.
             </p>
           </div>
         </section>
 
         <section class="right-panel">
+          <section v-if="submissionResult" class="card submit-result-card">
+            <div class="feedback-head compact">
+              <div>
+                <p class="eyebrow">Submission result</p>
+                <h3>{{ submissionResult.title }}</h3>
+              </div>
+              <span class="signal-pill" :class="submissionResult.accepted ? 'signal-good' : 'signal-warn'">
+                {{ submissionResult.status }}
+              </span>
+            </div>
+            <p class="muted">{{ submissionResult.message }}</p>
+            <div class="feedback-meta-grid">
+              <div class="meta-card">
+                <span class="meta-label">Compile</span>
+                <strong>{{ submissionResult.compileSuccess ? 'Success' : 'Failed' }}</strong>
+              </div>
+              <div class="meta-card">
+                <span class="meta-label">Tests</span>
+                <strong>{{ submissionResult.testsPassed }} passed / {{ submissionResult.testsFailed }} failed</strong>
+              </div>
+            </div>
+            <router-link class="ghost-btn submit-profile-link" to="/profile">
+              View profile progress
+            </router-link>
+          </section>
+
           <FeedbackPanel
               :feedback="feedback"
-              :loading="loading"
+              :loading="loading || submitting"
               :error="error"
               :connection-label="connectionLabel"
               :saving-outcome="savingOutcome"
@@ -76,7 +106,9 @@ const code = ref('')
 const attemptNo = ref(1)
 const feedback = ref(null)
 const loading = ref(false)
+const submitting = ref(false)
 const error = ref('')
+const submissionResult = ref(null)
 const socketConnected = ref(false)
 const realtimeEnabled = ref(true)
 const realtimeAvailable = ref(true)
@@ -129,6 +161,86 @@ async function askMentor() {
   }
 }
 
+async function submitCode() {
+  if (!task.value) return
+
+  const currentAttempt = attemptNo.value
+  submitting.value = true
+  error.value = ''
+
+  try {
+    const response = await requestMentorAnalysis({
+      studentId: Number(auth.userId),
+      taskId: resolvedTaskId.value,
+      language: task.value?.language || 'java',
+      code: code.value,
+      attemptNo: currentAttempt
+    })
+
+    feedback.value = decorateFeedback(response, 'REST')
+    reviewState.value = ''
+    attemptNo.value = currentAttempt + 1
+    submissionResult.value = buildSubmissionResult(response)
+
+    if (submissionResult.value.accepted && response.interactionId) {
+      await updateInteractionResult(response.interactionId, {
+        resolvedAfterFeedback: true,
+        fixedAfterMs: null,
+        feedbackHelpful: true,
+        feedbackRating: 5,
+        studentComment: 'Accepted submission',
+        repeatedSameErrorAfterFeedback: false
+      })
+      reviewState.value = 'resolved'
+    }
+  } catch (e) {
+    error.value = e?.response?.data?.message || 'Failed to submit code'
+  } finally {
+    submitting.value = false
+  }
+}
+
+function buildSubmissionResult(response) {
+  const testsPassed = Number(response?.testsPassed ?? 0)
+  const testsFailed = Number(response?.testsFailed ?? 0)
+  const compileSuccess = Boolean(response?.compileSuccess)
+  const accepted = compileSuccess && testsPassed > 0 && testsFailed === 0
+
+  if (accepted) {
+    return {
+      accepted,
+      compileSuccess,
+      testsPassed,
+      testsFailed,
+      status: 'Accepted',
+      title: 'Task solved',
+      message: 'This attempt passed the available analyzer checks and is counted as solved in your profile.'
+    }
+  }
+
+  if (!compileSuccess) {
+    return {
+      accepted,
+      compileSuccess,
+      testsPassed,
+      testsFailed,
+      status: 'Compile error',
+      title: 'Code needs syntax fixes',
+      message: 'The submission was recorded, but the code does not compile yet.'
+    }
+  }
+
+  return {
+    accepted,
+    compileSuccess,
+    testsPassed,
+    testsFailed,
+    status: 'Tests failed',
+    title: 'Not accepted yet',
+    message: 'The submission was recorded. Use the mentor feedback, fix the issue, and submit again.'
+  }
+}
+
 async function markFeedbackResolved(resolvedAfterFeedback) {
   if (!feedback.value?.interactionId || savingOutcome.value) return
 
@@ -149,7 +261,6 @@ async function markFeedbackResolved(resolvedAfterFeedback) {
 }
 
 function sendRealtimeUpdate() {
-  console.log(realtimeEnabled.value, socketConnected.value, task.value)
   if (!realtimeEnabled.value || !socketConnected.value || !task.value) return
 
   sendCodeUpdate({

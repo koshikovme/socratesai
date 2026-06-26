@@ -27,7 +27,7 @@ class OpenAiFeedbackServiceTest {
         properties = new OpenAiProperties();
         properties.setEnabled(true);
         properties.setApiKey("openai-key");
-        properties.setModel("gpt-4.1-mini");
+        properties.setModel("gpt-5.4-mini");
         properties.setBaseUrl("https://openai.example.test");
 
         RestClient.Builder builder = RestClient.builder()

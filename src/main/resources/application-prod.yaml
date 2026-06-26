@@ -28,7 +28,10 @@ app:
     ml:
       enabled: ${APP_POLICY_ML_ENABLED:false}
       base-url: ${APP_POLICY_ML_BASE_URL:http://localhost:8001}
+      predict-path: ${APP_POLICY_ML_PREDICT_PATH:/predict-mentor-state}
+      version: ${APP_POLICY_ML_VERSION:codeforces-source-v1}
       fallback-to-rule: ${APP_POLICY_ML_FALLBACK_TO_RULE:true}
+      min-confidence: 0.35
 
 springdoc:
   api-docs:

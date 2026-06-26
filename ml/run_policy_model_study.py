@@ -9,6 +9,7 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
+from sklearn.base import BaseEstimator, ClassifierMixin, clone
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.impute import SimpleImputer
@@ -17,7 +18,7 @@ from sklearn.metrics import accuracy_score, classification_report, f1_score
 from sklearn.model_selection import GroupShuffleSplit, train_test_split
 from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import FunctionTransformer, OneHotEncoder, StandardScaler
+from sklearn.preprocessing import FunctionTransformer, LabelEncoder, OneHotEncoder, StandardScaler
 
 BASE_DIR = Path(__file__).resolve().parent
 DEFAULT_DATA_PATH = BASE_DIR / "problem_suite_policy_dataset.csv"
@@ -263,7 +264,7 @@ def run_study(
     random_state: int,
 ) -> dict:
     experiments = build_feature_sets(feature_columns)
-    model_factories = build_model_factories(random_state)
+    model_factories, skipped_models = build_model_factories(random_state)
 
     y_train = df.iloc[split.train_idx][target_column]
     y_test = df.iloc[split.test_idx][target_column]
@@ -283,7 +284,6 @@ def run_study(
             )
         )
 
-    skipped_models = []
     for model_name, factory in model_factories.items():
         for feature_set_name, columns in experiments.items():
             if not columns:
@@ -315,18 +315,6 @@ def run_study(
             except Exception as exc:
                 results.append(skipped_result(model_name, feature_set_name, str(exc)))
 
-    for optional_name, package_name in [
-        ("xgboost", "xgboost"),
-        ("lightgbm", "lightgbm"),
-    ]:
-        if importlib.util.find_spec(package_name) is None:
-            skipped_models.append(
-                {
-                    "model": optional_name,
-                    "reason": f"Python package '{package_name}' is not installed.",
-                }
-            )
-
     return {
         "labels": labels,
         "results": results,
@@ -345,7 +333,7 @@ def build_feature_sets(feature_columns: list[str]) -> dict[str, list[str]]:
 
 
 def build_model_factories(random_state: int):
-    return {
+    factories = {
         "logistic_regression": lambda: LogisticRegression(
             max_iter=2000,
             class_weight="balanced",
@@ -367,6 +355,74 @@ def build_model_factories(random_state: int):
             random_state=random_state,
         ),
     }
+    skipped_models = []
+
+    if importlib.util.find_spec("xgboost") is None:
+        skipped_models.append({
+            "model": "xgboost",
+            "reason": "Python package 'xgboost' is not installed.",
+        })
+    else:
+        try:
+            from xgboost import XGBClassifier
+
+            factories["xgboost"] = lambda: LabelEncodedClassifier(
+                XGBClassifier(
+                    n_estimators=250,
+                    max_depth=5,
+                    learning_rate=0.05,
+                    subsample=0.9,
+                    colsample_bytree=0.9,
+                    objective="multi:softprob",
+                    eval_metric="mlogloss",
+                    random_state=random_state,
+                )
+            )
+        except Exception as exc:
+            skipped_models.append({"model": "xgboost", "reason": str(exc)})
+
+    if importlib.util.find_spec("lightgbm") is None:
+        skipped_models.append({
+            "model": "lightgbm",
+            "reason": "Python package 'lightgbm' is not installed.",
+        })
+    else:
+        try:
+            from lightgbm import LGBMClassifier
+
+            factories["lightgbm"] = lambda: LabelEncodedClassifier(
+                LGBMClassifier(
+                    n_estimators=250,
+                    max_depth=6,
+                    learning_rate=0.05,
+                    subsample=0.9,
+                    colsample_bytree=0.9,
+                    class_weight="balanced",
+                    random_state=random_state,
+                    verbose=-1,
+                )
+            )
+        except Exception as exc:
+            skipped_models.append({"model": "lightgbm", "reason": str(exc)})
+
+    return factories, skipped_models
+
+
+class LabelEncodedClassifier(BaseEstimator, ClassifierMixin):
+    def __init__(self, estimator):
+        self.estimator = estimator
+
+    def fit(self, x, y):
+        self.label_encoder_ = LabelEncoder()
+        encoded_y = self.label_encoder_.fit_transform(pd.Series(y).astype(str))
+        self.classes_ = self.label_encoder_.classes_
+        self.estimator_ = clone(self.estimator)
+        self.estimator_.fit(x, encoded_y)
+        return self
+
+    def predict(self, x):
+        encoded = self.estimator_.predict(x).astype(int)
+        return self.label_encoder_.inverse_transform(encoded)
 
 
 def build_pipeline(feature_columns: list[str], classifier) -> Pipeline:
@@ -522,8 +578,8 @@ def build_markdown_report(study: dict) -> str:
                 "",
                 "## Held-Out Groups",
                 "",
-                f"- Train groups: {', '.join(study['split']['train_groups'])}",
-                f"- Test groups: {', '.join(study['split']['test_groups'])}",
+                f"- Train groups: {format_group_preview(study['split']['train_groups'])}",
+                f"- Test groups: {format_group_preview(study['split']['test_groups'])}",
             ]
         )
 
@@ -539,6 +595,16 @@ def build_markdown_report(study: dict) -> str:
         ]
     )
     return "\n".join(lines)
+
+
+def format_group_preview(groups: list[str], limit: int = 20) -> str:
+    if not groups:
+        return "none"
+    preview = ", ".join(groups[:limit])
+    remaining = len(groups) - limit
+    if remaining <= 0:
+        return preview
+    return f"{preview}, ... ({len(groups)} total; {remaining} more omitted)"
 
 
 def count_values(series: pd.Series) -> dict[str, int]:

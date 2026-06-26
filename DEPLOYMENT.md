@@ -18,6 +18,8 @@ APP_JWT_SECRET=base64-encoded-secret-at-least-64-bytes-after-decoding
 APP_WEBSOCKET_ALLOWED_ORIGINS=https://your-domain.example
 APP_POLICY_MODE=ml
 APP_POLICY_ML_ENABLED=true
+APP_GEMINI_ENABLED=false
+APP_OPENAI_ENABLED=false
 APP_OPENAPI_ENABLED=false
 APP_SWAGGER_ENABLED=false
 APP_PORT=8080
@@ -34,6 +36,28 @@ curl http://localhost:8080/actuator/health
 ```
 
 The backend runs Flyway migrations on startup, including the expert-label and outcome-label schema.
+
+## LLM Provider Mode
+
+The application does not require an LLM for the policy experiments. With `APP_GEMINI_ENABLED=false` and `APP_OPENAI_ENABLED=false`, feedback text comes from deterministic templates while the policy still runs through the rule or ML selector.
+
+For a paid LLM demo, enable one provider:
+
+```env
+APP_OPENAI_ENABLED=true
+OPENAI_API_KEY=...
+APP_OPENAI_MODEL=gpt-5.4-mini
+```
+
+Gemini can still be used when quota is available:
+
+```env
+APP_GEMINI_ENABLED=true
+GEMINI_API_KEY=...
+APP_GEMINI_MODEL=gemini-3.1-flash-lite
+```
+
+Provider order is Gemini, then OpenAI, then deterministic templates.
 
 ## Hosting Options
 
