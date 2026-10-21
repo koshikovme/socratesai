@@ -1,5 +1,7 @@
 package com.masters.socratesai.interaction.model;
 
+import com.masters.socratesai.common.model.ContextSource;
+import com.masters.socratesai.common.model.EvidenceOrigin;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,6 +29,27 @@ public class InteractionLog {
 
     @Column(name = "task_id", nullable = false)
     private Long taskId;
+
+    private Long problemId;
+
+    private Long problemVersionId;
+
+    @Column(length = 30)
+    private String languageKey;
+
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
+    private ContextSource contextSource = ContextSource.LEGACY_UNKNOWN;
+
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
+    private EvidenceOrigin evidenceOrigin = EvidenceOrigin.LEGACY_UNKNOWN;
+
+    private Long codeRevision;
+
+    private UUID submissionId;
 
     @Column(name = "attempt_no", nullable = false)
     private Integer attemptNo;

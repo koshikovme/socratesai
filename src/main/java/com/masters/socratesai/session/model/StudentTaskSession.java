@@ -1,5 +1,6 @@
 package com.masters.socratesai.session.model;
 
+import com.masters.socratesai.common.model.ContextSource;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,6 +25,18 @@ public class StudentTaskSession {
 
     @Column(name = "task_id", nullable = false, length = 100)
     private Long taskId;
+
+    private Long problemId;
+
+    private Long problemVersionId;
+
+    @Column(length = 30)
+    private String languageKey;
+
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
+    private ContextSource contextSource = ContextSource.LEGACY_UNKNOWN;
 
     @Column(name = "started_at", nullable = false)
     private OffsetDateTime startedAt;
