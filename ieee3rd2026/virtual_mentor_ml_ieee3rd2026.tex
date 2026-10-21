@@ -4,6 +4,7 @@
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{graphicx}
+\graphicspath{{../figures/}{figures/}}
 \usepackage{textcomp}
 \usepackage{xcolor}
 \usepackage{booktabs}
@@ -16,7 +17,7 @@
 
 \begin{document}
 
-\title{A Machine Learning Model for Real-Time Personalized Feedback in Introductory Programming}
+\title{A Machine Learning Decision Layer for Feedback-State Selection in Introductory Programming}
 
 \author{
     \IEEEauthorblockN{Alimzhan Koshikov}
@@ -41,7 +42,7 @@
 \maketitle
 
 \begin{abstract}
-Virtual mentors for novice programmers need a reliable decision layer before they generate feedback. This paper studies that layer as a supervised machine learning problem for real-time personalized support in introductory programming. The model is connected to SocratesAI, a web-based prototype where a student submits code, the backend requests a feedback-state prediction, a bounded hint is generated, and the prediction is stored in interaction logs for later analysis. A public dataset of Python Codeforces submissions was filtered to beginner-level problems and mapped from judge outcomes into five feedback states: accepted, semantic debugging, execution safety, efficiency review, and syntax repair. The experimental frame contains 178414 submissions from 872 problems and is evaluated with a problem-level holdout. A source-code model based on hashed character n-grams achieved macro $F_1=0.426$, compared with $0.085$ for the majority baseline. A model that also uses run results achieved macro $F_1=0.814$. The results show that source code is useful for early estimates, but run results are needed for more reliable real-time feedback.
+Virtual mentors for novice programmers need a reliable decision layer before they generate feedback. This paper studies that layer as a feedback-state classification problem within SocratesAI, a prototype that combines a Spring Boot backend, a FastAPI inference service, and interaction logging for later evaluation. A public dataset of Python Codeforces submissions is filtered to beginner-level problems and official judge outcomes are mapped to five mentor states: accepted, semantic debug, execution safety, efficiency review, and syntax repair. The main diagnostic benchmark contains 178,414 submissions from 872 problems after beginner-level filtering and class balancing. The source-code model, which uses hashed character n-grams, reaches a macro F1 of 0.426 compared with 0.085 for the majority baseline. After run-result summaries are included, the post-execution macro F1 reaches 0.814. To check whether this result depends on the selected split, we additionally ran a three-split grouped evaluation and a split-first experiment with an uncapped test partition. The model ordering remained the same in both experiments. The contribution is an explicit feedback-state formulation and a deployable decision layer for SocratesAI rather than a claim of classroom learning gains. The results indicate that source code is useful for early estimates, while execution signals are most useful as post-execution refinement evidence.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -50,11 +51,11 @@ virtual mentor, programming education, machine learning, automated feedback, Cod
 
 \section{Introduction}
 
-Introductory programming is often a challenging subject because beginners must learn many things during the course, including syntax, algorithmic thinking, and debugging skills. During the course, students submit different codes within a coding task which causes different types of errors such as syntax error, time limit failure, wrong answer, etc. Frequently, these error traces are not sufficient to understand a problem, so it is important to provide precise and helpful feedback for each type of error. For example, syntax error needs a local repair hint, a time limit error needs a question about time complexity, and a wrong answer/output needs hint related to test cases or edge cases.
+Introductory programming is often difficult for beginners because they have to deal with several things at once: syntax, algorithmic reasoning, debugging, and testing. Because of this, student submissions can fail for very different reasons. Some contain syntax errors, others produce unsafe execution, incorrect logic, or solutions that are too inefficient. Judge output helps identify that something went wrong, but it does not always show what kind of feedback the student actually needs. A syntax error, for example, usually requires help with a specific part of the code. A time-limit error is more related to the efficiency of the chosen algorithm. For a wrong answer, it is often more useful to focus on edge cases or on the difference between the expected and actual output.
 
-Many recent applications for programming education use large language models (LLMs) to write explanation or hints \cite{Denny2024,Ahamed2025,CodeAid2024,Iris2024}, and this is quite useful. However, it is also important to consider one important question: before the virtual assistant writes a feedback message, what kind of feedback is really appropriate for the student's current situation when he gets stuck on some task? If this decision is wrong, the generated text can eventually mislead a student and react to the wrong signal.  
+Many recent systems in programming education use large language models (LLMs) to generate explanations and hints \cite{Denny2024,Ahamed2025,CodeAid2024,Iris2024}. This is useful, but there is still an important step that comes before generating the feedback. The system first needs to understand what kind of help is suitable for the student's current state. If this decision is incorrect, even a well-written explanation may focus on the wrong problem and lead the student in the wrong direction.
 
-So, this paper is focused on the decision layer of a virtual programming mentor. Instead of focusing on a complete tutoring system, the study examine whether the machine learning model can predict the appropriate feedback state from a student’s code and, if available, run the results. During the study, we implemented virtual assistant called SocratesAI which is a Spring Boot backend application combined with Python ML service. It was used as an implementation context: the Spring Boot backend calls a Python ML service, receives a predicted feedback state and confidence score, uses that state to guide feedback generation, and stores the prediction in \texttt{interaction\_logs}.
+This paper focuses on this decision layer. Instead of building a complete tutoring system, we study whether a machine learning model can predict an appropriate feedback state from the student's source code and, when available, from the results of code execution. The experiments are implemented within SocratesAI, a prototype that uses a Java Spring Boot backend together with a Python FastAPI ML service. The backend sends the student's submission for feedback-state prediction and then uses the predicted action to guide the feedback generation process. The predicted state and its confidence score are also stored in \texttt{interaction\_logs} for later analysis.
 
 The paper addresses the following research questions:
 \begin{itemize}
@@ -63,17 +64,22 @@ The paper addresses the following research questions:
     \item \textbf{RQ3.} Which feedback states remain unreliable, and how should SocratesAI handle low-confidence predictions?
 \end{itemize}
 
-The novelty of this work is not only that a classifier is trained on programming submissions. The paper studies this classifier as a feedback-state decision layer before hint generation. More specifically, it gives an operational mapping from judge outcomes to mentor states, evaluates the model with a problem-level holdout on 178,414 real submissions, compares source-only evidence with code-and-run evidence, and shows the integration path into SocratesAI through the Spring Boot backend, Python ML service, and \texttt{interaction\_logs}.
+The contribution of the paper is threefold:
+\begin{itemize}
+    \item it defines an operational feedback-state taxonomy that maps Codeforces judge outcomes to mentor decisions before free-form hint generation;
+    \item it evaluates this decision layer on 178414 real Python submissions using a problem-level holdout that keeps unseen programming tasks out of training;
+    \item it connects the trained model to SocratesAI through a confidence-aware inference path and structured interaction logging.
+\end{itemize}
+The novelty therefore lies in the feedback-state formulation and system integration, not in proposing a new classifier architecture.
 
 
 \section{Related Work}
 
-Automated assessment and feedback tools have been used in programming education for many years. Surveys by Messer et al. \cite{Messer2024} and Kumar et al. \cite{Kumar2025} show that these systems are useful when working with many students, but they usually focus on correctness, test results, or syntax-level feedback. However, a virtual mentor needs a more explicit intermediate representation. Before generating the final response, it should first understand what kind of help is appropriate for the student.
+Automated support for programming exercises covers many feedback mechanisms. Keuning et al. review automated feedback generation for programming exercises, while the more recent surveys by Messer et al. and Kumar et al. show how broad the design space has become, including test-based feedback, repair-oriented feedback, and adaptive explanation systems \cite{Keuning2019,Messer2024,Kumar2025}. In this area, Wang et al. introduced SARFGEN, a data-driven system that generates repair-oriented feedback for introductory programming tasks using previous student solutions \cite{Wang2018}. This work shows that useful programming feedback can be automated. However, the main focus is still on generating or repairing feedback after the system has already identified the problem in the student's submission.
 
-This problem became more important with the growth of LLM-based teaching assistants. Denny et al. discuss the key properties that AI teaching assistants should have in programming education, such as reliability and alignment with learning goals \cite{Denny2024}. CodeAid evaluates the use of an LLM-based programming assistant in a real classroom and shows how such tools can balance the needs of both students and educators \cite{CodeAid2024}. Iris explores an AI-driven virtual tutor for computer science education \cite{Iris2024}, while Ahmed et al. study whether AI-augmented feedback can be feasible in CS1 courses \cite{Ahamed2025}. Overall, these works show that feedback quality is not only about generating good natural language. The timing of feedback, the type of intervention, and the amount of help revealed to the student are also important.
+Another line of work emphasizes diagnosing the kind of error a student faces. Becker et al. study compiler-error enhancement for novice programmers, showing the value of improving how low-level failures are presented \cite{Becker2016}. Lobanov et al. classify recurring error types in programming-assignment submissions from an online learning platform \cite{Lobanov2019}. This diagnostic perspective is close to the present paper: before producing pedagogical language, the system should estimate which failure mode is most plausible from observable evidence.
 
-
-Other studies focus on student behaviour around AI help. Sheese et al. show that students may develop different help-seeking patterns when they use LLM-powered programming assistants \cite{Sheese2024}. Marwan et al. show that immediate adaptive feedback can support programming learning when feedback is tied to the learner's current state \cite{Marwan2022}. These findings motivate the present work: before SocratesAI phrases a hint, it should estimate the feedback need from observable evidence.
+This issue becomes even more important with LLM-based assistants. Denny et al. discuss desirable properties of AI teaching assistants in programming education, including reliability and alignment with learning goals \cite{Denny2024}. CodeAid reports a real classroom deployment of an LLM-based programming assistant \cite{CodeAid2024}, Iris explores an AI-driven tutor for computer science education \cite{Iris2024}, Liu et al. describe how human feedback was used to improve the CS50 AI assistant \cite{Liu2025}, and Ahmed et al. study AI-augmented feedback for CS1 \cite{Ahamed2025}. Sheese et al. further show that LLM tools change student help-seeking behaviour \cite{Sheese2024}, while Marwan et al. show the value of adaptive immediate feedback tied to learner state \cite{Marwan2022}. The present paper differs from those studies by focusing on the intermediate decision layer: it does not claim a full tutoring system or automatic program repair system, but tests whether a compact feedback-state classifier can decide the pedagogical direction before hint generation.
 
 \section{Method}
 
@@ -159,42 +165,48 @@ This split is stricter than a random row split because it tests whether the mode
 
 The empirical source is a local copy of the Codeforces Python submissions dataset \cite{MatrixStudio2026}. It was selected because it fixes the programming language family, contains accepted and failed submissions, provides official judge outcomes, and includes run-result fields such as passed tests, time, and memory.
 
-The original dataset contains 690396 Python code submissions. It was decided to filter the dataset and leave only beginner level problems with rating at most 1200 and also remove outcomes outside the taxonomy. This leaves 490357 suitable code submissions from 881 problems. In order to reduce domination of the ewo largest classes while keeping minority states, accepted and semantic-debug rows are capped at 50000 each. Ultimately, the final version of dataset contains 178414 submissions from 872 problems.
+The original dataset contains 690,396 Python submissions. After limiting the data to beginner-level problems with a rating of 1200 or lower and removing verdicts that do not belong to the defined taxonomy, 490,357 submissions from 881 problems remain. At this stage, the dataset is strongly dominated by the two largest classes, accepted and semantic debug. Together, they contain 411,943 submissions, which corresponds to 84.0\% of all filtered rows. To reduce this imbalance without removing examples from minority classes, the training script limits each class to at most 50,000 submissions. In practice, this cap affects only the accepted and semantic debug classes. After applying it, the final modeled dataset contains 178,414 submissions from 872 problems, while the share of the two largest classes decreases to 56.0\%. This step is used only to control class imbalance during macro-$F_1$-oriented training and should not be interpreted as the real distribution of student errors in a classroom.
 
-Source code from the submissions is represented by hashed character $3$--$5$-grams. This means that the code is divided into small fragments of three to five characters, which are then used as features for the model. This representation is useful for programming code because even small parts of the code can contain important information. For example, operators, indentation patterns, short expressions, and identifier shapes can still be meaningful, even when the exact variable names or tokens are different.
+The source code of each submission is represented using hashed character $3$--$5$-grams. This representation works well for program code because even short character sequences can capture useful patterns such as operators, indentation, brackets, delimiters, and identifier structure. At the same time, it does not require exact variable names to be shared between different solutions.
 
-In addition to the code fragments, several static metrics are also extracted from each submission. These include the number of lines, source length, branches, loops, functions, imports, input calls, print calls, and exception-handling logic. These features help describe the structure and complexity of the submitted solution.
+Several static features are also extracted from every submission, these include the number of lines, source-code length, blank lines, comments, average and maximum line length, branches, loops, functions, classes, imports, input calls, print calls, and exception-handling constructs. These features provide additional information about the structure and overall complexity of the submitted program.
 
-The problem context is also included in the feature set. It contains the problem rating, problem tags, and the Python variant used in the submission. In the code-and-run setting, execution-related features are added as well, including the number of passed tests, execution time in milliseconds, and memory usage in bytes.
+The model also receives information about the programming problem itself, including the problem rating, its tags, and the Python version used for the submission. For the code-and-run setting, we additionally include execution-related features such as the number of passed tests, execution time in milliseconds, and memory usage in bytes. Importantly, the verdict itself is not provided to the model as an input feature. Instead, the execution-enriched model uses only derived information from the run results, avoiding direct use of the label from which the proxy mentor state is created.
 
-The main classifier used in this work is Scikit-learn's \texttt{SGDClassifier} with logarithmic loss and $L_2$ regularization \cite{Pedregosa2011}. This classifier was chosen because the generated feature vectors are sparse and high-dimensional. In this case, a linear stochastic-gradient model is a practical choice because it trains quickly, can be rerun with fixed settings, and can be serialized directly into the Python service used by SocratesAI.
+The main classifier used in this study is Scikit-learn's \texttt{SGDClassifier} with logarithmic loss and $L_2$ regularization \cite{Pedregosa2011}. It was selected because the resulting feature vectors are sparse and high-dimensional. A linear model trained with stochastic gradient descent is a practical choice for this setting: it is relatively fast to train, easy to rerun under fixed experimental settings, and can be serialized and used directly by the Python service in SocratesAI.
 
-This model is used as a first practical step before moving to more complex neural models. At this stage, the goal is to understand how much mentoring signal can already be extracted from simple code fragments, static metrics, problem context, and execution results. Therefore, \texttt{SGDClassifier} works as a clear and efficient baseline for making feedback-state predictions from user-submitted code.
+At this stage, the goal is to understand how much mentoring signal can already be extracted from code fragments, static metrics, problem context, and execution results before moving to heavier neural models. The main comparison therefore varies the available evidence under one fixed linear classifier family rather than searching exhaustively over model families.
 
-The final run used 65536 hashed code features and 60 stochastic-gradient epochs for each linear classifier. One epoch means one complete pass through the training partition. The split contains 135752 training submissions from 654 problems and 42662 test submissions from 218 problems.
+\subsection{Experimental Protocol and Reproducibility}
+
+Table~\ref{tab:trainingcycle} lists the fixed settings used for the main study. The split contains 135752 training submissions from 654 problems and 42662 test submissions from 218 problems, with zero problem overlap. Because the goal is to test generalization to unseen tasks, the evaluation keeps complete problems out of the training partition. The feature extraction and SGD settings were fixed before the comparative reruns and reused across all reported ablations. The main tables report one grouped holdout with \texttt{random\_state}=42 after class capping, because the primary comparison is macro-$F_1$-oriented and should keep the rarer mentor states visible. To test robustness beyond that benchmark, a follow-up analysis repeats the grouped evaluation with \texttt{random\_state} values 42, 52, and 62, compares additional shallow classifier families on a shared 128-component SVD representation of the source-code features, and also reruns the study under a split-first protocol that caps only the training partition while leaving the test partition untouched.
 
 \begin{table}[t]
-\caption{Training cycle used for each model variant}
+\caption{Configuration used for the reported Codeforces study}
 \label{tab:trainingcycle}
 \centering
+\footnotesize
 \renewcommand{\arraystretch}{1.08}
-\begin{tabular}{p{1.8cm}p{5.2cm}}
+\begin{tabular}{p{1.85cm}p{5.15cm}}
 \toprule
-\textbf{Stage} & \textbf{Operation} \\
+\textbf{Item} & \textbf{Setting} \\
 \midrule
-Data frame & Read parquet files, filter beginner-level problems, map judge outcomes to feedback states. \\
-Split & Hold out complete problems, not only individual rows. \\
-Features & Build hashed code n-grams and add selected context, metric, and run-result fields. \\
-Epoch loop & For epochs $e=1,\ldots,60$, make one pass over the 135752 training submissions and update the linear classifier. \\
-Evaluation & Test once on 42662 submissions from unseen problems and compute aggregate, per-class, and confusion-matrix results. \\
-Artifact & Save the fitted pipeline for the Python prediction service. \\
+Split & \texttt{GroupShuffleSplit(test\_size=0.25, random\_state=42)} grouped by \texttt{problem\_id}. \\
+Row cap & \texttt{max\_rows\_per\_class=50000}; only accepted and semantic-debug are truncated. \\
+Code text & First 5000 source characters per submission. \\
+Code features & \texttt{HashingVectorizer}, \texttt{analyzer=char\_wb}, $3$--$5$-grams, 65536 features, \texttt{alternate\_sign=False}, $L_2$ normalization. \\
+Tag features & \texttt{TfidfVectorizer} with tokenized problem tags and \texttt{min\_df=2}. \\
+Numeric features & Median imputation plus \texttt{StandardScaler(with\_mean=False)}. \\
+Categorical features & \texttt{OneHotEncoder(handle\_unknown=ignore)} for language variant. \\
+Classifier & \texttt{SGDClassifier(loss=log\_loss, penalty=l2, alpha=1e-5, max\_iter=60, tol=None, class\_weight=balanced, random\_state=42)}. \\
+Software & \texttt{scikit-learn 1.7.1}, \texttt{pandas 2.3.2}, and \texttt{pyarrow 24.0.0}. \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.78\linewidth]{figures/Figure1_ml_pipeline.pdf}
+\includegraphics[width=0.78\linewidth]{Figure1_ml_pipeline.pdf}
 \caption{Pipeline from beginner programming submissions to a feedback-state model used by SocratesAI. Test problems are kept separate from training problems.}
 \label{fig:pipeline}
 \end{figure}
@@ -203,10 +215,10 @@ Artifact & Save the fitted pipeline for the Python prediction service. \\
 
 Five models are compared: a majority baseline, a context-metrics model, a source-code model, a source-context model, and a code-and-run model. The reported metrics are accuracy, balanced accuracy, macro $F_1$, and weighted $F_1$. Macro $F_1$ is the main metric because the mentor should not be evaluated only on the largest classes.
 
-Table~\ref{tab:results} shows the model comparison. The majority baseline performs poorly under macro $F_1$ because it predicts only the largest class. Context and static metrics alone improve the result only modestly. Source code is more informative: the source-code model reaches macro $F_1=0.426$ and balanced accuracy $0.425$ on unseen problems. This is not reliable enough for autonomous tutoring, but it is clearly above the baseline and shows that code structure contains a real feedback signal.
+Table~\ref{tab:results} reports the class-balanced diagnostic benchmark. The purpose of this comparison is to isolate which evidence sources improve the decision layer under one fixed linear classifier family, not to claim that SGD is the best possible classifier family.
 
 \begin{table}[t]
-\caption{Model performance on held-out problems}
+\caption{Baseline and feature-set comparison on a single held-out problem split (42662 test submissions)}
 \label{tab:results}
 \centering
 \renewcommand{\arraystretch}{1.1}
@@ -223,18 +235,28 @@ Code + run results & 0.7808 & 0.8207 & 0.8137 & 0.7763 \\
 \end{tabular}
 \end{table}
 
-The strongest result is obtained when run results are added. The code-and-run model reaches macro $F_1=0.814$ and balanced accuracy $0.821$. This does not mean the mentor should simply repeat the judge outcome. The point is narrower: if SocratesAI has test-run evidence, it should treat this evidence as a central modelling signal, not only as a final grade.
+\textbf{Baseline comparison.} The majority baseline is intentionally weak, but it is still informative: on the 42662-submission test split it collapses every case into semantic debug, classifies only 11589 submissions correctly, and yields macro $F_1=0.085$. The context-metrics baseline is stronger, reaching macro $F_1=0.310$, yet it still performs very poorly on execution safety ($F_1=0.078$). Adding raw source text is the first step that makes every feedback state meaningfully learnable. The source-code model improves macro $F_1$ by 0.116 over context metrics and by 0.341 over the majority baseline, with the clearest gains on syntax repair ($F_1=0.549$) and efficiency review ($F_1=0.440$). The source+context variant does not improve over source code alone on this split, so the paper does not claim that simple metadata and static counts consistently add value once character n-grams are already available.
+
+The strongest result is obtained when run results are added. The code-and-run model reaches macro $F_1=0.814$ and balanced accuracy $0.821$. This model should be read as an evidence upper bound for the moment after execution evidence is available, not as a replacement for the source-only path that SocratesAI can use while the student is still editing. The supported conclusion is therefore narrower than saying that judge output solves mentoring: if SocratesAI has test-run evidence, it should treat that evidence as a central modelling signal, not only as a final grade.
+
+Because the target taxonomy is itself derived from final Codeforces verdicts, a direct rule mapping from the final verdict token to the same labels would be perfect by construction and is therefore not a meaningful ML baseline. The code-and-run result should instead be interpreted more narrowly: it estimates the feedback state from derived run summaries such as passed tests, time, and memory, without seeing the verdict token itself. In SocratesAI, that corresponds to post-execution refinement when the mentor has execution telemetry but still needs to choose a pedagogical action.
+
+\textbf{Additional classifier baselines.} A follow-up classifier-family comparison reused the same source-code signal but projected it to 128 SVD components so that all four shallow classifier families could train on the same representation. On that compressed space, linear SVM achieved the best macro $F_1$ at $0.383$, followed by SGD at $0.378$, Logistic Regression at $0.365$, and Random Forest at $0.358$. All four compressed-representation models remain below the main full-sparse source-code model ($0.426$ macro $F_1$), which suggests that preserving the high-dimensional character $n$-gram space matters more here than switching among these classifier families. For deployment, this supports keeping the sparse linear model used by the FastAPI service.
+
+\textbf{Statistical validation.} The held-out test partition contains 42,662 submissions, providing reasonably precise accuracy estimates. The corresponding 95\% Wilson confidence intervals are $0.2674$--$0.2759$ for the majority baseline, $0.3297$--$0.3387$ for context metrics, $0.4004$--$0.4098$ for source code, $0.3992$--$0.4085$ for source + context, and $0.7769$--$0.7847$ for code + run. We also repeated the grouped evaluation with seeds 42, 52, and 62 to check whether the model ranking was caused by a particularly favorable split. The same general ordering was observed in all three runs. The majority baseline achieved macro $F_1=0.087 \pm 0.001$, followed by context metrics with $0.302 \pm 0.025$, source code with $0.420 \pm 0.005$, source + context with $0.399 \pm 0.011$, and code + run with $0.808 \pm 0.007$. These results suggest that the relative performance of the models remains stable across the tested unseen-problem splits rather than depending on a single favorable partition.
+
+\textbf{Split-first follow-up.} The main balanced benchmark applies class capping before the train-test split, so we also performed an additional experiment with a cleaner sequence. In this setup, the data is first split by problem, the class cap is applied only to the training partition, and the test partition remains unchanged. The resulting test set contains 118,310 submissions and therefore follows a more natural class distribution. The overall ordering remains the same: majority macro $F_1=0.139$, context metrics $0.224$, source + context $0.319$, source code $0.349$, and code + run $0.798$. The absolute macro-$F_1$ values are lower because accepted and semantic-debug submissions dominate the uncapped test set, but the relative ordering of the different evidence sources does not change.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\linewidth]{figures/Figure3_feature_set_comparison.pdf}
+\includegraphics[width=\linewidth]{Figure3_feature_set_comparison.pdf}
 \caption{Feature-set ablation. Source code improves over context metrics, while run results substantially improve the decision layer.}
 \label{fig:ablation}
 \end{figure}
 
-The per-class scores in Table~\ref{tab:perclass} are more useful than looking only at the overall metrics. They show how well the model works for each feedback state separately. The source-code model performs best on syntax repair and efficiency review. This is reasonable because syntax mistakes, repeated code patterns, and inefficient structures can often be noticed directly from the source code, even before the program is executed.
+The per-class scores in Table~\ref{tab:perclass} are more useful than looking only at the overall metrics. The source-code model performs best on syntax repair and efficiency review, where surface structure often reveals the issue directly, but it is weaker on accepted and semantic-debug states because two visually similar solutions can still differ on hidden tests.
 
-At the same time, the source-code model is weaker on accepted and semantic-debug states. This is also expected because two solutions may look very similar in the code, but one of them can still fail on hidden tests. In this case, source code alone does not always provide enough information to understand whether the solution is fully correct or whether it contains a logical mistake.
+RQ3 also concerns how SocratesAI should handle low-confidence predictions. On held-out source-code predictions, requiring confidence of at least 0.35 retains 58.1\% of submissions and raises macro $F_1$ to $0.493$. Raising the threshold to 0.50 retains 11.5\% of submissions with macro $F_1=0.608$, and raising it to 0.70 retains 2.9\% with macro $F_1=0.748$. The current prototype therefore uses 0.35 as a pragmatic operating point: it improves reliability over unrestricted source-only prediction without collapsing coverage to a tiny minority of cases.
 
 \begin{table}[t]
 \caption{Per-class $F_1$ for two main model variants}
@@ -254,53 +276,47 @@ Syntax repair & 0.5490 & 0.9602 \\
 \end{tabular}
 \end{table}
 
-Figure~\ref{fig:confusion} shows how the source-code model classifies different feedback states. The matrix is row-normalized, which means that each row shows how submissions from one true state were predicted by the model. The cells on the diagonal show correct predictions, while the other cells show where the model confused one state with another.
-
-This is important for virtual mentoring because a wrong state prediction can lead to the wrong type of feedback. For example, accepted submissions are often confused with semantic-debug cases. Also, execution-safety problems are not concentrated in one predicted class, but are spread across several different states. This means that source code can give useful early signals about the possible feedback state, but it has clear limitations. It can help the system make an initial decision, but it is not always enough to distinguish a correct solution from a solution that only fails on specific tests.
+Figure~\ref{fig:confusion} shows how the source-code model confuses different feedback states. Accepted submissions are often confused with semantic-debug cases, and execution-safety problems are spread across several predicted states. This is exactly why the source-only model should be treated as an early estimate rather than a final diagnosis.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.93\linewidth]{figures/Figure4_confusion_matrix.pdf}
+\includegraphics[width=0.93\linewidth]{Figure4_confusion_matrix.pdf}
 \caption{Error-classification matrix for the source-code model. Off-diagonal cells show which feedback states are confused.}
 \label{fig:confusion}
 \end{figure}
 
 \section{Integration into SocratesAI}
 
-The trained model is placed between code analysis and feedback generation layers in SocratesAI. The backend accepts and collects data including student's source code, task contexts and run results, then the backend processes request data by converting the data into a feature vector and sends to the endpoint of the Python ML service - \texttt{/predict-mentor-state}. Finally, the Python ML inference service predicts and provides full response including predicted state such as \texttt{syntax\_repair} or \texttt{efficiency\_review}, confidence scores, and a mapped feedback action.
+The trained model is placed between code analysis and feedback generation layers in SocratesAI. In the current prototype, a Java 21 Spring Boot backend collects analyzer output, session context, and the student's source code, serializes those fields as JSON, and calls the FastAPI endpoint \texttt{/predict-mentor-state}. The Python ML service reconstructs the same source metrics used during training, applies the fitted pipeline, and returns a response that includes the predicted mentor state, confidence score, per-class scores, and a mapped feedback action.
 
-The Spring Boot backend receives and processes the response from The Python ML Service and uses this action for feedback generation and saves the result of the prediction and confidence states in \texttt{interaction\_logs}. The Codeforces dataset is not a complete replacement for SocratesAI logs, it is a extra source for building an initial model. Additionally, logs collected in the application can significantly help in the future in conducting full classroom experiment within a programming course, as it record whether a prediction was evaluated as useful feedback by users.
+The Spring Boot backend uses that action for bounded feedback generation and stores the returned mentor state and confidence in \texttt{interaction\_logs}. When ML mode is enabled but confidence is below the current operating threshold of 0.35, the backend keeps the ML prediction for logging but falls back to the rule selector for the final action. This design keeps the prediction connected to the product without allowing an uncertain prediction to drive the intervention.
 
-The implementation has two modes: 1) source-only mode, in which the mentor can make an early estimate while the student is still editing, and should be considered as a preparatory stage to detect some basic syntax and structural errors, 2) code and-run mode, apart from basic metrics such as source code and task context, it uses test execution evidence and becomes much more reliable. It aligned with a realistic CS1 course workflow: a student writes code, runs or submits it, and receiveas a short intervention tied to the observed failure type.
+The implementation has two modes: source-only mode, in which the mentor can make an early estimate while the student is still editing, and code-and-run mode, in which test execution evidence is also available and the prediction becomes much more reliable. This aligns with a realistic CS1 workflow: a student writes code, runs or submits it, and receives a short intervention tied to the observed failure type.
 
-The main purpose of this trained model is to select the correct pedagogical direction for student instead of just providing final hint. For example, high-confidence efficiency review prediction can consequently lead to a prompt which can help to a student with time complexity issues. A low-confidence semantic-debug prediction can lead a leading question asking the student to compare expected and actual output.  LLM is used only to phrase the selected action in natural language. The prompt for LLM is strictly limited and bounded: it should not provide a full solution, should not rewrite the student's program, and should keep the hint connected to the selected feedback state.
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=\linewidth]{figures/interface.png}
-\caption{SocratesAI interface where the model-guided feedback appears next to the student's code. The screenshot shows the deployment context; the evaluated component is the feedback-state model.}
-\label{fig:interface}
-\end{figure}
+The main purpose of this trained model is to select the pedagogical direction instead of providing the final answer. For example, a high-confidence efficiency-review prediction can lead to a prompt about time complexity, while a low-confidence semantic-debug prediction can trigger a more cautious leading question about expected versus actual output. In the current prototype, LLMs are used only to phrase the selected action in natural language. The prompt is bounded so that it does not provide a full solution, rewrite the student's program, or ignore the predicted feedback state. The repository also stores post-hoc outcomes such as \texttt{feedback\_helpful}, \texttt{feedback\_rating}, \texttt{resolved\_after\_feedback}, and expert labels, which makes later classroom or expert validation possible even though those data are not the main evaluation source in the present paper.
 
 \section{Discussion and Limitations}
 
 The results show that a machine learning model can learn meaningful feedback-state signals from real programming submissions, but source code alone is not enough for reliable tutoring on unseen problems. Run results change the problem substantially. This is not a weakness of the experiment; it is a design lesson for SocratesAI. A mentor that ignores passed tests, time, and memory discards evidence that helps separate failure modes.
 
-There are also limitations.  First, Codeforces outcomes are objective judge results, not teacher-written pedagogical labels. Second, beginner-rated Codeforces problems consists only first-year programming tasks, while real classroom CS1 assignments may include style, decomposition, and explanation goals. Finally, the taxonomy is compact, the future model should distinguish more subtle error types such as off-by-one loop errors, wrong invariants, input parsing mistakes, and missing edge cases.
+Several limitations bound this conclusion. First, the labels are proxy mentor states derived from Codeforces verdicts, not teacher-written pedagogical annotations. Second, the code-and-run benchmark should be interpreted as a post-execution upper bound, not as evidence that ML is needed once a platform already exposes the final verdict token directly. Third, the main ablation table uses a balanced benchmark, although both the additional three-split rerun and the split-first follow-up preserve the same ordering across unseen-problem partitions. Fourth, although SocratesAI now logs mentor-state predictions, usefulness ratings, resolution flags, and expert labels, those interaction logs are not yet large enough to serve as the main quantitative evaluation dataset. Finally, beginner-rated Codeforces problems differ from real CS1 tasks that may also emphasize style, decomposition, and explanation quality.
 
-These limitations are acceptable for the present stage because the paper does not claim a finished educational product. It gives an empirical basement for the ML part of the mentor and shows us the next engineering step that we need to implement: keep collecting SocratesAI interaction logs, store predictions and outcomes, and validate the model on target-domain student data.
+These limitations are acceptable only within the scope claimed here: the paper presents a feasible ML decision layer for a virtual mentor, not a finished educational product and not evidence of learning gains. The next research step is to keep collecting SocratesAI interaction logs and validate the model on target-domain student data.
 
 \section{Conclusion}
 
-This paper presents virtual mentoring in introductory programming as a supervised machine learning task based on feedback states, and by using 178414 real Python submissions from beginner-level Codeforces problems, the study showed that source-code features can provide useful signals, but they are still not enough when the model is tested on unseen problems. The source-code model achieved macro $F_1=0.426$, while the code-and-run model performed much better and achieved macro $F_1=0.814$.
+This paper presents the feedback-state decision layer of a virtual programming mentor as a supervised machine learning task. Using real Python submissions from beginner-level Codeforces problems, the study shows that source-code features provide useful early signals, but they are still not enough when the model is tested on unseen problems. On the main balanced benchmark, the source-code model achieves macro $F_1=0.426$, while the code-and-run model achieves macro $F_1=0.814$. A split-first follow-up with an uncapped test partition preserves the same ordering, although with lower absolute macro-$F_1$ values under the natural class skew.
 
-In conclusion, the main practical result is that a proper virtual mentor should not depend only on generating explanations or on the submitted source code, but should predict a appropriate feedback state, use code execution results when they are available, and store predictions and outcomes inside the real application in order to train the model. In SocratesAI, this approach connects the external training dataset with the implemented system: the ML service predicts the feedback state, the feedback layer turns it into a limited and relevant hint, and \texttt{interaction\_logs} become the source for future classroom evaluation.
+The main supported conclusion is pragmatic: a virtual mentor should not rely only on generated explanations or on the submitted source code, but should estimate an appropriate feedback state, use execution results when they are available, and store predictions and outcomes inside the application for later validation. In SocratesAI, this connects the external Codeforces study to the deployed prototype: the ML service predicts the feedback state, the feedback layer turns it into a bounded hint, and \texttt{interaction\_logs} form the basis for future classroom evaluation. Stronger claims about educational effectiveness still require real classroom evidence.
 
 \section*{Acknowledgment}
 
-This work was carried out as part of the master’s degree research at Astana IT University. The authors thank the School of Software Engineering for supporting the development and evaluation of the SocratesAI prototype.
+The authors thank the course instructors and reviewers whose feedback helped narrow the project from a general virtual mentor prototype to a focused machine learning study.
 
 \begin{thebibliography}{00}
+
+\bibitem{Keuning2019}
+H. Keuning, J. T. Jeuring, and B. Heeren, ``A systematic literature review of automated feedback generation for programming exercises,'' \emph{ACM Transactions on Computing Education}, vol. 19, no. 1, Article 3, 2019.
 
 \bibitem{Messer2024}
 M. Messer, N. C. C. Brown, M. K{\"o}lling, and M. Shi, ``Automated grading and feedback tools for programming education: A systematic review,'' \emph{ACM Transactions on Computing Education}, vol. 24, no. 1, Article 10, 2024.
@@ -320,11 +336,23 @@ M. Kazemitabaar \emph{et al.}, ``CodeAid: Evaluating a classroom deployment of a
 \bibitem{Iris2024}
 P. Bassner, E. Frankford, and S. Krusche, ``Iris: An AI-driven virtual tutor for computer science education,'' in \emph{Proc. ITiCSE}, 2024, pp. 394--400.
 
+\bibitem{Liu2025}
+R. Liu, J. Zhao, B. Xu, C. Perez, Y. Zhukovets, and D. J. Malan, ``Improving AI in CS50: Leveraging human feedback for better learning,'' in \emph{Proc. ACM SIGCSE TS}, 2025, pp. 715--721.
+
 \bibitem{Sheese2024}
 B. Sheese, M. Liffiton, J. Savelka, and P. Denny, ``Patterns of student help-seeking when using a large language model-powered programming assistant,'' in \emph{Proc. ACE}, 2024, pp. 49--57.
 
 \bibitem{Marwan2022}
 S. Marwan, B. Akram, T. Barnes, and T. W. Price, ``Adaptive immediate feedback for block-based programming: Design and evaluation,'' \emph{IEEE Transactions on Learning Technologies}, vol. 15, no. 3, pp. 406--420, 2022.
+
+\bibitem{Becker2016}
+B. A. Becker, G. Glanville, R. Iwashima, C. McDonnell, K. Goslin, and C. Mooney, ``Effective compiler error message enhancement for novice programming students,'' \emph{Computer Science Education}, vol. 26, no. 2--3, pp. 148--175, 2016.
+
+\bibitem{Lobanov2019}
+A. Lobanov, T. Bryksin, and A. Shpilman, ``Automatic classification of error types in solutions to programming assignments at online learning platform,'' in \emph{Artificial Intelligence in Education}, 2019, pp. 174--178.
+
+\bibitem{Wang2018}
+K. Wang, R. Singh, and Z. Su, ``Search, align, and repair: Data-driven feedback generation for introductory programming exercises,'' in \emph{Proc. PLDI}, 2018, pp. 481--495.
 
 \bibitem{Pedregosa2011}
 F. Pedregosa \emph{et al.}, ``Scikit-learn: Machine learning in Python,'' \emph{Journal of Machine Learning Research}, vol. 12, pp. 2825--2830, 2011.
