@@ -31,7 +31,7 @@ class AnalyzerServiceTest {
     );
 
     @Test
-    void shouldReturnSyntaxErrorResultWhenCompilationFails() {
+    void shouldReturnSyntaxErrorEstimateWhenHeuristicFindsIssue() {
         AnalyzerRequest request = request("if (", "java");
         SyntaxCheckResult syntax = new SyntaxCheckResult();
         syntax.setCompileSuccess(false);
@@ -49,11 +49,13 @@ class AnalyzerServiceTest {
         assertThat(result.getSuspiciousRegion()).isEqualTo("statement ending");
         assertThat(result.getCodeLines()).isEqualTo(1);
         assertThat(result.getAnalysisTimeMs()).isGreaterThanOrEqualTo(0);
+        assertThat(result.getSignals()).containsEntry("compilerExecuted", false).containsEntry("testsExecuted", false)
+                .containsEntry("evidenceOrigin", "STATIC_HEURISTIC");
         verify(patternDetectionEngine, never()).detect("if (", 7L);
     }
 
     @Test
-    void shouldReturnPatternBasedResultWhenCompilationSucceeds() {
+    void shouldReturnPatternBasedEstimateWhenHeuristicFindsNoIssue() {
         AnalyzerRequest request = request("for (int i = 0; i <= n; i++) {\n  sum += i;\n}", "java");
         SyntaxCheckResult syntax = new SyntaxCheckResult();
         syntax.setCompileSuccess(true);
@@ -78,6 +80,8 @@ class AnalyzerServiceTest {
         assertThat(result.getTestsFailed()).isEqualTo(2);
         assertThat(result.getSuspiciousRegion()).isEqualTo("for loop condition");
         assertThat(result.getSignals()).containsEntry("loopBoundarySuspicious", true);
+        assertThat(result.getSignals()).containsEntry("compilerExecuted", false).containsEntry("testsExecuted", false)
+                .containsEntry("evidenceOrigin", "STATIC_HEURISTIC");
         assertThat(result.getCodeLines()).isEqualTo(3);
         assertThat(result.getAnalysisTimeMs()).isGreaterThanOrEqualTo(0);
     }

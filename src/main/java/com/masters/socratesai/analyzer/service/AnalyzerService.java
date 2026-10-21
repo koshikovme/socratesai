@@ -6,23 +6,16 @@ import com.masters.socratesai.analyzer.engine.PatternDetectionEngine;
 import com.masters.socratesai.analyzer.engine.ProgressEstimator;
 import com.masters.socratesai.analyzer.engine.SyntaxCheckEngine;
 import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
+import java.util.HashMap;
 
 @Service
+@RequiredArgsConstructor
 public class AnalyzerService {
 
     private final SyntaxCheckEngine syntaxCheckEngine;
     private final PatternDetectionEngine patternDetectionEngine;
     private final ProgressEstimator progressEstimator;
-
-    public AnalyzerService(
-            SyntaxCheckEngine syntaxCheckEngine,
-            PatternDetectionEngine patternDetectionEngine,
-            ProgressEstimator progressEstimator
-    ) {
-        this.syntaxCheckEngine = syntaxCheckEngine;
-        this.patternDetectionEngine = patternDetectionEngine;
-        this.progressEstimator = progressEstimator;
-    }
 
     public AnalyzerResult analyze(AnalyzerRequest request) {
         long start = System.currentTimeMillis();
@@ -49,6 +42,12 @@ public class AnalyzerService {
             result.setSignals(pattern.getSignals());
         }
 
+        var signals = new HashMap<String, Object>();
+        if (result.getSignals() != null) signals.putAll(result.getSignals());
+        signals.put("compilerExecuted", false);
+        signals.put("testsExecuted", false);
+        signals.put("evidenceOrigin", "STATIC_HEURISTIC");
+        result.setSignals(signals);
         result.setCodeLines(request.getCode() == null ? 0 : request.getCode().split("\\R").length);
         result.setAnalysisTimeMs((int) (System.currentTimeMillis() - start));
         return result;

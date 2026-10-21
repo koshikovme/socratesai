@@ -48,7 +48,7 @@ public class MentorPolicyService {
                 throw ex;
             }
 
-            log.warn("ML policy failed, falling back to rule selector: {}", ex.getMessage());
+            log.warn("ML policy failed, falling back to rule selector ({})", ex.getClass().getSimpleName());
             rawDecision = new PolicyDecision(
                     ruleBasedPolicyEngine.decide(features),
                     ruleBasedPolicyEngine.policyVersion()

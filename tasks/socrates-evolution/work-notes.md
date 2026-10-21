@@ -1,8 +1,8 @@
 # SocratesAI evolution: architecture blueprint and implementation checklist
 
-**Status:** Plan approved. The authorized DTO/schema/JPA portion of Steps 1–2 is implemented and locally verified; remaining tasks stay explicitly unchecked.
+**Status:** Plan approved. The authorized Steps 1–2 schema scope and Step 3 sandbox adapter/comparator are implemented and locally verified. Actual sandbox hosting/execution and remaining tasks stay explicitly unchecked.
 **Prepared:** 2026-10-21.
-**Last updated:** 2026-10-22. See [result-1-schema.md](./result-1-schema.md) for frozen contracts, schema details, limitations, and verification evidence.
+**Last updated:** 2026-10-22. See [result-1-schema.md](./result-1-schema.md) for schema/contracts and [result-3-sandbox.md](./result-3-sandbox.md) for adapter verification and the missing execution host.
 **Workspace:** `/home/koshikovalimzhan/IdeaProjects/socratesai`.
 **Task folder:** `tasks/socrates-evolution/` relative to the repository root. The requested `/tasks/...` paths refer to this repository folder, not an operating-system directory.
 **Requirements source:** [task-context.md](./task-context.md), read before preparing this plan.
@@ -440,7 +440,7 @@ Work proceeds in the order below. Each stage ends with a scoped reviewable chang
 - [x] **P1.4** Inventory every caller of numeric `taskId`, including frontend routes, sessions, interactions, profile progress, exports, benchmarks, and tests. Recorded in `result-1-schema.md`; callers remain compatible.
 - [x] **P1.5** Produce the legacy/native identifier and provenance contract; identify ambiguous records without modifying shared databases. V9 preserves unknown links, including numeric collisions; no shared-record inspection/mapping is claimed.
 - [x] **P1.6** Specify problem/version/language/test/collection DTOs, publication validation, visibility, pagination, safe errors, and conflict semantics. Typed DTOs and validation implemented; the blueprint/report specify service rules, while HTTP envelopes/controllers remain Step 4 work.
-- [x] **P1.7** Specify run/submit status/verdict DTOs, idempotency behavior, test comparison, quotas, attempt counting, and history authorization. Contracts frozen; worker/comparator/authorization use cases remain future implementation.
+- [x] **P1.7** Specify run/submit status/verdict DTOs, idempotency behavior, test comparison, quotas, attempt counting, and history authorization. Contracts frozen; comparator/adapter implemented in Step 3, while worker/authorization use cases remain future implementation.
 - [ ] **P1.8** Specify the correlated WS protocol, identity source, payload limits, language eligibility, and nullable/unknown execution evidence.
 - [ ] **P1.9** Record provider/host/domain/access/region/budget, retention rules, RPO/RTO, and open decisions using explicit missing-input markers.
 - [x] **P1.10** Write the requested combined `result-1-schema.md` with contracts, compatibility changes, implemented schema, and the test matrix; update this checklist. Remaining external decisions are explicitly open.
@@ -472,18 +472,18 @@ Work proceeds in the order below. Each stage ends with a scoped reviewable chang
 
 **Depends on:** Steps 1–2 contracts/schema; do this before claiming language support. **Primary areas:** execution module and dedicated sandbox infrastructure.
 
-- [ ] **P3.1** Review provider release/advisories/host privileges and installed runtime versions; document self-hosted versus managed choice and operational cost assumptions.
-- [ ] **P3.2** Establish an isolated local/staging execution environment without application secrets, mounts, or shared database access.
-- [ ] **P3.3** Implement `CodeExecutionPort`, provider request/result DTOs, bounded HTTP client, authentication, and error normalization.
-- [ ] **P3.4** Discover and validate the approved runtime allowlist; map language keys, runtime versions, entry points, and starter conventions centrally.
-- [ ] **P3.5** Implement asynchronous provider create/poll and bounded batch mapping; prohibit user-selected provider URLs/options/callbacks.
-- [ ] **P3.6** Enforce source/stdin/output/file/process/CPU/wall/memory constraints, compile limits where supported, and safe decode limits.
-- [ ] **P3.7** Implement normalized verdict mapping and deterministic comparison rules; explicitly handle unsupported memory/output status distinctions.
+- [ ] **P3.1** Review provider release/advisories/host privileges and installed runtime versions; document self-hosted versus managed choice and operational cost assumptions. Partial: primary release/advisory review and dedicated-host versus managed tradeoff recorded in `result-3-sandbox.md`; actual host/image/runtime approval and cost remain open.
+- [ ] **P3.2** Establish an isolated local/staging execution environment without application secrets, mounts, or shared database access. User confirmed no Judge0 server is available; localhost protocol fixtures never execute source.
+- [x] **P3.3** Implement `CodeExecutionPort`, provider request/result DTOs, bounded HTTP client, authentication, and error normalization. Implemented and tested; disabled by default until operator configuration and isolation verification.
+- [ ] **P3.4** Discover and validate the approved runtime allowlist; map language keys, runtime versions, entry points, and starter conventions centrally. Partial: configured ID/key/version/full-name allowlist and cached `/languages` verification implemented; real catalog, approved entry points and templates await the host.
+- [x] **P3.5** Implement asynchronous provider create/poll and bounded batch mapping; prohibit user-selected provider URLs/options/callbacks. Poll-only retries, exponential backoff, original absolute deadline, cancellation and bounded concurrency verified over local HTTP.
+- [ ] **P3.6** Enforce source/stdin/output/file/process/CPU/wall/memory constraints, compile limits where supported, and safe decode limits. Partial: request/UTF-8/HTTP/Base64 bounds and explicit provider resource/network flags implemented; actual host enforcement and compile-specific limits require an isolated runtime.
+- [x] **P3.7** Implement normalized verdict mapping and deterministic comparison rules; explicitly handle unsupported memory/output status distinctions. All documented status IDs, local output comparison, unsupported memory distinction and unknown/incomplete responses tested.
 - [ ] **P3.8** Test valid/wrong/syntax/runtime programs in every proposed language and verify compiler versions against catalog labels.
 - [ ] **P3.9** In a disposable sandbox only, test infinite loop, memory pressure, process spawning, output flood, filesystem access, network denial, timeout cleanup, and worker restart.
-- [ ] **P3.10** Verify no source or hidden-dependent output escapes through logs/errors; verify private endpoint auth and network boundaries.
+- [ ] **P3.10** Verify no source or hidden-dependent output escapes through logs/errors; verify private endpoint auth and network boundaries. Partial: hidden-echo DTO tests, diagnostic removal, safe exceptions/logging, authentication headers, redirect rejection and bounded responses pass; real private-network/proxy/APM boundaries remain unverified.
 - [ ] **P3.11** Measure compile/test overhead and set justified initial per-language and global quotas in configuration.
-- [ ] **P3.12** Write `result-3-sandbox.md` with provider/image/runtime digests, settings, isolation evidence, limitations, and commands.
+- [x] **P3.12** Write `result-3-sandbox.md` with provider/image/runtime digests, settings, isolation evidence, limitations, and commands. Missing deployment evidence is explicitly marked; operator/integration instructions are in `docs/sandbox.md`.
 
 **Exit:** Every advertised language executes in a tested isolated environment; isolation failure blocks public code execution. Provider mocks alone do not satisfy this exit.
 
@@ -533,7 +533,7 @@ Work proceeds in the order below. Each stage ends with a scoped reviewable chang
 - [ ] **P6.2** Add and validate correlated editor/problem/version/language/revision fields and a documented compatibility policy.
 - [ ] **P6.3** Resolve native problem access and safe statement/sample context before analysis or session creation.
 - [ ] **P6.4** Stop trusting client identity, attempt numbers, compiler/test results, and arbitrary mentor/analyzer context; restrict any research-only raw-feedback route.
-- [ ] **P6.5** Remove in-process compilation from production formative analysis; route explicit compiler checks through the sandbox and gate language-specific static rules.
+- [ ] **P6.5** Remove in-process compilation from production formative analysis; route explicit compiler checks through the sandbox and gate language-specific static rules. Partial: JavaCompiler removed in Step 3 and static provenance markers added; actual run routing and language eligibility remain pending.
 - [ ] **P6.6** Replace fabricated grading counts with explicit heuristic/unknown evidence; preserve legacy feature contracts through a documented adapter.
 - [ ] **P6.7** Add language eligibility at backend and policy API boundaries; preserve Python model inference and clearly labeled rule/template fallback elsewhere.
 - [ ] **P6.8** Preserve low-confidence/failure semantics, bind configurable threshold, record safe fallback reasons, and verify source truncation/model version behavior.
@@ -671,9 +671,9 @@ New smoke/benchmark/experiment outputs use a new directory or prefix, never over
 | Shared DB disruption | Isolated fixtures/tests and explicit permission before any unsafe shared mutation/load. |
 | Missing visual references or ambiguous product scope | Conventional initial UX; record open decisions; obtain references only if exact visual matching is required. |
 
-**Current progress:** Step 0 complete. The authorized DTO, migration, JPA/repository, and isolated-test subset of Steps 1–2 is complete; those phases are not globally closed. Full backend `verify`: 94 tests, 0 failures/errors, 1 existing opt-in experiment skipped; all 13 new tests passed and existing coverage gates passed. Steps 3–10, actual sandbox execution, model retraining, shared/production migration, hosting, and production smoke testing are not completed.
+**Current progress:** Step 0 and the authorized DTO/schema scope of Steps 1–2 are complete and accepted by the user. Step 3 adapter/comparator/polling/privacy implementation is complete and locally verified; infrastructure feasibility and actual isolated execution are still open. The latest backend verification and scope boundaries are recorded in `result-3-sandbox.md`. Steps 4–10, actual sandbox execution, model retraining, shared/production migration, hosting, and production smoke testing are not completed.
 
-**Next action after this scoped schema delivery:** Review `result-1-schema.md` and complete remaining Step 1 decisions, then proceed to the sandbox/teacher use cases when requested. Keep legacy mappings, atomic native session counters, and real staging rollback checks explicitly pending. Current endpoints still use the legacy write path; new DTOs must not be mistaken for already-connected controllers/workers.
+**Next action:** Establish the dedicated sandbox and approve its image/runtime catalog (P3.1/2/4), then perform real execution/isolation/overhead tests (P3.6/8/9/10/11). Teacher APIs can proceed separately where they do not require verified execution; publication and public execution remain gated. Keep legacy mappings, atomic native session counters, staging rollback and durable Step 5 worker orchestration explicitly pending. The adapter is not connected to controllers/jobs/WS yet.
 
 **How to maintain this file:** Mark a task complete only after its code and required verification exist. Append a dated factual session entry with changed files, decisions, commands/results, artifact locations, open blockers, and the next task ID. Keep rationale and decisions concise; do not store secrets, private student data, or speculative results.
 
@@ -700,3 +700,13 @@ New smoke/benchmark/experiment outputs use a new directory or prefix, never over
 - User explicitly requested a Git push after accepting the implementation result. This supersedes the earlier working-directory-only restriction for this scoped change.
 - Publish the DTO/schema implementation, its tests, and task documentation as one semantic commit on the current branch. Leave unrelated pre-existing untracked research artifacts and local configuration untouched.
 - The last full backend verification remains BUILD SUCCESS: 94 tests, zero failures/errors, one existing opt-in experiment skipped. Only documentation changed afterward.
+
+### Sandbox adapter implementation session — 2026-10-22
+
+- User authorized Step 3 implementation, local verification, report/checklist updates and Git push. User confirmed no separate Judge0 server exists; no student code was executed on the workstation or a public demo.
+- Added the domain execution port, internal/wire DTOs, bounded Judge0 HTTP adapter, pinned runtime-catalog validation, asynchronous polling with capped exponential backoff and a shared absolute deadline, cancellation/admission cleanup, deterministic comparator and strict status/verdict normalization.
+- Removed backend JavaCompiler use. Legacy analyzer booleans/counts remain compatibility estimates with explicit static-evidence signals; full nullable execution/ML provenance adaptation remains Step 6. Preserved interaction_logs, PolicyFeatures field names, model artifacts and the /predict-mentor-state endpoint.
+- Hidden diagnostics are discarded internally and hidden case details are excluded from student responses. Sanitized ML/provider errors and fallback logging; localhost HTTP tests cover hidden input echo, secret-bearing error bodies, redirects, chunked response bounds, uncertain create outcomes, transient polling failures and deadline/aggregation races.
+- Verification, actual test counts, operational defaults and missing host/image/runtime evidence are recorded in `result-3-sandbox.md`; application integration and operator configuration are in `docs/sandbox.md`. Shared databases 21/22 were not accessed.
+- Final local verification: `bash mvnw -B verify` on Java 21; BUILD SUCCESS, 178 tests, zero failures/errors, one existing opt-in experiment skipped. All 79 new sandbox cases (26 HTTP) and 5 added regression cases passed; global/core JaCoCo gates passed without threshold changes.
+- Step 3 infrastructure exit is deliberately open: no deployment digest, installed compiler, host isolation, real runtime quota or throughput evidence is claimed. No student execution endpoint or production deployment is enabled by this delivery.

@@ -53,7 +53,12 @@ public class MlPolicySelector implements PolicySelector {
             throw new IllegalStateException("ML policy service returned an empty action");
         }
 
-        FeedbackAction action = FeedbackAction.valueOf(response.action().trim().toUpperCase(Locale.ROOT));
+        FeedbackAction action;
+        try {
+            action = FeedbackAction.valueOf(response.action().trim().toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException ex) {
+            throw new IllegalStateException("ML policy service returned an invalid action");
+        }
         return new PolicyDecision(
                 action,
                 policyVersion(),
@@ -75,20 +80,16 @@ public class MlPolicySelector implements PolicySelector {
         try {
             response = httpClient.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
         } catch (IOException e) {
-            throw new IllegalStateException("Failed to call ML policy service: " + e.getMessage(), e);
+            throw new IllegalStateException("Failed to call ML policy service");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new IllegalStateException("Interrupted while calling ML policy service", e);
+            throw new IllegalStateException("Interrupted while calling ML policy service");
         }
 
         if (response.statusCode() < 200 || response.statusCode() >= 300) {
             throw new IllegalStateException(
                     "ML policy service rejected request with status "
                             + response.statusCode()
-                            + ": "
-                            + response.body()
-                            + "; payload="
-                            + payload
             );
         }
 
@@ -102,7 +103,7 @@ public class MlPolicySelector implements PolicySelector {
                     confidence
             );
         } catch (JsonProcessingException e) {
-            throw new IllegalStateException("ML policy service returned invalid JSON: " + response.body(), e);
+            throw new IllegalStateException("ML policy service returned invalid JSON");
         }
     }
 
@@ -136,7 +137,7 @@ public class MlPolicySelector implements PolicySelector {
         try {
             return OBJECT_MAPPER.writeValueAsString(toPayload(features));
         } catch (JsonProcessingException e) {
-            throw new IllegalStateException("Failed to serialize ML policy request", e);
+            throw new IllegalStateException("Failed to serialize ML policy request");
         }
     }
 

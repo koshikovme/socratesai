@@ -31,6 +31,27 @@ logging:
     liquibase: info
 
 app:
+  execution:
+    judge0:
+      enabled: ${APP_JUDGE0_ENABLED:false}
+      base-url: ${APP_JUDGE0_BASE_URL:}
+      auth-header: ${APP_JUDGE0_AUTH_HEADER:X-Auth-Token}
+      api-key: ${APP_JUDGE0_API_KEY:}
+      allow-plain-http: ${APP_JUDGE0_ALLOW_PLAIN_HTTP:false}
+      connect-timeout: ${APP_JUDGE0_CONNECT_TIMEOUT:2s}
+      request-timeout: ${APP_JUDGE0_REQUEST_TIMEOUT:5s}
+      operation-timeout: ${APP_JUDGE0_OPERATION_TIMEOUT:30s}
+      initial-backoff: ${APP_JUDGE0_INITIAL_BACKOFF:100ms}
+      max-backoff: ${APP_JUDGE0_MAX_BACKOFF:2s}
+      catalog-ttl: ${APP_JUDGE0_CATALOG_TTL:1m}
+      max-batch-size: ${APP_JUDGE0_MAX_BATCH_SIZE:5}
+      max-concurrent-operations: ${APP_JUDGE0_MAX_CONCURRENT_OPERATIONS:16}
+      max-response-bytes: ${APP_JUDGE0_MAX_RESPONSE_BYTES:2097152}
+      max-source-bytes: ${APP_JUDGE0_MAX_SOURCE_BYTES:80000}
+      max-test-bytes: ${APP_JUDGE0_MAX_TEST_BYTES:65536}
+      max-processes: ${APP_JUDGE0_MAX_PROCESSES:64}
+      max-poll-attempts: ${APP_JUDGE0_MAX_POLL_ATTEMPTS:100}
+      runtimes: []
   jwt:
     secret: ${APP_JWT_SECRET:c29jcmF0ZXNhaS1sb2NhbC1kZXYtand0LXNlY3JldC1taW5pbXVtLTY0LWJ5dGVzLWNoYW5nZS1tZS0yMDI2IQ==}
     expiration-ms: ${APP_JWT_EXPIRATION_MS:86400000}

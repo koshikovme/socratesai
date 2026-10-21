@@ -55,6 +55,26 @@ class MentorPolicyServiceTest {
     }
 
     @Test
+    void shouldNotLogProviderExceptionMessageOrStackTrace() {
+        var logger = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(MentorPolicyService.class);
+        var appender = new ch.qos.logback.core.read.ListAppender<ch.qos.logback.classic.spi.ILoggingEvent>();
+        appender.start();
+        logger.addAppender(appender);
+        try {
+            properties.setMode(PolicyMode.ML);
+            properties.getMl().setFallbackToRule(true);
+            when(mlSelector.decideWithMetadata(any())).thenThrow(new IllegalStateException("private-source-and-token"));
+            service.decide(analyzer("STUCK_NO_PROGRESS", true, 0, 1), context(1, 1, null, null, 0), 1);
+            assertThat(appender.list).hasSize(1);
+            assertThat(appender.list.getFirst().getFormattedMessage()).doesNotContain("private-source-and-token");
+            assertThat(appender.list.getFirst().getThrowableProxy()).isNull();
+        } finally {
+            logger.detachAppender(appender);
+            appender.stop();
+        }
+    }
+
+    @Test
     void shouldFallbackToRuleWhenMlConfidenceIsLowButKeepMentorStateMetadata() {
         properties.setMode(PolicyMode.ML);
         properties.getMl().setFallbackToRule(true);

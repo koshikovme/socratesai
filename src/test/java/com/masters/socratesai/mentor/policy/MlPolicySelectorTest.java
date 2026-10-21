@@ -4,12 +4,15 @@ import com.masters.socratesai.mentor.model.FeedbackAction;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class MlPolicySelectorTest {
 
@@ -125,6 +128,26 @@ class MlPolicySelectorTest {
         assertThat(decision.confidence()).isEqualTo(0.61);
         assertThat(requestBody.get()).contains("\"code_model_text\"");
         assertThat(requestBody.get()).contains("System.out.println");
+    }
+
+    @ParameterizedTest
+    @CsvSource({"500,private-source-echo", "200,{private-source-echo", "200,'{\"action\":\"private-source-echo\"}'"})
+    void shouldNotExposeResponseBodiesOrSourceInErrors(int status, String body) throws Exception {
+        server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        server.createContext("/predict", exchange -> {
+            byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
+            exchange.sendResponseHeaders(status, bytes.length);
+            exchange.getResponseBody().write(bytes);
+            exchange.close();
+        });
+        server.start();
+        var properties = new MentorPolicyProperties();
+        properties.getMl().setEnabled(true);
+        properties.getMl().setBaseUrl("http://127.0.0.1:" + server.getAddress().getPort());
+        properties.getMl().setPredictPath("/predict");
+        var selector = new MlPolicySelector(properties);
+        assertThatThrownBy(() -> selector.decideWithMetadata(PolicyFeatures.from(analyzerResult(), studentContext(), 1, "private-source-echo")))
+                .isInstanceOf(IllegalStateException.class).hasNoCause().hasMessageNotContaining("private-source-echo");
     }
 
     private static com.masters.socratesai.analyzer.dto.AnalyzerResult analyzerResult() {
