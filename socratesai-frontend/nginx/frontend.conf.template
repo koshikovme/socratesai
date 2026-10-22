@@ -1,0 +1,33 @@
+server {
+    listen 8080;
+    server_name ${APP_DOMAIN};
+    location = /healthz { access_log off; return 200 'ok\n'; }
+    location / { return 308 ${APP_PUBLIC_ORIGIN}$request_uri; }
+}
+server {
+    listen 8443 ssl;
+    server_name ${APP_DOMAIN};
+    ssl_certificate /run/tls/fullchain.pem;
+    ssl_certificate_key /run/tls/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_session_cache shared:TLS:10m;
+    ssl_session_timeout 1d;
+    ssl_session_tickets off;
+    add_header Strict-Transport-Security "max-age=31536000" always;
+    add_header X-Content-Type-Options nosniff always;
+    add_header X-Frame-Options DENY always;
+    add_header Referrer-Policy strict-origin-when-cross-origin always;
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' ${APP_WS_ORIGIN}; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'" always;
+    root /usr/share/nginx/html;
+    index index.html;
+    set $backend http://backend:8080;
+    location = /api { include /etc/nginx/snippets/proxy.conf; }
+    location /api/ { include /etc/nginx/snippets/proxy.conf; }
+    location = /ws { include /etc/nginx/snippets/websocket.conf; }
+    location /ws/ { include /etc/nginx/snippets/websocket.conf; }
+    location = /healthz { access_log off; return 200 'ok\n'; }
+    location /actuator { return 404; }
+    location /assets/ { expires 1y; try_files $uri =404; }
+    location = /index.html { expires -1; }
+    location / { try_files $uri $uri/ /index.html; }
+}

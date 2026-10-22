@@ -1,0 +1,7 @@
+# Deliberately empty: do not invent provider IDs/compiler versions before /languages verification.
+# Copy outside the repository and map app.execution.judge0.runtimes with the operator-verified
+# key, language-key, version, language-id, provider-name and entry-point for each runtime.
+app:
+  execution:
+    judge0:
+      runtimes: []

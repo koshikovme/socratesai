@@ -1,0 +1,7 @@
+# Serving subset; versions must agree with the canonical research requirements.
+-c requirements.txt
+fastapi
+uvicorn
+pandas
+scikit-learn
+joblib

@@ -20,11 +20,11 @@ SocratesAI is a full-stack teaching assistant for programming practice. The repo
 
 1) Java 21
 
-2) Node.js 18+ and npm 
+2) Node.js 22.23.1 and npm
 
 3) Docker Desktop or Docker Engine
 
-4) Python 3.11+ for the optional ML service
+4) Python 3.12 for the packaged ML service (research scripts require Python 3.11+)
 
 ## Default Local Ports
 
@@ -153,3 +153,7 @@ npm run build
 3. Run the Vue frontend on `5173`.
 4. Optionally run the ML policy service on `8001`, or switch the backend to `APP_POLICY_MODE=RULE`.
 5. Open the frontend and register a user.
+
+## Production containers and delivery
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for the four-service HTTPS deployment, mandatory external secrets/TLS, isolated network layout, reproducible images, release-tag GHCR publication and rollback limits. Production exposes only edge ports 80/443; the development ports above are not production host mappings. The separate Judge0 host remains an operator prerequisite for real judging.

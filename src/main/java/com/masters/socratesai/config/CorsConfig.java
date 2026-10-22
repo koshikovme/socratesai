@@ -1,19 +1,17 @@
 package com.masters.socratesai.config;
 
 import org.springframework.context.annotation.Bean;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
+@RequiredArgsConstructor
 public class CorsConfig {
 
     private final FrontendOriginConfig frontendOriginConfig;
-
-    public CorsConfig(FrontendOriginConfig frontendOriginConfig) {
-        this.frontendOriginConfig = frontendOriginConfig;
-    }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

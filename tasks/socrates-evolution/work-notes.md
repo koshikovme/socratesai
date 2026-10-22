@@ -1,8 +1,8 @@
 # SocratesAI evolution: architecture blueprint and implementation checklist
 
-**Status:** Plan approved. Steps 1–7 application scopes are implemented and locally verified; Step 7 browser journeys use synthetic protocol fixtures. Actual isolated sandbox execution, CI/CD/hosting and production acceptance remain open. P5.10 institutional retention policy remains partial.
+**Status:** Plan approved. Steps 1–7 and the requested Step 8 application packaging/CI workflow scope are implemented and locally verified. Actual isolated sandbox execution, release-tag registry publication and hosted deployment/acceptance remain open. P5.10 retention and the stock PostgreSQL helper advisory review remain explicit follow-ups.
 **Prepared:** 2026-10-21.
-**Last updated:** 2026-10-22. See [result-7-frontend.md](./result-7-frontend.md) for native UI contracts, teacher/student journeys and frontend/browser verification. See [result-1-schema.md](./result-1-schema.md) for schema/contracts and [result-3-sandbox.md](./result-3-sandbox.md) for adapter verification and the missing execution host. See [result-4-authoring.md](./result-4-authoring.md) for role provisioning, authoring, publication and collection contracts/tests.
+**Last updated:** 2026-10-22. See [result-8-delivery.md](./result-8-delivery.md) for images, TLS/private networking, startup validation, CI/release behavior, scans and local verification. See [result-7-frontend.md](./result-7-frontend.md) for native UI contracts, teacher/student journeys and frontend/browser verification. See [result-1-schema.md](./result-1-schema.md) for schema/contracts and [result-3-sandbox.md](./result-3-sandbox.md) for adapter verification and the missing execution host. See [result-4-authoring.md](./result-4-authoring.md) for role provisioning, authoring, publication and collection contracts/tests.
 **Workspace:** `/home/koshikovalimzhan/IdeaProjects/socratesai`.
 **Task folder:** `tasks/socrates-evolution/` relative to the repository root. The requested `/tasks/...` paths refer to this repository folder, not an operating-system directory.
 **Requirements source:** [task-context.md](./task-context.md), read before preparing this plan.
@@ -578,21 +578,23 @@ Work proceeds in the order below. Each stage ends with a scoped reviewable chang
 
 **Depends on:** Steps 2–7 for final gates. **Primary areas:** Dockerfiles, Compose, edge configuration, `.github/workflows/`, environment examples.
 
-- [ ] **P8.1** Select verified Java/Node/Python versions and record lockfile/model compatibility; fix inaccurate prerequisites in docs.
-- [ ] **P8.2** Add the production frontend build/static image and edge configuration for HTTPS, SPA routing, `/api`, `/ws`, and SockJS transports.
-- [ ] **P8.3** Harden backend/policy images, package required model artifacts only, add readiness, and remove runtime compilation and secret-containing build contexts.
-- [ ] **P8.4** Update production Compose for the complete application mesh, private services, resource limits, required secrets, persistent volumes, and no fallback production credentials.
-- [ ] **P8.5** Add separate sandbox infrastructure manifests/runbook with pinned verified images/runtimes and explicit engine-specific dependencies.
-- [ ] **P8.6** Add `.env.example` and startup validation for origins, auth, model path/threshold, sandbox, quotas, timeouts, retention, and deployment configuration.
-- [ ] **P8.7** Extend CI with backend verification, frontend coverage/build, Python inference/contracts, disposable PostgreSQL migrations, config checks, and secret/dependency scanning.
-- [ ] **P8.8** Add trusted isolated sandbox integration and full browser E2E; keep privileged execution and real secrets inaccessible to PR jobs.
-- [ ] **P8.9** Configure reviewed immutable action revisions, least-privilege job permissions, artifact retention, and redacted logs.
-- [ ] **P8.10** Build/publish versioned images to the selected registry on a trusted release; record image/model digests and test reports.
-- [ ] **P8.11** Add staging and production workflows with environment-scoped credentials, deployment concurrency, migration lock, smoke checks, and compatible-image rollback.
-- [ ] **P8.12** Prove the application can start from documented container artifacts on a clean isolated host; do not depend on a developer's caches or datasets.
-- [ ] **P8.13** Write `result-8-delivery.md` with workflow triggers, artifact promotion, environment requirements, and reproducibility evidence.
+- [x] **P8.1** Select verified Java/Node/Python versions and record lockfile/model compatibility; fix inaccurate prerequisites in docs.
+- [x] **P8.2** Add the production frontend build/static image and edge configuration for HTTPS, SPA routing, `/api`, `/ws`, and SockJS transports.
+- [x] **P8.3** Harden backend/policy images, package required model artifacts only, add readiness, and remove runtime compilation and secret-containing build contexts.
+- [x] **P8.4** Update production Compose for the complete application mesh, private services, resource limits, required secrets, persistent volumes, and no fallback production credentials.
+- [ ] **P8.5** Add separate sandbox infrastructure manifests/runbook with pinned verified images/runtimes and explicit engine-specific dependencies. **Partial:** runbook and empty operator runtime template exist; no actual host/engine/compiler catalog has been supplied, so no image or runtime IDs are fabricated.
+- [x] **P8.6** Add `.env.example` and startup validation for origins, auth, model path/threshold, sandbox, quotas, timeouts, retention, and deployment configuration.
+- [x] **P8.7** Extend CI with backend verification, frontend coverage/build, Python inference/contracts, disposable PostgreSQL migrations, config checks, and secret/dependency scanning.
+- [ ] **P8.8** Add trusted isolated sandbox integration and full browser E2E; keep privileged execution and real secrets inaccessible to PR jobs. **Partial:** CI browser protocol fixtures and actual application TLS/WS container smoke exist; live sandbox CI awaits a dedicated verified host. PR jobs receive no execution-host credentials.
+- [x] **P8.9** Configure reviewed immutable action revisions, least-privilege job permissions, artifact retention, and redacted logs.
+- [ ] **P8.10** Build/publish versioned images to the selected registry on a trusted release; record image/model digests and test reports. **Partial:** all images build locally; GHCR release promotion and manifests are implemented. Actual publication awaits a supplied version tag and a successful remote run; none is claimed.
+- [ ] **P8.11** Add staging and production workflows with environment-scoped credentials, deployment concurrency, migration lock, smoke checks, and compatible-image rollback. **Partial:** trusted release environment/concurrency, Flyway lock and operator promotion/backup/rollback runbook exist. Real staging/production automation needs host/identity/backup inputs in Step 9.
+- [x] **P8.12** Prove the application can start from documented container artifacts on a clean isolated host; do not depend on a developer's caches or datasets.
+- [x] **P8.13** Write `result-8-delivery.md` with workflow triggers, artifact promotion, environment requirements, and reproducibility evidence.
 
-**Exit:** A reviewed release can produce and promote repeatable artifacts; a complete workflow file alone is not evidence that hosted delivery succeeded.
+**Implementation status (2026-10-22):** Requested application packaging and CI/release workflow implemented: 3 non-root images built, TLS/API/STOMP/new-volume Compose smoke passed with 12 migrations and a non-superuser DB application role. Java 296 tests (0 errors/failures, 1 opt-in skip), frontend 83 tests/lint/build plus 2 browser fixtures, Python 11 contracts plus legacy model smoke pass. Trivy fixed HIGH/CRITICAL gate: 0 in the 3 application images; the separately reported stock PostgreSQL image has 26 Go-stdlib findings in its unused-under-UID-70 gosu helper, requiring pre-production review. Context exclusion checks, actionlint, shell syntax and coverage gates pass. See `result-8-delivery.md`. No real sandbox, remote release publication or hosting success is claimed.
+
+**Exit:** The requested package can start from its built images and the workflow can validate/promote artifacts. Actual release-tag execution, sandbox certification, database-base advisory review and hosted delivery remain explicit external acceptance steps.
 
 ### Step 9 — Hosting, authorized live verification, and production release
 
@@ -677,9 +679,9 @@ New smoke/benchmark/experiment outputs use a new directory or prefix, never over
 | Shared DB disruption | Isolated fixtures/tests and explicit permission before any unsafe shared mutation/load. |
 | Missing visual references or ambiguous product scope | Conventional initial UX; record open decisions; obtain references only if exact visual matching is required. |
 
-**Current progress:** Steps 0–7 application scopes are implemented and locally verified. Step 7 adds native student/teacher/admin journeys with 83 frontend tests, measured coverage, production build and 2 passing Chrome protocol-fixture scenarios; npm audit reports zero vulnerabilities at verification. See `result-7-frontend.md`. The accepted Step 6 Java/Python evidence remains unchanged. P4.9 native frontend transition is complete; P5.10 institution-approved long-term graded-source retention remains partial. Actual Judge0 execution, CI/CD/hosting and production smoke are open.
+**Current progress:** Steps 0–7 and requested Step 8 application packaging/CI code are locally verified. Step 8: 296 Java tests, 83 frontend tests, 2 browser fixtures, 11 Python contracts plus model smoke, all image builds and actual TLS/STOMP/private Compose startup pass. The three application images pass the fixed HIGH/CRITICAL gate; stock PostgreSQL helper findings are reported separately for review. See `result-8-delivery.md`. P8.5/P8.8 live sandbox, P8.10 actual release event, P8.11 hosting automation, P5.10 retention and production acceptance remain open.
 
-**Next action:** Continue with Step 8 reproducible production packaging and CI/CD when requested. Use the native frontend contract/SPA proxy requirements in `socratesai-frontend/README.md`. The isolated Judge0 host, real runtime certification, multi-instance admission/routing, institutional retention and staff reference recovery remain documented follow-ups. No shared or production databases were accessed during Step 7.
+**Next action:** Obtain the Step 9 host/domain/TLS/deployment identity and a certified execution server when authorized. Configure protected release settings, review the database helper findings, then run a chosen version-tag release and promote only its recorded digests into staging. Do not claim registry/hosting/real judging verification from local builds or synthetic fixtures. No shared or production databases were accessed.
 
 **How to maintain this file:** Mark a task complete only after its code and required verification exist. Append a dated factual session entry with changed files, decisions, commands/results, artifact locations, open blockers, and the next task ID. Keep rationale and decisions concise; do not store secrets, private student data, or speculative results.
 
@@ -765,3 +767,14 @@ New smoke/benchmark/experiment outputs use a new directory or prefix, never over
 - Node 22.23.1/npm 10.9.8 lockfile install, 83 frontend tests, unchanged coverage gates, production build and 2 production-preview Chrome protocol-fixture journeys pass. Audit through registry.npmjs.org reports zero advisories. Updated stale frontend README and wrote `result-7-frontend.md`; backend, research models/results and papers were unchanged.
 - Browser fixtures validate editor languages and native HTTP/STOMP behavior, not actual Judge0 execution. Global catalog search is unavailable in the current backend; UI filters clearly apply to the current page. Metric-only execution DTOs do not expose sample stdout/stderr. Vite's lazy solver/Monaco chunk warning remains visible; deployment, infrastructure capacity and live acceptance stay open.
 - User authorized the scoped commit/push. Unrelated untracked datasets, AGENTS.md, local files and paper materials remain excluded.
+
+
+### Step 8 implementation — 2026-10-22
+
+- Added digest-pinned multi-stage backend JDK/JRE, frontend HTTPS Nginx and minimal hash-locked Python images. Runtime users are non-root; the backend has neither javac nor jdk.compiler. Added strict allowlist contexts and actual BuildKit exclusion tests for secrets/datasets/experiments/TeX.
+- Replaced production Compose with the complete mesh, internal DB/model network, edge-only host ports, resource/read-only/capability/log limits, external TLS/runtime catalog and separate non-superuser DB application role. Real cold-volume smoke verifies HTTPS redirect, SPA/assets/API, role denials, exact origins, authenticated SockJS/STOMP, health/Flyway and compiler/port boundaries.
+- Added pre-bean production validation with safe errors and fixed the localhost-only production CORS/WS configuration. Added atomic checksum-verified model lifespan/readiness and hash-locked serving/test dependency subsets without training packages or extra models.
+- Trivy exposed fixed security issues; patched Boot to 4.0.8 with compatible Jackson/Tomcat overrides, removed the unused AI milestone BOM and aligned Flyway. Updated FastAPI/Starlette and Nginx/Python base pins. Three application images have zero fixed HIGH/CRITICAL findings. Separately recorded 26 Go-stdlib advisories in stock PostgreSQL's gosu helper; configured non-root startup does not invoke it, but no blanket waiver or whole-stack zero is claimed.
+- Replaced the old workflow with least-privilege, SHA-pinned verification/build/scan jobs and same-artifact GHCR version/commit promotion on trusted tags. Added ESLint, actionlint, SBOM/report retention and release manifests; no production secrets, SSH targets or registry publication were invented.
+- Final local verification: Java 296 tests (0 failures/errors, 1 opt-in skip), frontend 83 tests/lint/coverage/build and 2 browser fixtures, Python 11 contract/readiness tests plus legacy action smoke; 3 Docker builds, network-free model load, context checks and production container smoke pass. Existing coverage thresholds are unchanged. Details/logs in `result-8-delivery.md`.
+- Updated DEPLOYMENT.md and runtime docs. Actual execution-host manifests/CI, release-tag publication, host deployment/backup/rollback and institutional retention remain open. User authorizes the scoped commit/push; unrelated research/paper/local files stay excluded.

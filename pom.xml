@@ -5,7 +5,7 @@
 <parent>
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-starter-parent</artifactId>
-	<version>4.0.5</version>
+	<version>4.0.8</version>
 	<relativePath/> <!-- lookup parent from repository -->
 </parent>
 <groupId>com.masters</groupId>
@@ -28,7 +28,11 @@
 </scm>
 <properties>
 	<java.version>21</java.version>
-	<spring-ai.version>2.0.0-M3</spring-ai.version>
+    <project.build.outputTimestamp>1980-01-01T00:00:02Z</project.build.outputTimestamp>
+    <!-- Security patch overrides until the Boot 4.0 BOM catches up; verified by Trivy and contracts. -->
+    <jackson-2-bom.version>2.21.8</jackson-2-bom.version>
+    <jackson-bom.version>3.1.8</jackson-bom.version>
+    <tomcat.version>11.0.27</tomcat.version>
 </properties>
 <dependencies>
 	<dependency>
@@ -105,7 +109,6 @@
 	<dependency>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-flyway</artifactId>
-		<version>4.0.1</version>
 		<scope>compile</scope>
 	</dependency>
 	<dependency>
@@ -158,17 +161,7 @@
 		<scope>test</scope>
 	</dependency>
 </dependencies>
-<dependencyManagement>
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.ai</groupId>
-			<artifactId>spring-ai-bom</artifactId>
-			<version>${spring-ai.version}</version>
-			<type>pom</type>
-			<scope>import</scope>
-		</dependency>
-	</dependencies>
-</dependencyManagement>
+
 
 	<build>
 		<plugins>

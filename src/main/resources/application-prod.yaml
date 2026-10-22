@@ -1,4 +1,6 @@
 spring:
+  config:
+    import: ${APP_RUNTIME_CONFIG_IMPORT:optional:file:/run/config/runtime-catalog.yaml}
   datasource:
     url: ${APP_DATASOURCE_URL}
     username: ${APP_DATASOURCE_USERNAME}
@@ -14,6 +16,11 @@ logging:
     org.hibernate.orm.jdbc.bind: info
 
 app:
+  deployment:
+    domain: ${APP_DOMAIN}
+    public-origin: ${APP_PUBLIC_ORIGIN}
+  websocket:
+    allowed-origins: ${APP_WEBSOCKET_ALLOWED_ORIGINS:${APP_PUBLIC_ORIGIN}}
   jwt:
     secret: ${APP_JWT_SECRET}
     expiration-ms: ${APP_JWT_EXPIRATION_MS:3600000}
@@ -38,3 +45,22 @@ springdoc:
     enabled: ${APP_OPENAPI_ENABLED:false}
   swagger-ui:
     enabled: ${APP_SWAGGER_ENABLED:false}
+
+server:
+  forward-headers-strategy: framework
+  shutdown: graceful
+  error:
+    include-message: never
+    include-stacktrace: never
+    include-binding-errors: never
+spring.lifecycle.timeout-per-shutdown-phase: 25s
+management:
+  endpoints.web.exposure.include: health
+  endpoint:
+    health:
+      show-details: never
+      group:
+        readiness:
+          include: readinessState,db
+        liveness:
+          include: livenessState

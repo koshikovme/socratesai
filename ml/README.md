@@ -349,4 +349,21 @@ python ml/test_policy_api.py
 python ml/test_policy_model.py
 ```
 
-These checks require the pinned serving dependencies from `ml/requirements.txt` plus `httpx` for FastAPI TestClient. `test_policy_api.py` explicitly loads the repository's saved default models for its smoke test. It does not recreate Codeforces evaluation results or validate classroom effectiveness.
+These checks install the hash-locked serving subset from `ml/requirements-serving.lock` plus pinned `httpx` for FastAPI TestClient; the direct serving versions remain constrained by `ml/requirements.txt`. `test_policy_api.py` explicitly loads the repository's saved default models for its smoke test. It does not recreate Codeforces evaluation results or validate classroom effectiveness.
+
+
+## Production serving package
+
+`ml/Dockerfile` uses Python 3.12, a hash-locked wheel-only serving subset and a non-root user. `requirements.txt` remains the canonical direct dependency list for research; `requirements-serving.in` constrains serving versions against it, and `requirements-serving.lock` pins every serving transitive dependency with hashes. Training packages (Matplotlib, XGBoost, LightGBM, PyArrow), datasets and alternative model artifacts are not included in the image.
+
+Regenerate the serving lock in a disposable Python 3.12 environment with pip-tools 7.5.1:
+
+```sh
+pip-compile --generate-hashes --strip-extras --no-emit-index-url --no-emit-trusted-host --output-file=ml/requirements-serving.lock ml/requirements-serving.in
+```
+
+The image includes exactly `mentor_policy_model.joblib` and `codeforces_feedback_need/source_code_model.joblib`, copied to `/app/models/`, with `models.manifest.json` SHA-256 checks before deserialization. No model is downloaded or trained at startup. Changing artifacts requires updating and reviewing that manifest.
+
+Lifespan initialization publishes both loaded models atomically. `/ready` and the compatible `/health` return 503 until both are loaded; `/live` reports process liveness. Load failures use a fixed error without artifact paths or source. Container health checks use `/ready`. FastAPI was updated to 0.159.1 to allow the patched Starlette dependency; the model libraries/artifacts and inference field contracts were preserved and smoke-tested. Tests also include `python ml/test_readiness.py`.
+
+`requirements-test.txt` is also a complete generated hash lock (including HTTPX); edit `requirements-test.in` and regenerate it with pip-tools rather than appending unhashed packages to a hash-locked include. The packaged action artifact follows `policy_api.py`’s documented `mentor_policy_model.joblib` default; the earlier production Compose selected `problem_suite_policy_model.joblib`. Alternative research action artifacts remain in the repository but require an explicitly reviewed package/manifest to ship. Native mentor-state inference continues using the unchanged source-code artifact.

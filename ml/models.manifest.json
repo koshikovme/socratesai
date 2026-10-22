@@ -1,0 +1,10 @@
+{
+  "action": {
+    "file": "mentor_policy_model.joblib",
+    "sha256": "f38cb4cb0476f7544eaa006663c297e44b5025caec9305de9685ce8c2df3ddfb"
+  },
+  "mentor_state": {
+    "file": "source_code_model.joblib",
+    "sha256": "e7be65df21e20cdd005d54139cc17c1a37ee348751b17713cd7f712e00dcf13d"
+  }
+}

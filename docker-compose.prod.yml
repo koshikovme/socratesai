@@ -1,73 +1,199 @@
+x-hardening: &hardening
+  restart: unless-stopped
+  init: true
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  logging:
+    driver: json-file
+    options:
+      max-size: 10m
+      max-file: '3'
+
 services:
   postgres:
-    image: postgres:16
-    restart: unless-stopped
+    <<: *hardening
+    image: postgres:16-alpine@sha256:deb28ee471183cb0c303113dac9b2433c51eeeeb678def7af9a9ec5820367815
+    user: '70:70'
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-socratesdb}
-      POSTGRES_USER: ${POSTGRES_USER:-socrates}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me}
+      POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_ADMIN_USER:-cluster_admin}
+      POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD:?Set a separate PostgreSQL operator password}
+      APP_DATABASE_USERNAME: ${POSTGRES_USER:?Set the application database role}
+      APP_DATABASE_PASSWORD: ${POSTGRES_PASSWORD:?Set a unique application password}
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - type: bind
+        source: ./deploy/postgres/10-application-role.sh
+        target: /docker-entrypoint-initdb.d/10-application-role.sh
+        read_only: true
+        bind:
+          create_host_path: false
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+      - /var/run/postgresql:size=16m,uid=70,gid=70,mode=0770
+    networks: [backend-net]
+    mem_limit: 1g
+    cpus: 1
+    pids_limit: 128
+    shm_size: 128m
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
+      test: [CMD-SHELL, 'pg_isready -h 127.0.0.1 -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 10s
 
   policy-api:
+    <<: *hardening
+    image: ${POLICY_IMAGE:?Set a versioned POLICY_IMAGE}
     build:
       context: ./ml
-    restart: unless-stopped
     environment:
-      POLICY_MODEL_PATH: ${POLICY_MODEL_PATH:-/app/problem_suite_policy_model.joblib}
-    expose:
-      - "8001"
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8001/health', timeout=3)\""
-        ]
-      interval: 15s
-      timeout: 5s
-      retries: 8
+      POLICY_MODEL_PATH: /app/models/mentor_policy_model.joblib
+      MENTOR_STATE_MODEL_PATH: /app/models/source_code_model.joblib
+      MODEL_CHECKSUM_MANIFEST: /app/models/manifest.json
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    tmpfs: ['/tmp:size=64m,mode=1777']
+    networks: [backend-net]
+    mem_limit: 768m
+    cpus: 1
+    pids_limit: 96
 
   backend:
+    <<: *hardening
+    image: ${BACKEND_IMAGE:?Set a versioned BACKEND_IMAGE}
     build:
       context: .
-    restart: unless-stopped
     depends_on:
       postgres:
         condition: service_healthy
       policy-api:
-        condition: service_started
+        condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      APP_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-socratesdb}
-      APP_DATASOURCE_USERNAME: ${POSTGRES_USER:-socrates}
-      APP_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-change-me}
-      APP_JWT_SECRET: ${APP_JWT_SECRET:-c29jcmF0ZXNhaS1sb2NhbC1kZXYtand0LXNlY3JldC1taW5pbXVtLTY0LWJ5dGVzLWNoYW5nZS1tZS0yMDI2}
+      APP_DOMAIN: ${APP_DOMAIN:?Set APP_DOMAIN}
+      APP_PUBLIC_ORIGIN: ${APP_PUBLIC_ORIGIN:?Set the exact HTTPS origin}
+      APP_WEBSOCKET_ALLOWED_ORIGINS: ${APP_PUBLIC_ORIGIN:?Set the exact HTTPS origin}
+      APP_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:?Set POSTGRES_DB}
+      APP_DATASOURCE_USERNAME: ${POSTGRES_USER:?Set POSTGRES_USER}
+      APP_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      APP_JWT_SECRET: ${APP_JWT_SECRET:?Set a random base64 JWT secret of at least 64 bytes}
       APP_JWT_EXPIRATION_MS: ${APP_JWT_EXPIRATION_MS:-3600000}
       APP_POLICY_MODE: ${APP_POLICY_MODE:-ml}
       APP_POLICY_ML_ENABLED: ${APP_POLICY_ML_ENABLED:-true}
       APP_POLICY_ML_BASE_URL: http://policy-api:8001
-      APP_POLICY_ML_FALLBACK_TO_RULE: ${APP_POLICY_ML_FALLBACK_TO_RULE:-true}
+      APP_POLICY_ML_PREDICT_PATH: /predict-mentor-state
+      APP_POLICY_ML_VERSION: codeforces-source-v1
+      APP_POLICY_ML_MIN_CONFIDENCE: ${APP_POLICY_ML_MIN_CONFIDENCE:-0.35}
+      APP_POLICY_ML_FALLBACK_TO_RULE: 'true'
       APP_GEMINI_ENABLED: ${APP_GEMINI_ENABLED:-false}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
-      APP_GEMINI_MODEL: ${APP_GEMINI_MODEL:-gemini-3.1-flash-lite}
+      APP_GEMINI_MODEL: ${APP_GEMINI_MODEL:-}
+      APP_GEMINI_BASE_URL: ${APP_GEMINI_BASE_URL:-https://generativelanguage.googleapis.com/v1beta}
       APP_OPENAI_ENABLED: ${APP_OPENAI_ENABLED:-false}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
-      APP_OPENAI_MODEL: ${APP_OPENAI_MODEL:-gpt-5.4-mini}
-      APP_OPENAPI_ENABLED: ${APP_OPENAPI_ENABLED:-false}
-      APP_SWAGGER_ENABLED: ${APP_SWAGGER_ENABLED:-false}
-      APP_WEBSOCKET_ALLOWED_ORIGINS: ${APP_WEBSOCKET_ALLOWED_ORIGINS:-https://example.com}
-    ports:
-      - "${APP_PORT:-8080}:8080"
-    healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/actuator/health || exit 1"]
-      interval: 20s
-      timeout: 5s
-      retries: 10
+      APP_OPENAI_MODEL: ${APP_OPENAI_MODEL:-}
+      APP_OPENAI_BASE_URL: ${APP_OPENAI_BASE_URL:-https://api.openai.com/v1}
+      APP_ADMIN_BOOTSTRAP_ENABLED: ${APP_ADMIN_BOOTSTRAP_ENABLED:-false}
+      APP_ADMIN_BOOTSTRAP_EMAIL: ${APP_ADMIN_BOOTSTRAP_EMAIL:-}
+      APP_ADMIN_BOOTSTRAP_PASSWORD: ${APP_ADMIN_BOOTSTRAP_PASSWORD:-}
+      APP_ADMIN_BOOTSTRAP_FULL_NAME: ${APP_ADMIN_BOOTSTRAP_FULL_NAME:-}
+      APP_JUDGE0_ENABLED: ${APP_JUDGE0_ENABLED:-false}
+      APP_JUDGE0_BASE_URL: ${APP_JUDGE0_BASE_URL:-}
+      APP_JUDGE0_API_KEY: ${APP_JUDGE0_API_KEY:-}
+      APP_JUDGE0_AUTH_HEADER: ${APP_JUDGE0_AUTH_HEADER:-X-Auth-Token}
+      APP_JUDGE0_ALLOW_PLAIN_HTTP: ${APP_JUDGE0_ALLOW_PLAIN_HTTP:-false}
+      APP_JUDGE0_CONNECT_TIMEOUT: ${APP_JUDGE0_CONNECT_TIMEOUT:-2s}
+      APP_JUDGE0_REQUEST_TIMEOUT: ${APP_JUDGE0_REQUEST_TIMEOUT:-5s}
+      APP_JUDGE0_OPERATION_TIMEOUT: ${APP_JUDGE0_OPERATION_TIMEOUT:-30s}
+      APP_JUDGE0_INITIAL_BACKOFF: ${APP_JUDGE0_INITIAL_BACKOFF:-100ms}
+      APP_JUDGE0_MAX_BACKOFF: ${APP_JUDGE0_MAX_BACKOFF:-2s}
+      APP_JUDGE0_CATALOG_TTL: ${APP_JUDGE0_CATALOG_TTL:-1m}
+      APP_JUDGE0_MAX_BATCH_SIZE: ${APP_JUDGE0_MAX_BATCH_SIZE:-5}
+      APP_JUDGE0_MAX_CONCURRENT_OPERATIONS: ${APP_JUDGE0_MAX_CONCURRENT_OPERATIONS:-16}
+      APP_JUDGE0_MAX_RESPONSE_BYTES: ${APP_JUDGE0_MAX_RESPONSE_BYTES:-2097152}
+      APP_JUDGE0_MAX_SOURCE_BYTES: ${APP_JUDGE0_MAX_SOURCE_BYTES:-80000}
+      APP_JUDGE0_MAX_TEST_BYTES: ${APP_JUDGE0_MAX_TEST_BYTES:-65536}
+      APP_JUDGE0_MAX_PROCESSES: ${APP_JUDGE0_MAX_PROCESSES:-64}
+      APP_JUDGE0_MAX_POLL_ATTEMPTS: ${APP_JUDGE0_MAX_POLL_ATTEMPTS:-100}
+      APP_JUDGING_ENABLED: ${APP_JUDGING_ENABLED:-false}
+      APP_JUDGING_CONCURRENCY: ${APP_JUDGING_CONCURRENCY:-4}
+      APP_JUDGING_BATCH_SIZE: ${APP_JUDGING_BATCH_SIZE:-5}
+      APP_JUDGING_MAX_ATTEMPTS: ${APP_JUDGING_MAX_ATTEMPTS:-3}
+      APP_JUDGING_MAX_PER_USER: ${APP_JUDGING_MAX_PER_USER:-5}
+      APP_JUDGING_MAX_QUEUED: ${APP_JUDGING_MAX_QUEUED:-1000}
+      APP_JUDGING_LEASE: ${APP_JUDGING_LEASE:-15s}
+      APP_JUDGING_DEADLINE: ${APP_JUDGING_DEADLINE:-5m}
+      APP_JUDGING_SAMPLE_TTL: ${APP_JUDGING_SAMPLE_TTL:-15m}
+      APP_JUDGING_INITIAL_BACKOFF: ${APP_JUDGING_INITIAL_BACKOFF:-1s}
+      APP_JUDGING_MAX_BACKOFF: ${APP_JUDGING_MAX_BACKOFF:-10s}
+      APP_REFERENCE_VERIFICATION_TIMEOUT: ${APP_REFERENCE_VERIFICATION_TIMEOUT:-30s}
+      APP_REFERENCE_VERIFICATION_EVIDENCE_TTL: ${APP_REFERENCE_VERIFICATION_EVIDENCE_TTL:-30m}
+      APP_REFERENCE_VERIFICATION_MAX_CONCURRENT: ${APP_REFERENCE_VERIFICATION_MAX_CONCURRENT:-4}
+      APP_REFERENCE_VERIFICATION_BATCH_SIZE: ${APP_REFERENCE_VERIFICATION_BATCH_SIZE:-5}
+      APP_MENTOR_DEBOUNCE_MS: ${APP_MENTOR_DEBOUNCE_MS:-250}
+      APP_MENTOR_MIN_INTERVAL_MS: ${APP_MENTOR_MIN_INTERVAL_MS:-1000}
+      APP_MENTOR_TIMEOUT_MS: ${APP_MENTOR_TIMEOUT_MS:-15000}
+      APP_MENTOR_CONCURRENCY: ${APP_MENTOR_CONCURRENCY:-4}
+      APP_MENTOR_MESSAGES_PER_SECOND: ${APP_MENTOR_MESSAGES_PER_SECOND:-20}
+      APP_MENTOR_SESSIONS_PER_USER: ${APP_MENTOR_SESSIONS_PER_USER:-4}
+      APP_MENTOR_EDITORS_PER_USER: ${APP_MENTOR_EDITORS_PER_USER:-4}
+      APP_MENTOR_MAX_SESSIONS: ${APP_MENTOR_MAX_SESSIONS:-1024}
+      APP_MENTOR_MAX_EDITORS: ${APP_MENTOR_MAX_EDITORS:-1024}
+      APP_OPENAPI_ENABLED: 'false'
+      APP_SWAGGER_ENABLED: 'false'
+      APP_SHOW_SQL: 'false'
+      APP_FORMAT_SQL: 'false'
+    volumes:
+      - type: bind
+        source: ${APP_RUNTIME_CONFIG_FILE:?Set APP_RUNTIME_CONFIG_FILE}
+        target: /run/config/runtime-catalog.yaml
+        read_only: true
+        bind:
+          create_host_path: false
+    tmpfs: ['/tmp:size=256m,mode=1777']
+    networks: [frontend-net, backend-net]
+    mem_limit: 1536m
+    cpus: 2
+    pids_limit: 256
+    stop_grace_period: 30s
 
+  frontend-nginx:
+    <<: *hardening
+    image: ${FRONTEND_IMAGE:?Set a versioned FRONTEND_IMAGE}
+    build:
+      context: ./socratesai-frontend
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN:?Set APP_DOMAIN}
+      APP_PUBLIC_ORIGIN: ${APP_PUBLIC_ORIGIN:?Set the exact HTTPS origin}
+    ports:
+      - '${EDGE_BIND_ADDRESS:-0.0.0.0}:${EDGE_HTTP_PORT:-80}:8080'
+      - '${EDGE_BIND_ADDRESS:-0.0.0.0}:${EDGE_HTTPS_PORT:-443}:8443'
+    volumes:
+      - type: bind
+        source: ${TLS_DIRECTORY:?Set external TLS_DIRECTORY}
+        target: /run/tls
+        read_only: true
+        bind:
+          create_host_path: false
+    tmpfs: ['/tmp:size=64m,uid=101,gid=101,mode=1777']
+    networks: [frontend-net]
+    mem_limit: 128m
+    cpus: 0.5
+    pids_limit: 64
+    stop_grace_period: 15s
+
+networks:
+  frontend-net:
+    driver: bridge
+  backend-net:
+    driver: bridge
+    internal: true
 volumes:
   postgres_data:

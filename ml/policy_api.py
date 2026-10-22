@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import os
+import hashlib
+import json
+from contextlib import asynccontextmanager
 import re
 from pathlib import Path
 from typing import Any
@@ -27,7 +30,15 @@ if not MENTOR_STATE_MODEL_PATH.is_absolute():
     cwd_path = Path.cwd() / MENTOR_STATE_MODEL_PATH
     MENTOR_STATE_MODEL_PATH = cwd_path if cwd_path.exists() else BASE_DIR / MENTOR_STATE_MODEL_PATH
 
-app = FastAPI(title="Socrates Policy API")
+@asynccontextmanager
+async def lifespan(_app):
+    global action_model, mentor_state_model
+    load_model()
+    yield
+    action_model = mentor_state_model = None
+
+
+app = FastAPI(title="Socrates Policy API", lifespan=lifespan)
 action_model = None
 mentor_state_model = None
 
@@ -92,25 +103,39 @@ async def safe_validation_error(_request, _error):
     return JSONResponse(status_code=422, content={"code": "INVALID_REQUEST", "message": "Invalid inference request"})
 
 
-@app.on_event("startup")
 def load_model() -> None:
     global action_model, mentor_state_model
-    if not MODEL_PATH.exists():
-        raise RuntimeError(f"Model file not found: {MODEL_PATH.resolve()}")
-    action_model = joblib.load(MODEL_PATH)
+    action_model = mentor_state_model = None
+    try:
+        manifest_path = os.getenv("MODEL_CHECKSUM_MANIFEST")
+        if manifest_path:
+            manifest = json.loads(Path(manifest_path).read_text())
+            for key, path in [("action", MODEL_PATH), ("mentor_state", MENTOR_STATE_MODEL_PATH)]:
+                if hashlib.sha256(path.read_bytes()).hexdigest() != manifest[key]["sha256"]:
+                    raise ValueError("Model checksum mismatch")
+        loaded_action = joblib.load(MODEL_PATH)
+        loaded_mentor = joblib.load(MENTOR_STATE_MODEL_PATH)
+        if not callable(getattr(loaded_action, "predict", None)) or not callable(getattr(loaded_mentor, "predict", None)):
+            raise ValueError("Invalid model artifact")
+        action_model, mentor_state_model = loaded_action, loaded_mentor
+    except Exception:
+        raise RuntimeError("Policy model initialization failed") from None
 
-    if not MENTOR_STATE_MODEL_PATH.exists():
-        raise RuntimeError(f"Mentor-state model file not found: {MENTOR_STATE_MODEL_PATH.resolve()}")
-    mentor_state_model = joblib.load(MENTOR_STATE_MODEL_PATH)
+
+@app.get("/live")
+def live() -> dict[str, str]:
+    return {"status": "alive"}
 
 
+@app.get("/ready")
 @app.get("/health")
-def health() -> dict[str, str | bool]:
-    return {
-        "status": "ok",
+def health():
+    ready = action_model is not None and mentor_state_model is not None
+    return JSONResponse(status_code=200 if ready else 503, content={
+        "status": "ok" if ready else "starting",
         "action_model_loaded": action_model is not None,
         "mentor_state_model_loaded": mentor_state_model is not None,
-    }
+    })
 
 
 @app.post("/predict")
@@ -119,8 +144,11 @@ def predict(request: PolicyRequest) -> dict[str, str]:
         raise HTTPException(status_code=503, detail="Model is not loaded")
 
     frame = pd.DataFrame([request.model_dump()])
-    prediction = action_model.predict(frame)[0]
-    return {"action": str(prediction)}
+    try:
+        prediction = action_model.predict(frame)[0]
+        return {"action": str(prediction)}
+    except Exception:
+        raise HTTPException(status_code=503, detail="Policy inference unavailable") from None
 
 
 @app.post("/predict-mentor-state")
