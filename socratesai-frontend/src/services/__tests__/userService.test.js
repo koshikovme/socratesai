@@ -20,7 +20,7 @@ describe('userService', () => {
 
         const result = await fetchMyProgress()
 
-        expect(get).toHaveBeenCalledWith('/api/users/me/progress')
+        expect(get).toHaveBeenCalledWith('/api/users/me/progress', {})
         expect(result.summary.solvedTasks).toBe(1)
     })
 
@@ -39,7 +39,7 @@ describe('userService', () => {
 
         const result = await updateMySettings(payload)
 
-        expect(put).toHaveBeenCalledWith('/api/users/me/settings', payload)
+        expect(put).toHaveBeenCalledWith('/api/users/me/settings', payload, {})
         expect(result.darkMode).toBe(true)
     })
 })

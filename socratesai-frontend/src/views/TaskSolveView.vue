@@ -1,359 +1,162 @@
-<template>
-  <div class="page-shell">
-    <AppHeader />
-    <main class="page-content solve-page">
-      <section v-if="task" class="card solve-hero">
-        <div class="solve-hero-copy">
-          <p class="eyebrow">Workspace</p>
-          <h2>{{ task.title }}</h2>
-          <p class="solve-meta">{{ task.topic }} / {{ task.language }} / {{ task.difficulty }}</p>
-          <SafeMarkdown class="muted" :content="task.description" />
-        </div>
-
-        <div class="solve-hero-actions">
-          <button class="primary-btn" :disabled="loading || submitting" @click="askMentor">
-            {{ loading ? 'Analyzing...' : 'Ask Mentor' }}
-          </button>
-          <button class="primary-btn submit-code-btn" :disabled="submitting || loading" @click="submitCode">
-            {{ submitting ? 'Submitting...' : 'Submit code' }}
-          </button>
-          <button class="ghost-btn" @click="toggleRealtime">
-            {{ realtimeEnabled ? 'Realtime On' : 'Realtime Off' }}
-          </button>
-          <span class="connection-pill" :class="socketConnected ? 'live' : 'idle'">
-            {{ socketConnected ? 'Socket live' : 'Socket offline' }}
-          </span>
-        </div>
-      </section>
-
-      <div class="solve-layout">
-        <section class="left-panel">
-          <CodeEditorPanel
-              v-model="code"
-              :language="task?.language || 'java'"
-              :attempt-no="attemptNo"
-          />
-
-          <div class="card editor-note-card">
-            <p class="eyebrow">Workflow</p>
-            <p class="muted">
-              Ask Mentor is formative help. Submit code records a summative attempt and appears in your profile progress.
-              Realtime nudges do not increment session attempts.
-            </p>
-          </div>
-        </section>
-
-        <section class="right-panel">
-          <section v-if="submissionResult" class="card submit-result-card">
-            <div class="feedback-head compact">
-              <div>
-                <p class="eyebrow">Submission result</p>
-                <h3>{{ submissionResult.title }}</h3>
-              </div>
-              <span class="signal-pill" :class="submissionResult.accepted ? 'signal-good' : 'signal-warn'">
-                {{ submissionResult.status }}
-              </span>
-            </div>
-            <p class="muted">{{ submissionResult.message }}</p>
-            <div class="feedback-meta-grid">
-              <div class="meta-card">
-                <span class="meta-label">Compile</span>
-                <strong>{{ submissionResult.compileSuccess ? 'Success' : 'Failed' }}</strong>
-              </div>
-              <div class="meta-card">
-                <span class="meta-label">Tests</span>
-                <strong>{{ submissionResult.testsPassed }} passed / {{ submissionResult.testsFailed }} failed</strong>
-              </div>
-            </div>
-            <router-link class="ghost-btn submit-profile-link" to="/profile">
-              View profile progress
-            </router-link>
-          </section>
-
-          <FeedbackPanel
-              :feedback="feedback"
-              :loading="loading || submitting"
-              :error="error"
-              :connection-label="connectionLabel"
-              :saving-outcome="savingOutcome"
-              :review-state="reviewState"
-              @mark-resolved="markFeedbackResolved(true)"
-              @mark-stuck="markFeedbackResolved(false)"
-          />
-        </section>
-      </div>
-    </main>
-  </div>
-</template>
-
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import { contextKey, SOURCE_LIMIT, useEditorStore } from '../stores/editor'
+import { fetchProblem } from '../services/catalogService'
+import { apiErrorMessage } from '../services/errors'
+import { registerSessionCleanup } from '../services/sessionLifecycle'
+import { updateInteractionResult } from '../services/mentorService'
+import { useNativeMentor } from '../composables/useNativeMentor'
+import { useJudging } from '../composables/useJudging'
 import AppHeader from '../components/AppHeader.vue'
-import SafeMarkdown from '../components/SafeMarkdown.vue'
-import FeedbackPanel from '../components/FeedbackPanel.vue'
+import ProblemStatement from '../components/ProblemStatement.vue'
 import CodeEditorPanel from '../components/CodeEditorPanel.vue'
-import { fetchTaskById } from '../services/taskService'
-import { getCachedLeetCodeTaskByRouteId } from '../services/leetcodeService'
-import { requestMentorAnalysis, updateInteractionResult } from '../services/mentorService'
-import { createMentorSocket, disconnectSocket, sendCodeUpdate } from '../services/websocketService'
+import FeedbackPanel from '../components/FeedbackPanel.vue'
+import ExecutionResult from '../components/ExecutionResult.vue'
+import SubmissionHistory from '../components/SubmissionHistory.vue'
 
-const route = useRoute()
 const auth = useAuthStore()
-
-const task = ref(null)
-const code = ref('')
-const attemptNo = ref(1)
-const feedback = ref(null)
+const route = useRoute()
+const editor = useEditorStore()
+editor.resetSessions()
+const problem = ref(null)
+const languageKey = ref('')
 const loading = ref(false)
-const submitting = ref(false)
 const error = ref('')
-const submissionResult = ref(null)
-const socketConnected = ref(false)
-const realtimeEnabled = ref(true)
-const realtimeAvailable = ref(true)
+const history = ref(null)
 const savingOutcome = ref(false)
 const reviewState = ref('')
-const socketFailureCount = ref(0)
-let intentionalSocketDisconnect = false
-let debounceTimer = null
-
-const resolvedTaskId = computed(() => {
-  if (task.value?.externalId) {
-    return Number(task.value.externalId)
-  }
-  return Number(route.params.id)
+const outcomeError = ref('')
+let controller
+let loadGeneration = 0
+let outcomeController
+const language = computed(() => problem.value?.languages.find(item => item.languageKey === languageKey.value))
+const key = computed(() => problem.value && contextKey({ problemId: problem.value.id, problemVersionId: problem.value.problemVersionId, languageKey: languageKey.value }))
+const buffer = computed(() => editor.contexts[key.value])
+const code = computed({ get: () => buffer.value?.code ?? '', set: value => editor.update(key.value, value) })
+const tooLong = computed(() => code.value.length > SOURCE_LIMIT)
+const snapshot = computed(() => !buffer.value || tooLong.value ? null : {
+  problemId: buffer.value.problemId, problemVersionId: buffer.value.problemVersionId,
+  languageKey: buffer.value.languageKey, editorSessionId: buffer.value.editorSessionId,
+  codeRevision: buffer.value.codeRevision, code: buffer.value.code,
 })
+const mentor = useNativeMentor({ snapshot, token: () => auth.token, advanceRevision: () => editor.advanceRevision(key.value) })
+const judging = useJudging({
+  onCreated: (operation, submitted) => {
+    if (operation.kind === 'submission') { editor.markSubmitted(submitted); history.value?.refresh() }
+  },
+  onFinished: operation => {
+    history.value?.refresh()
+    if (operation.problemId === problem.value?.id && operation.problemVersionId === problem.value?.problemVersionId && operation.languageKey === languageKey.value) mentor.refresh()
+  },
+})
+const judgingLocked = computed(() => judging.busy.value || judging.phase.value === 'paused')
+const submitDisabled = computed(() => !snapshot.value || !code.value.trim() || judgingLocked.value)
+const unsaved = computed(() => Object.values(editor.contexts).some(item => item.dirty))
 
-async function loadTask() {
-  const routeId = String(route.params.id)
-  task.value = getCachedLeetCodeTaskByRouteId(routeId) || await fetchTaskById(routeId)
-  code.value = task.value?.starterCode || ''
-}
+watch(languageKey, () => {
+  if (!problem.value || !language.value) return
+  try {
+    editor.open({ problemId: problem.value.id, problemVersionId: problem.value.problemVersionId, languageKey: languageKey.value }, language.value.starterCode)
+  } catch {
+    error.value = 'The in-memory editor limit was reached. Discard other buffers to open this language.'
+  }
+}, { flush: 'sync' })
+watch(() => mentor.feedback.value?.interactionId, () => { reviewState.value = ''; outcomeError.value = '' })
 
-function decorateFeedback(payload, transport) {
-  return payload ? { ...payload, transport } : null
-}
-
-async function askMentor() {
-  if (!task.value) return
-
-  const currentAttempt = attemptNo.value
+async function load() {
+  controller?.abort()
+  controller = new AbortController()
+  const generation = ++loadGeneration
   loading.value = true
+  problem.value = null
+  languageKey.value = ''
   error.value = ''
-
+  judging.stop()
   try {
-    const response = await requestMentorAnalysis({
-      studentId: Number(auth.userId),
-      taskId: resolvedTaskId.value,
-      language: task.value?.language || 'java',
-      code: code.value,
-      attemptNo: currentAttempt
-    })
-
-    feedback.value = decorateFeedback(response, 'REST')
-    reviewState.value = ''
-    attemptNo.value = currentAttempt + 1
-  } catch (e) {
-    error.value = e?.response?.data?.message || 'Failed to get mentor feedback'
-  } finally {
-    loading.value = false
-  }
+    const id = Number(route.params.id)
+    const version = route.query.version ? Number(route.query.version) : null
+    if (!Number.isSafeInteger(id) || id < 1 || (version !== null && (!Number.isSafeInteger(version) || version < 1))) throw { code: 'INVALID_REQUEST' }
+    const response = await fetchProblem(id, version, { signal: controller.signal })
+    if (generation !== loadGeneration) return
+    problem.value = response
+    languageKey.value = response.languages[0]?.languageKey ?? ''
+  } catch (e) { if (generation === loadGeneration) error.value = apiErrorMessage(e) }
+  finally { if (generation === loadGeneration) loading.value = false }
 }
 
-async function submitCode() {
-  if (!task.value) return
-
-  const currentAttempt = attemptNo.value
-  submitting.value = true
+function discardOtherBuffers() {
+  if (!window.confirm('Discard all other in-memory code buffers? This cannot be undone.')) return
+  editor.discardOtherContexts(key.value)
+  if (problem.value && language.value) editor.open({ problemId: problem.value.id, problemVersionId: problem.value.problemVersionId, languageKey: languageKey.value }, language.value.starterCode)
   error.value = ''
-
-  try {
-    const response = await requestMentorAnalysis({
-      studentId: Number(auth.userId),
-      taskId: resolvedTaskId.value,
-      language: task.value?.language || 'java',
-      code: code.value,
-      attemptNo: currentAttempt
-    })
-
-    feedback.value = decorateFeedback(response, 'REST')
-    reviewState.value = ''
-    attemptNo.value = currentAttempt + 1
-    submissionResult.value = buildSubmissionResult(response)
-
-    if (submissionResult.value.accepted && response.interactionId) {
-      await updateInteractionResult(response.interactionId, {
-        resolvedAfterFeedback: true,
-        fixedAfterMs: null,
-        feedbackHelpful: true,
-        feedbackRating: 5,
-        studentComment: 'Accepted submission',
-        repeatedSameErrorAfterFeedback: false
-      })
-      reviewState.value = 'resolved'
-    }
-  } catch (e) {
-    error.value = e?.response?.data?.message || 'Failed to submit code'
-  } finally {
-    submitting.value = false
-  }
 }
 
-function buildSubmissionResult(response) {
-  const testsPassed = Number(response?.testsPassed ?? 0)
-  const testsFailed = Number(response?.testsFailed ?? 0)
-  const compileSuccess = Boolean(response?.compileSuccess)
-  const accepted = compileSuccess && testsPassed > 0 && testsFailed === 0
-
-  if (accepted) {
-    return {
-      accepted,
-      compileSuccess,
-      testsPassed,
-      testsFailed,
-      status: 'Accepted',
-      title: 'Task solved',
-      message: 'This attempt passed the available analyzer checks and is counted as solved in your profile.'
-    }
-  }
-
-  if (!compileSuccess) {
-    return {
-      accepted,
-      compileSuccess,
-      testsPassed,
-      testsFailed,
-      status: 'Compile error',
-      title: 'Code needs syntax fixes',
-      message: 'The submission was recorded, but the code does not compile yet.'
-    }
-  }
-
-  return {
-    accepted,
-    compileSuccess,
-    testsPassed,
-    testsFailed,
-    status: 'Tests failed',
-    title: 'Not accepted yet',
-    message: 'The submission was recorded. Use the mentor feedback, fix the issue, and submit again.'
-  }
+function start(kind) {
+  if (submitDisabled.value) return
+  const collectionId = route.query.collection ? Number(route.query.collection) : undefined
+  if (collectionId !== undefined && (!Number.isSafeInteger(collectionId) || collectionId < 1)) { error.value = 'Invalid collection link. Open the problem from the catalog.'; return }
+  judging.start(kind, { ...snapshot.value }, collectionId)
 }
 
 async function markFeedbackResolved(resolvedAfterFeedback) {
-  if (!feedback.value?.interactionId || savingOutcome.value) return
-
+  const id = mentor.feedback.value?.interactionId
+  if (!id || savingOutcome.value) return
+  outcomeController?.abort()
+  outcomeController = new AbortController()
+  const current = outcomeController
   savingOutcome.value = true
-  error.value = ''
-
   try {
-    await updateInteractionResult(feedback.value.interactionId, {
-      resolvedAfterFeedback,
-      fixedAfterMs: null
-    })
-    reviewState.value = resolvedAfterFeedback ? 'resolved' : 'stuck'
-  } catch (e) {
-    error.value = e?.response?.data?.message || 'Failed to save feedback outcome'
-  } finally {
-    savingOutcome.value = false
-  }
+    await updateInteractionResult(id, { resolvedAfterFeedback, fixedAfterMs: null }, { signal: current.signal })
+    if (!current.signal.aborted && mentor.feedback.value?.interactionId === id) reviewState.value = resolvedAfterFeedback ? 'resolved' : 'stuck'
+  } catch (e) { if (!current.signal.aborted) outcomeError.value = apiErrorMessage(e) }
+  finally { if (!current.signal.aborted) savingOutcome.value = false }
 }
-
-function sendRealtimeUpdate() {
-  if (!realtimeEnabled.value || !socketConnected.value || !task.value) return
-
-  sendCodeUpdate({
-    studentId: Number(auth.userId),
-    taskId: resolvedTaskId.value,
-    language: task.value?.language || 'java',
-    code: code.value,
-    attemptNo: attemptNo.value
-  })
-}
-
-function toggleRealtime() {
-  if (!realtimeAvailable.value && !realtimeEnabled.value) {
-    socketFailureCount.value = 0
-    realtimeAvailable.value = true
-    connectRealtime()
-    return
-  }
-
-  realtimeEnabled.value = !realtimeEnabled.value
-  if (!realtimeEnabled.value) {
-    clearTimeout(debounceTimer)
-    intentionalSocketDisconnect = true
-    disconnectSocket()
-    socketConnected.value = false
-  } else {
-    connectRealtime()
-  }
-}
-
-function handleSocketFailure() {
-  socketConnected.value = false
-  socketFailureCount.value += 1
-
-  if (socketFailureCount.value >= 3) {
-    realtimeEnabled.value = false
-    realtimeAvailable.value = false
-    disconnectSocket()
-  }
-}
-
-function connectRealtime() {
-  if (!realtimeEnabled.value || !realtimeAvailable.value || !auth.token) return
-
-  intentionalSocketDisconnect = false
-  createMentorSocket({
-    token: auth.token,
-    onFeedback: (message) => {
-      feedback.value = decorateFeedback(message, 'WS')
-      reviewState.value = ''
-    },
-    onConnect: () => {
-      socketConnected.value = true
-      socketFailureCount.value = 0
-    },
-    onDisconnect: () => {
-      if (intentionalSocketDisconnect) {
-        intentionalSocketDisconnect = false
-        socketConnected.value = false
-        return
-      }
-      handleSocketFailure()
-    },
-    onError: () => {
-      handleSocketFailure()
-    }
-  })
-}
-
-onMounted(async () => {
-  await loadTask()
-  connectRealtime()
-})
-
-watch(code, () => {
-  clearTimeout(debounceTimer)
-  if (!realtimeEnabled.value) return
-
-  debounceTimer = setTimeout(() => {
-    sendRealtimeUpdate()
-  }, 1500)
-})
-
-onBeforeUnmount(() => {
-  intentionalSocketDisconnect = true
-  disconnectSocket()
-  clearTimeout(debounceTimer)
-})
-
-const connectionLabel = computed(() => {
-  if (!realtimeAvailable.value) return 'Realtime unavailable'
-  if (!realtimeEnabled.value) return 'Realtime paused'
-  return socketConnected.value ? 'Realtime connected' : 'Realtime reconnecting'
-})
+function canLeave() { return !auth.token || !unsaved.value || window.confirm('Code is held in memory only. Leave this workspace? Reloading or signing out will discard it.') }
+function beforeUnload(event) { if (unsaved.value) { event.preventDefault(); event.returnValue = '' } }
+function clear() { loading.value = false; loadGeneration++; controller?.abort(); outcomeController?.abort(); problem.value = null; languageKey.value = ''; error.value = ''; outcomeError.value = ''; reviewState.value = ''; savingOutcome.value = false }
+const unregister = registerSessionCleanup(clear)
+window.addEventListener('beforeunload', beforeUnload)
+onBeforeRouteLeave(canLeave)
+onBeforeRouteUpdate(canLeave)
+onBeforeUnmount(() => { clear(); unregister(); window.removeEventListener('beforeunload', beforeUnload) })
+watch(() => [route.params.id, route.query.version, route.query.collection], load, { immediate: true })
 </script>
+
+<template>
+  <div class="page-shell">
+    <AppHeader />
+    <main class="page-content native-workspace">
+      <RouterLink v-if="route.query.collection" :to="`/collections/${route.query.collection}`">Back to collection</RouterLink>
+      <p v-if="loading" role="status">Loading problem…</p>
+      <p v-if="error" role="alert" class="error-text">{{ error }}</p>
+      <div v-if="problem" class="workspace-grid">
+        <ProblemStatement :problem="problem" />
+        <section class="workspace-code" aria-label="Solution workspace">
+          <div class="card workspace-controls">
+            <label>Language
+              <select aria-label="Language" v-model="languageKey" :disabled="judging.busy.value">
+                <option v-for="item in problem.languages" :key="item.languageKey" :value="item.languageKey">{{ item.languageKey }}</option>
+              </select>
+            </label>
+            <p v-if="language" class="muted">{{ language.timeLimitMs }} ms · {{ language.memoryLimitKb }} KiB · Revision {{ buffer?.codeRevision ?? 0 }}</p>
+            <p v-if="!problem.languages.length" role="alert">No verified language is available for this version.</p>
+            <p v-if="tooLong" role="alert" class="error-text">Source exceeds {{ SOURCE_LIMIT }} characters. Shorten it before sending.</p>
+            <div class="action-row">
+              <button class="ghost-btn" :disabled="submitDisabled" @click="start('sample')">Run samples</button>
+              <button class="primary-btn" :disabled="submitDisabled" @click="start('submission')">{{ judging.busy.value ? 'Judging…' : 'Submit' }}</button>
+              <button class="ghost-btn" :disabled="!snapshot || mentor.pending.value" @click="mentor.refresh()">Ask mentor</button>
+            </div>
+          </div>
+          <CodeEditorPanel v-if="buffer" v-model="code" :language="languageKey" :context-id="buffer.editorSessionId" />
+          <button class="ghost-btn" @click="discardOtherBuffers">Discard other buffers</button>
+          <p class="muted">Buffers stay in memory for each language and version. Feedback and sample runs do not count as graded attempts.</p>
+          <ExecutionResult :result="judging.result.value" :operation="judging.operation.value" :phase="judging.phase.value" :error="judging.error.value" @retry="judging.retry()" />
+          <FeedbackPanel :feedback="mentor.feedback.value" :loading="mentor.pending.value" :error="outcomeError || mentor.error.value" :connection-label="mentor.status.value" :saving-outcome="savingOutcome" :review-state="reviewState" @mark-resolved="markFeedbackResolved(true)" @mark-stuck="markFeedbackResolved(false)" />
+        </section>
+      </div>
+      <SubmissionHistory ref="history" :disabled="judgingLocked" @select="item => judging.resume('submission', item)" />
+    </main>
+  </div>
+</template>

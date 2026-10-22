@@ -5,7 +5,9 @@
       <p class="subtitle">Policy-aware coding mentor for CS1 practice</p>
     </div>
     <div class="header-actions">
-      <RouterLink to="/dashboard" class="header-link">Workspace</RouterLink>
+      <RouterLink to="/dashboard" class="header-link">Catalog</RouterLink>
+      <RouterLink v-if="['TEACHER', 'ADMIN'].includes(auth.role)" to="/teacher" class="header-link">Teaching</RouterLink>
+      <RouterLink v-if="auth.role === 'ADMIN'" to="/admin/users" class="header-link">Roles</RouterLink>
       <RouterLink to="/profile" class="header-link">Profile</RouterLink>
       <button class="header-link header-button" @click="toggleThemeMode">
         {{ theme === 'dark' ? 'Light mode' : 'Dark mode' }}
@@ -39,7 +41,7 @@ async function toggleThemeMode() {
   try {
     await updateMySettings({ darkMode: theme.value === 'dark' })
   } catch (e) {
-    console.error('Failed to persist theme setting', e)
+    /* Theme remains applied locally. Do not log response bodies. */
   }
 }
 

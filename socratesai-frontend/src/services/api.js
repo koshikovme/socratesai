@@ -14,13 +14,14 @@ api.interceptors.request.use((config) => {
     if (auth.token) {
         config.headers.Authorization = `Bearer ${auth.token}`
     }
+    config.sessionToken = auth.token
     return config
 })
 
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error?.response?.status === 401) {
+        if (error?.response?.status === 401 && error.config?.sessionToken === useAuthStore().token) {
             const auth = useAuthStore()
             auth.logout()
         }

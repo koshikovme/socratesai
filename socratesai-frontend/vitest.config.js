@@ -6,17 +6,14 @@ export default defineConfig({
     test: {
         environment: 'jsdom',
         globals: true,
+        exclude: ['node_modules/**', 'e2e/**', 'dist/**'],
         clearMocks: true,
         coverage: {
             provider: 'v8',
+            reportsDirectory: 'coverage-native',
             reporter: ['text', 'html'],
-            include: [
-                'src/services/authService.js',
-                'src/services/mentorService.js',
-                'src/services/websocketService.js',
-                'src/stores/**/*.js',
-                'src/components/FeedbackPanel.vue'
-            ],
+            include: ['src/services/**/*.js', 'src/stores/**/*.js', 'src/composables/**/*.js', 'src/components/**/*.vue', 'src/views/**/*.vue', 'src/router/access.js'],
+            exclude: ['**/__tests__/**'],
             thresholds: {
                 lines: 55,
                 functions: 55,

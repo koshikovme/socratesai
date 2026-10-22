@@ -1,8 +1,8 @@
 # SocratesAI evolution: architecture blueprint and implementation checklist
 
-**Status:** Plan approved. The authorized Steps 1–2 schema scope, Step 3 adapter and Step 4 secure authoring APIs are implemented and locally verified. Actual sandbox hosting/execution, the frontend catalog transition and remaining phases stay explicitly unchecked.
+**Status:** Plan approved. Steps 1–7 application scopes are implemented and locally verified; Step 7 browser journeys use synthetic protocol fixtures. Actual isolated sandbox execution, CI/CD/hosting and production acceptance remain open. P5.10 institutional retention policy remains partial.
 **Prepared:** 2026-10-21.
-**Last updated:** 2026-10-22. See [result-1-schema.md](./result-1-schema.md) for schema/contracts and [result-3-sandbox.md](./result-3-sandbox.md) for adapter verification and the missing execution host. See [result-4-authoring.md](./result-4-authoring.md) for role provisioning, authoring, publication and collection contracts/tests.
+**Last updated:** 2026-10-22. See [result-7-frontend.md](./result-7-frontend.md) for native UI contracts, teacher/student journeys and frontend/browser verification. See [result-1-schema.md](./result-1-schema.md) for schema/contracts and [result-3-sandbox.md](./result-3-sandbox.md) for adapter verification and the missing execution host. See [result-4-authoring.md](./result-4-authoring.md) for role provisioning, authoring, publication and collection contracts/tests.
 **Workspace:** `/home/koshikovalimzhan/IdeaProjects/socratesai`.
 **Task folder:** `tasks/socrates-evolution/` relative to the repository root. The requested `/tasks/...` paths refer to this repository folder, not an operating-system directory.
 **Requirements source:** [task-context.md](./task-context.md), read before preparing this plan.
@@ -499,7 +499,7 @@ Work proceeds in the order below. Each stage ends with a scoped reviewable chang
 - [x] **P4.6** Queue staff reference verification through the sandbox; require verification of the exact draft hash before publication. After-commit bounded coordinator executes all language/batch snapshots through CodeExecutionPort; persisted proof/hash/TTL gates publication. Restarted pending work fails closed by deadline; generic durable worker recovery remains Step 5. Live execution still requires Step 3 infrastructure.
 - [x] **P4.7** Implement collection CRUD, bounded member selection, transactional reorder, pinned versions, publish validation, and archive. Same-revision concurrent reorders have one winner; invalid selection rolls back, public collections cannot disclose restricted members.
 - [x] **P4.8** Implement student/public projections that never serialize hidden tests, staff reference code, or private authoring fields. Separate student language/collection DTOs and sample-only queries; public sample ordinals do not expose hidden case positions.
-- [ ] **P4.9** Add native catalog/detail/language endpoints and same-policy legacy task adapters; deprecate the external catalog path intentionally. Partial: native APIs and secure compatibility facade are implemented; frontend LeetCode catalog replacement/deprecation stays with Step 7. Legacy unverified content is excluded until a new version passes verification.
+- [x] **P4.9** Add native catalog/detail/language endpoints and same-policy legacy task adapters; deprecate the external catalog path intentionally. Native APIs/secure compatibility facade and Step 7 frontend replacement are implemented. The UI has no external catalog/cache dependency; numeric legacy task links redirect to native routes. Legacy unverified content remains excluded until a new version passes verification.
 - [x] **P4.10** Add integration tests for foreign ownership, unpublished access, stale edits, invalid membership, missing tests, and archive/delete references. PostgreSQL HTTP matrix, concurrency, audit rollback, hash/TTL gates and projection privacy all pass.
 - [x] **P4.11** Verify raw stored statement/output content is safely rendered/encoded and errors do not leak data. SafeMarkdown uses escaped Vue text interpolation; malicious content tests and structured safe error envelopes pass.
 - [x] **P4.12** Write result-4-authoring.md with endpoints, permissions, publication behavior, and test evidence. Report complete; initial delivery left changes uncommitted, and the subsequent user request authorizes Git publication.
@@ -554,23 +554,25 @@ Work proceeds in the order below. Each stage ends with a scoped reviewable chang
 
 **Depends on:** Steps 4–6 contracts/APIs. **Primary areas:** `socratesai-frontend/src/`.
 
-- [ ] **P7.1** Add native problem/collection/language/run/submission/teacher service modules using the existing API/auth layer.
-- [ ] **P7.2** Replace the LeetCode-first dashboard with native catalogs and bounded server filters/pagination.
-- [ ] **P7.3** Build collection detail and student progress views from real accepted submissions.
-- [ ] **P7.4** Split problem statement, editor, mentor, sample results, and submission history into focused components.
-- [ ] **P7.5** Add runtime-aware language selection and per-language buffers/starters without destroying edits; handle unsaved navigation.
-- [ ] **P7.6** Implement Run samples and Submit actions, idempotency keys, queued/running states, terminal verdicts, and bounded status polling.
-- [ ] **P7.7** Connect correlated WS updates and discard obsolete/cross-tab responses; implement reconnect/HTTP recovery and visible degraded states.
-- [ ] **P7.8** Build teacher problem list/editor, public/hidden test editor, language/limit configuration, verification, and publication flow.
-- [ ] **P7.9** Build collection list/editor, ordered member selection, version pin/update, publication, and archive handling.
-- [ ] **P7.10** Add role-aware routes/navigation and supported admin provisioning UX; remove privileged role choice from public registration.
-- [ ] **P7.11** Safely render statements/output, clear sockets and transient source on logout, and handle stale revisions/auth expiry/access denial.
-- [ ] **P7.12** Test user behavior with Vitest/component tests; cover language switches, job polling, protected routes, stale feedback, and validation conflicts.
-- [ ] **P7.13** Add browser E2E for teacher -> collection -> student -> WS -> run -> submit -> history across validated languages and denied-access cases.
-- [ ] **P7.14** Check responsive layout, keyboard navigation, editor workers, production SPA routing, and no remaining dependency on cached external task IDs.
-- [ ] **P7.15** Write `result-7-frontend.md` with user journeys, visual-reference assumptions, accessibility notes, and test evidence.
+- [x] **P7.1** Add native problem/collection/language/run/submission/teacher service modules using the existing API/auth layer.
+- [x] **P7.2** Replace the LeetCode-first dashboard with native catalogs, bounded server pagination and explicitly current-page filters (the current API supports page/size only).
+- [x] **P7.3** Build collection detail and student progress views from real accepted submissions.
+- [x] **P7.4** Split problem statement, editor, mentor, sample results, and submission history into focused components.
+- [x] **P7.5** Add runtime-aware language selection and per-language buffers/starters without destroying edits; handle unsaved navigation.
+- [x] **P7.6** Implement Run samples and Submit actions, idempotency keys, queued/running states, terminal verdicts, and bounded status polling.
+- [x] **P7.7** Connect correlated WS updates and discard obsolete/cross-tab responses; implement reconnect/HTTP recovery and visible degraded states.
+- [x] **P7.8** Build teacher problem list/editor, public/hidden test editor, language/limit configuration, verification, and publication flow.
+- [x] **P7.9** Build collection list/editor, ordered member selection, version pin/update, publication, and archive handling.
+- [x] **P7.10** Add role-aware routes/navigation and supported admin provisioning UX; remove privileged role choice from public registration.
+- [x] **P7.11** Safely render statements/output, clear sockets and transient source on logout, and handle stale revisions/auth expiry/access denial.
+- [x] **P7.12** Test user behavior with Vitest/component tests; cover language switches, job polling, protected routes, stale feedback, and validation conflicts.
+- [x] **P7.13** Add browser protocol-fixture E2E for teacher -> collection -> student -> WS -> run -> submit -> history across the three configured editor languages and denied-access cases; live sandbox coverage remains P9.6.
+- [x] **P7.14** Check responsive layout, keyboard navigation, bundled editor workers, production-build SPA deep links in preview, and no remaining dependency on cached external task IDs; deployed edge routing remains Steps 8–9.
+- [x] **P7.15** Write `result-7-frontend.md` with user journeys, visual-reference assumptions, accessibility notes, and test evidence.
 
-**Exit:** Complete teacher/student flows work against the new APIs; the UI separates advice, sample results, and actual submission verdicts.
+**Implementation status (2026-10-22):** Native student/teacher/admin interfaces, revision/hash-correlated mentor transport, memory-only buffers, durable judging UI, protected projections and cleanup are implemented. Frontend: 83 passing tests, unchanged coverage gates, successful production build and 2 production-preview browser scenarios with synthetic HTTP/STOMP fixtures. Backend catalogs expose only page/size, so filters are explicitly current-page. Existing run DTOs expose metrics only, so no diagnostic output is fabricated. See `result-7-frontend.md` for evidence and limits. P7.13 validates browser protocol journeys across all three editor languages; actual Judge0-backed end-to-end verification remains Steps 8–9. P7.14 verifies preview SPA fallback and bundled workers; the production edge is still infrastructure work.
+
+**Exit:** Complete teacher/student frontend journeys use the native API contracts and separate advice, sample results and actual submission verdicts. Live execution/deployment acceptance remains dependent on the isolated host and production environment.
 
 ### Step 8 — CI/CD and reproducible production packaging
 
@@ -675,9 +677,9 @@ New smoke/benchmark/experiment outputs use a new directory or prefix, never over
 | Shared DB disruption | Isolated fixtures/tests and explicit permission before any unsafe shared mutation/load. |
 | Missing visual references or ambiguous product scope | Conventional initial UX; record open decisions; obtain references only if exact visual matching is required. |
 
-**Current progress:** Steps 0–5 and the requested Step 6 backend scope are implemented and locally verified. Latest Java 21 clean verify: 282 tests, no failures/errors, one existing opt-in experiment skipped; all coverage gates pass. Python: 7 contract/saved-model smoke tests plus successful action-model smoke, without training. See `result-6-mentor.md`. Frontend's last recorded checks remain Step 4; frontend was not modified in Step 6 and needs the native WS/API integration in Step 7. P4.9 frontend catalog transition and P5.10 institution-approved long-term graded-source policy remain open. Actual isolated Judge0 execution, CI/CD/hosting and production smoke remain open.
+**Current progress:** Steps 0–7 application scopes are implemented and locally verified. Step 7 adds native student/teacher/admin journeys with 83 frontend tests, measured coverage, production build and 2 passing Chrome protocol-fixture scenarios; npm audit reports zero vulnerabilities at verification. See `result-7-frontend.md`. The accepted Step 6 Java/Python evidence remains unchanged. P4.9 native frontend transition is complete; P5.10 institution-approved long-term graded-source retention remains partial. Actual Judge0 execution, CI/CD/hosting and production smoke are open.
 
-**Next action:** Continue with Step 7 native frontend workspace when requested: published native IDs/versions, per-editor UUID/revision/hash correlation, safe unknown-vs-executed displays, Run/Submit and history. Use `/user/queue/feedback` and `/api/mentor/native-feedback`; do not restore client-controlled identity/analyzer results. Real Judge0, process-wide admission/routing for multiple instances, institutional retention and staff reference recovery remain documented follow-ups. No shared or production databases were accessed.
+**Next action:** Continue with Step 8 reproducible production packaging and CI/CD when requested. Use the native frontend contract/SPA proxy requirements in `socratesai-frontend/README.md`. The isolated Judge0 host, real runtime certification, multi-instance admission/routing, institutional retention and staff reference recovery remain documented follow-ups. No shared or production databases were accessed during Step 7.
 
 **How to maintain this file:** Mark a task complete only after its code and required verification exist. Append a dated factual session entry with changed files, decisions, commands/results, artifact locations, open blockers, and the next task ID. Keep rationale and decisions concise; do not store secrets, private student data, or speculative results.
 
@@ -752,3 +754,14 @@ New smoke/benchmark/experiment outputs use a new directory or prefix, never over
 - Preserved policy/expert CSV columns and appended provenance; restricted global exports/research routes to ADMIN and enforced outcome/teacher-label ownership. Updated the opt-in research operator fixture while preserving NO_POLICY ablation; did not run or overwrite benchmark artifacts.
 - Java `bash mvnw -B clean verify`: 282 tests, 0 failures/errors, 1 existing opt-in skip; global/core coverage gates pass. Python: 7 contract/saved-model smoke tests and action-model smoke pass in temporary serving venv. Evidence in `result-6-mentor.md` and local /tmp build logs; no shared DB, live student execution or paid LLM calls.
 - Inspected affected IEEE/source metrics/artifacts; no training, metric, TeX/PDF or duplicate-paper changes. Updated ml/README.md and wrote result-6-mentor.md. Current user request authorizes a scoped semantic commit/push; unrelated untracked datasets, papers and experiments remain excluded.
+
+
+### Step 7 implementation — 2026-10-22
+
+- Replaced the external cached catalog and heuristic submission UI with published native problems/collections, explicit current-page filters, exact-version collection progress and server-owned judged attempts/SOLVED.
+- Added memory-only per-version/language buffers, UUID/revision/hash-correlated WS/native HTTP mentoring, bounded debounce/recovery metadata, context socket recycling, safe ERROR handling and unknown/ML/RULE display.
+- Added idempotent sample/submission creation, exact-body retry after lost create response, bounded GET polling and retryScheduled recovery, expired-run handling, paged owner history and hidden-output allowlists. Logout aborts requests/timers, closes sockets and clears stores/private authoring/source data.
+- Added teacher draft/language/test/reference verification/publication and ordered pinned collection editors, optimistic conflict reload and administrator role-change UX. All protected routes recheck server identity/role; SafeMarkdown remains escaped text.
+- Node 22.23.1/npm 10.9.8 lockfile install, 83 frontend tests, unchanged coverage gates, production build and 2 production-preview Chrome protocol-fixture journeys pass. Audit through registry.npmjs.org reports zero advisories. Updated stale frontend README and wrote `result-7-frontend.md`; backend, research models/results and papers were unchanged.
+- Browser fixtures validate editor languages and native HTTP/STOMP behavior, not actual Judge0 execution. Global catalog search is unavailable in the current backend; UI filters clearly apply to the current page. Metric-only execution DTOs do not expose sample stdout/stderr. Vite's lazy solver/Monaco chunk warning remains visible; deployment, infrastructure capacity and live acceptance stay open.
+- User authorized the scoped commit/push. Unrelated untracked datasets, AGENTS.md, local files and paper materials remain excluded.

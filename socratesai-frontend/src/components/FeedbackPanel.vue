@@ -6,27 +6,28 @@
           <p class="eyebrow">Mentor feedback</p>
           <h3>{{ actionLabel }}</h3>
         </div>
-        <span class="signal-pill" :class="feedback?.compileSuccess ? 'signal-good' : 'signal-warn'">
-          {{ feedback?.compileSuccess ? 'Compiles' : 'Needs fixes' }}
+        <span class="signal-pill" :class="feedback?.compileSuccess === true ? 'signal-good' : 'signal-neutral'">
+          {{ feedback?.compileSuccess == null ? 'Execution unknown' : (feedback.compileSuccess ? 'Compiled' : 'Compile error') }}
         </span>
       </div>
 
+      <p v-if="feedback" class="policy-mode">{{ feedback.policyMode === 'ML' ? 'ML' : 'RULE' }}<span v-if="feedback.fallbackReason"> · {{ fallbackLabel }}</span></p>
       <p v-if="feedback" class="feedback-text">{{ feedback.feedbackText }}</p>
       <p v-else-if="loading" class="muted">Generating mentor feedback...</p>
       <p v-else class="muted">Ask the mentor or keep typing with realtime assist enabled.</p>
 
       <div v-if="feedback" class="feedback-meta-grid">
         <div class="meta-card">
-          <span class="meta-label">Error type</span>
-          <strong>{{ feedback.errorType || 'N/A' }}</strong>
+          <span class="meta-label">Evidence</span>
+          <strong>{{ feedback.evidenceOrigin || 'Unknown' }}</strong>
         </div>
         <div class="meta-card">
-          <span class="meta-label">Region</span>
-          <strong>{{ feedback.suspiciousRegion || 'N/A' }}</strong>
+          <span class="meta-label">Mentor state</span>
+          <strong>{{ feedback.mentorState || 'Unavailable' }}</strong>
         </div>
         <div class="meta-card">
           <span class="meta-label">Tests</span>
-          <strong>{{ feedback.testsPassed ?? 0 }} passed / {{ feedback.testsFailed ?? 0 }} failed</strong>
+          <strong>{{ feedback.executionKnown === false || feedback.testsPassed == null ? 'Not executed' : `${feedback.testsPassed} passed / ${feedback.testsFailed} failed` }}</strong>
         </div>
         <div class="meta-card">
           <span class="meta-label">Source</span>
@@ -46,7 +47,7 @@
 
       <p v-if="error" class="error-text">{{ error }}</p>
       <p v-else class="muted">
-        Mark whether this feedback helped. That directly improves your future ML dataset quality.
+        You can record whether this hint helped. This does not change your judged progress.
       </p>
 
       <div class="feedback-actions">
@@ -119,6 +120,8 @@ const sourceLabel = computed(() => {
   if (!props.feedback?.feedbackSource) return transport
   return `${transport} / ${props.feedback.feedbackSource}`
 })
+
+const fallbackLabel = computed(() => ({ UNSUPPORTED_LANGUAGE: 'Rules for this language', ML_UNAVAILABLE: 'Model unavailable', LOW_CONFIDENCE: 'Low model confidence', ML_DISABLED: 'Model disabled', CONFIGURED_RULE: 'Rule mode configured', EMPTY_SOURCE: 'Empty buffer' }[props.feedback?.fallbackReason] || 'Rule fallback'))
 
 const canReview = computed(() => Boolean(props.feedback?.interactionId))
 </script>

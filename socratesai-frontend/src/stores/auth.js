@@ -1,4 +1,5 @@
-import { defineStore } from 'pinia'
+import { defineStore, getActivePinia } from 'pinia'
+import { clearSessionResources } from '../services/sessionLifecycle'
 
 export const useAuthStore = defineStore('auth', {
     state: () => ({
@@ -10,6 +11,7 @@ export const useAuthStore = defineStore('auth', {
     }),
     actions: {
         setAuth(data) {
+            this.logout()
             this.token = data.token
             this.userId = String(data.userId)
             this.email = data.email
@@ -23,6 +25,11 @@ export const useAuthStore = defineStore('auth', {
             localStorage.setItem('role', this.role)
         },
         logout() {
+            clearSessionResources()
+            // Reset every non-auth Pinia store, including transient editor buffers.
+            getActivePinia()?._s.forEach(store => {
+                if (store.$id !== 'auth') store.$reset()
+            })
             this.token = ''
             this.userId = ''
             this.email = ''
@@ -33,6 +40,7 @@ export const useAuthStore = defineStore('auth', {
             localStorage.removeItem('email')
             localStorage.removeItem('fullName')
             localStorage.removeItem('role')
+            sessionStorage.removeItem('leetcode_tasks_cache')
         }
     }
 })

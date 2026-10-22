@@ -3,8 +3,8 @@
     <div class="card auth-card">
       <h2>Login</h2>
       <form @submit.prevent="handleLogin" class="auth-form">
-        <input v-model="email" type="email" placeholder="Email" required />
-        <input v-model="password" type="password" placeholder="Password" required />
+        <input v-model="email" type="email" aria-label="Email" autocomplete="username" placeholder="Email" required />
+        <input v-model="password" type="password" aria-label="Password" autocomplete="current-password" placeholder="Password" required />
         <button class="primary-btn" :disabled="loading">
           {{ loading ? 'Signing in...' : 'Login' }}
         </button>
@@ -21,7 +21,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onBeforeUnmount } from 'vue'
+import { apiErrorMessage } from '../services/errors'
 import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { login } from '../services/authService'
@@ -33,6 +34,7 @@ const email = ref('')
 const password = ref('')
 const loading = ref(false)
 const error = ref('')
+onBeforeUnmount(() => { password.value = '' })
 
 async function handleLogin() {
   loading.value = true
@@ -42,7 +44,7 @@ async function handleLogin() {
     auth.setAuth(data)
     await router.push('/dashboard')
   } catch (e) {
-    error.value = e?.response?.data?.message || 'Login failed'
+    error.value = apiErrorMessage(e)
   } finally {
     loading.value = false
   }

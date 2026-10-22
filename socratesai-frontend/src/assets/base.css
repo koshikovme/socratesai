@@ -561,28 +561,6 @@ a {
     justify-self: flex-start;
 }
 
-.leetcode-preview {
-    margin-top: 12px;
-    color: var(--ink);
-    max-height: 180px;
-    overflow: auto;
-    line-height: 1.5;
-}
-
-.leetcode-preview pre {
-    white-space: pre-wrap;
-    background: var(--meta-bg);
-    padding: 12px;
-    border-radius: 12px;
-    overflow: auto;
-}
-
-.leetcode-preview img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 12px;
-}
-
 .auth-page {
     min-height: 100vh;
     display: flex;
@@ -678,4 +656,31 @@ select {
         align-items: flex-start;
         text-align: left;
     }
+}
+
+/* Native catalogs and the pinned-version workspace share the existing theme. */
+.native-workspace { display: grid; gap: 24px; }
+.workspace-grid { display: grid; grid-template-columns: minmax(280px, .8fr) minmax(0, 1.2fr); gap: 24px; align-items: start; }
+.workspace-code { display: grid; gap: 18px; min-width: 0; }
+.workspace-controls label { display: grid; gap: 8px; }
+.action-row, .pagination { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.pagination { margin-top: 18px; }
+.sample-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+pre { white-space: pre-wrap; overflow-wrap: anywhere; background: var(--meta-bg); padding: 12px; border: 1px solid var(--line); border-radius: 6px; }
+.case-results, .history-list { padding-left: 20px; display: grid; gap: 12px; overflow-wrap: anywhere; }
+.history-list button { margin-left: 12px; }
+.statement-card h1 { font-size: 28px; }
+input, textarea, select { max-width: 100%; color: var(--ink); background: var(--input-bg); }
+button:disabled { cursor: not-allowed; opacity: .55; }
+:focus-visible { outline: 3px solid var(--accent-strong); outline-offset: 3px; }
+@media (max-width: 950px) {
+  .workspace-grid { grid-template-columns: 1fr; }
+  .app-header { position: static; flex-wrap: wrap; gap: 18px; }
+  .header-actions { gap: 8px; }
+}
+@media (max-width: 600px) {
+  .page-content { padding: 14px; }
+  .card { padding: 16px; }
+  .sample-pair { grid-template-columns: 1fr; }
+  .header-link, .user-chip, .role-chip { font-size: 12px; }
 }

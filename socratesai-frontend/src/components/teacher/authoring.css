@@ -1,0 +1,23 @@
+.authoring-page { display: grid; gap: 20px; }
+.authoring-page .section-head { flex-wrap: wrap; }
+.authoring-page h1, .authoring-page h2, .authoring-page h3 { margin-top: 0; }
+.authoring-form { display: grid; gap: 18px; }
+.authoring-form fieldset { min-width: 0; border: 1px solid var(--line); border-radius: 8px; padding: 18px; }
+.authoring-form legend { font-weight: 700; padding: 0 6px; }
+.authoring-form label { display: grid; gap: 7px; }
+.authoring-form textarea { width: 100%; resize: vertical; padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--input-bg); color: var(--ink); font: inherit; }
+.authoring-form textarea.code-input { font-family: 'IBM Plex Mono', monospace; font-size: 13px; }
+.authoring-form input[type=checkbox] { width: auto; }
+.authoring-form .check-label { display: flex; align-items: center; }
+.authoring-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.authoring-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.authoring-entry { display: grid; gap: 14px; margin-top: 14px; border: 1px solid var(--line); border-radius: 8px; padding: 14px; }
+.authoring-table { width: 100%; border-collapse: collapse; }
+.authoring-table th, .authoring-table td { padding: 12px; border-bottom: 1px solid var(--line); text-align: left; }
+.authoring-scroll { overflow-x: auto; }
+.authoring-status { background: var(--meta-bg); padding: 12px; border-radius: 8px; }
+.authoring-list { padding-left: 24px; }
+.authoring-list li { padding: 10px 0; }
+.authoring-list .authoring-actions { margin-top: 8px; }
+.authoring-page :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+@media (max-width: 700px) { .authoring-grid { grid-template-columns: 1fr; } }

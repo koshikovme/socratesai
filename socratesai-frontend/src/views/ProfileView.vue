@@ -64,13 +64,13 @@
                   <span class="signal-pill" :class="task.status === 'SOLVED' ? 'signal-good' : 'signal-neutral'">
                     {{ task.status === 'SOLVED' ? 'Solved' : 'In progress' }}
                   </span>
-                  <router-link v-if="task.openable" class="ghost-btn" :to="`/tasks/${task.taskId}`">Open</router-link>
-                  <span v-else class="compact-chip">External</span>
+                  <router-link v-if="task.openable" class="ghost-btn" :to="`/problems/${task.taskId}`">Open</router-link>
+                  <span v-else class="compact-chip">Unavailable</span>
                 </div>
               </div>
             </div>
 
-            <p v-else class="muted">No attempts yet. Open a task and ask the mentor or submit code.</p>
+            <p v-else class="muted">No graded attempts yet. Submit a solution to record judged progress.</p>
           </section>
 
           <section class="card progress-panel">
@@ -108,7 +108,7 @@
                   </p>
                 </div>
                 <div class="activity-side">
-                  <span>{{ item.testsPassed ?? 0 }}/{{ (item.testsPassed ?? 0) + (item.testsFailed ?? 0) }} tests</span>
+                  <span>{{ item.testsPassed == null ? 'Execution unknown' : `${item.testsPassed}/${item.testsPassed + (item.testsFailed ?? 0)} tests` }} · {{ item.evidenceOrigin || 'Legacy' }}</span>
                   <small>{{ formatDate(item.createdAt) }}</small>
                 </div>
               </div>
@@ -122,12 +122,15 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onBeforeUnmount, ref } from 'vue'
 import AppHeader from '../components/AppHeader.vue'
 import { useAuthStore } from '../stores/auth'
 import { fetchMyProgress, updateMySettings } from '../services/userService'
 import { applyTheme, getStoredTheme, toggleTheme } from '../services/themeService'
 
+import { apiErrorMessage } from '../services/errors'
+import { registerSessionCleanup } from '../services/sessionLifecycle'
+const controller = new AbortController()
 const auth = useAuthStore()
 const progress = ref(null)
 const loading = ref(false)
@@ -170,12 +173,14 @@ async function loadProgress() {
   error.value = ''
 
   try {
-    progress.value = await fetchMyProgress()
+    const result = await fetchMyProgress({ signal: controller.signal })
+    if (controller.signal.aborted) return
+    progress.value = result
     if (progress.value?.profile?.darkMode !== undefined) {
       theme.value = applyTheme(progress.value.profile.darkMode ? 'dark' : 'light')
     }
   } catch (e) {
-    error.value = e?.response?.data?.message || 'Failed to load student progress'
+    if (!controller.signal.aborted) error.value = apiErrorMessage(e)
   } finally {
     loading.value = false
   }
@@ -185,15 +190,15 @@ async function toggleThemeMode() {
   theme.value = toggleTheme()
 
   try {
-    const updatedProfile = await updateMySettings({ darkMode: theme.value === 'dark' })
-    if (progress.value) {
+    const updatedProfile = await updateMySettings({ darkMode: theme.value === 'dark' }, { signal: controller.signal })
+    if (progress.value && !controller.signal.aborted) {
       progress.value = {
         ...progress.value,
         profile: updatedProfile
       }
     }
   } catch (e) {
-    error.value = e?.response?.data?.message || 'Theme changed locally, but could not be saved'
+    if (!controller.signal.aborted) error.value = apiErrorMessage(e)
   }
 }
 
@@ -225,5 +230,8 @@ function formatDate(value) {
   }).format(new Date(value))
 }
 
+function clear() { controller.abort(); progress.value = null; error.value = '' }
+const unregister = registerSessionCleanup(clear)
+onBeforeUnmount(() => { clear(); unregister() })
 onMounted(loadProgress)
 </script>

@@ -10,8 +10,8 @@ describe('FeedbackPanel', () => {
                     action: 'CODE_HIGHLIGHT',
                     compileSuccess: false,
                     feedbackText: 'Check the loop boundary.',
-                    errorType: 'OFF_BY_ONE',
-                    suspiciousRegion: 'line 3',
+                    evidenceOrigin: 'SUBMISSION',
+                    mentorState: 'semantic_debug',
                     testsPassed: 0,
                     testsFailed: 1,
                     interactionId: 'abc-123',
@@ -23,8 +23,8 @@ describe('FeedbackPanel', () => {
 
         expect(wrapper.text()).toContain('Code Highlight')
         expect(wrapper.text()).toContain('Check the loop boundary.')
-        expect(wrapper.text()).toContain('OFF_BY_ONE')
-        expect(wrapper.text()).toContain('line 3')
+        expect(wrapper.text()).toContain('SUBMISSION')
+        expect(wrapper.text()).toContain('semantic_debug')
         expect(wrapper.text()).toContain('Realtime')
         expect(wrapper.text()).toContain('Session session-1')
     })

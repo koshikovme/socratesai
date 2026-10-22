@@ -6,23 +6,23 @@
       <form @submit.prevent="handleRegister" class="auth-form">
         <input
             v-model="fullName"
-            type="text"
+            type="text" aria-label="Full name" maxlength="120" autocomplete="name"
             placeholder="Full name"
             required
         />
 
         <input
             v-model="email"
-            type="email"
+            type="email" aria-label="Email" maxlength="120" autocomplete="username"
             placeholder="Email"
             required
         />
 
         <input
             v-model="password"
-            type="password"
+            type="password" aria-label="Password" autocomplete="new-password"
             placeholder="Password"
-            minlength="6"
+            minlength="6" maxlength="100"
             required
         />
 
@@ -42,7 +42,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onBeforeUnmount } from 'vue'
+import { apiErrorMessage } from '../services/errors'
 import { useRouter, RouterLink } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { register } from '../services/authService'
@@ -55,6 +56,7 @@ const email = ref('')
 const password = ref('')
 const loading = ref(false)
 const error = ref('')
+onBeforeUnmount(() => { password.value = '' })
 
 async function handleRegister() {
   loading.value = true
@@ -72,9 +74,7 @@ async function handleRegister() {
     await router.push('/dashboard')
   } catch (e) {
     error.value =
-        e?.response?.data?.message ||
-        e?.response?.data?.error ||
-        'Registration failed'
+        apiErrorMessage(e)
   } finally {
     loading.value = false
   }

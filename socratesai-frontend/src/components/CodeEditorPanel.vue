@@ -2,12 +2,13 @@
   <div class="card editor-card">
     <div class="editor-toolbar">
       <span>Language: {{ normalizedLanguage }}</span>
-      <span>Attempt: {{ attemptNo }}</span>
+      <span>Full source buffer</span>
     </div>
 
     <div class="monaco-shell">
       <VueMonacoEditor
           v-model:value="localValue"
+          :key="contextId"
           :language="normalizedLanguage"
           theme="vs-dark"
           :options="editorOptions"
@@ -18,6 +19,7 @@
 </template>
 
 <script setup>
+import '../monaco-setup'
 import { computed } from 'vue'
 import { VueMonacoEditor } from '@guolao/vue-monaco-editor'
 
@@ -30,10 +32,7 @@ const props = defineProps({
     type: String,
     default: 'java'
   },
-  attemptNo: {
-    type: Number,
-    default: 1
-  }
+  contextId: { type: String, default: '' }
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -50,6 +49,8 @@ const normalizedLanguage = computed(() => {
     js: 'javascript',
     ts: 'typescript',
     py: 'python',
+    python3: 'python',
+    cpp17: 'cpp',
     cpp: 'cpp',
     csharp: 'csharp'
   }

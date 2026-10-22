@@ -1,19 +1,14 @@
-<template>
-  <section>
-    <div class="section-head">
-      <h2>{{ title }}</h2>
-    </div>
-    <div class="task-grid">
-      <TaskCard v-for="task in tasks" :key="task.id" :task="task" />
-    </div>
-  </section>
-</template>
-
 <script setup>
 import TaskCard from './TaskCard.vue'
 
 defineProps({
-  title: String,
-  tasks: Array
+  tasks: { type: Array, default: () => [] },
+  solvedIds: { type: Set, default: () => new Set() }
 })
 </script>
+
+<template>
+  <div class="task-grid">
+    <TaskCard v-for="task in tasks" :key="task.id" :task="task" :solved="solvedIds.has(String(task.id))" />
+  </div>
+</template>
