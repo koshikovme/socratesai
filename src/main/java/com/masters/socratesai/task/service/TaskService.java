@@ -1,102 +1,57 @@
 package com.masters.socratesai.task.service;
 
-import com.masters.socratesai.task.dto.CreateTaskRequest;
-import com.masters.socratesai.task.dto.CreateTaskTestRequest;
-import com.masters.socratesai.task.dto.TaskResponse;
-import com.masters.socratesai.task.model.Task;
-import com.masters.socratesai.task.model.TaskTest;
-import com.masters.socratesai.task.repo.TaskRepository;
+import com.masters.socratesai.common.api.*;
+import com.masters.socratesai.common.model.ContentVisibility;
+import com.masters.socratesai.task.dto.*;
+import com.masters.socratesai.task.model.OutputComparison;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-@Service
-@RequiredArgsConstructor
+/** Compatibility facade. All native permissions and publication gates remain mandatory. */
+@Service @Validated @RequiredArgsConstructor
 public class TaskService {
+    private final TeacherProblemService teacher;
+    private final StudentProblemService student;
 
-    private final TaskRepository taskRepository;
-
-    @Transactional
-    public TaskResponse createTask(CreateTaskRequest request) {
-        Task task = Task.builder()
-                .title(request.getTitle())
-                .topic(request.getTopic())
-                .difficulty(request.getDifficulty())
-                .language(request.getLanguage())
-                .description(request.getDescription())
-                .starterCode(request.getStarterCode())
-                .published(Boolean.TRUE.equals(request.getPublished()))
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        if (request.getTests() != null) {
-            for (CreateTaskTestRequest testRequest : request.getTests()) {
-                TaskTest test = TaskTest.builder()
-                        .task(task)
-                        .inputData(testRequest.getInputData())
-                        .expectedOutput(testRequest.getExpectedOutput())
-                        .hidden(Boolean.TRUE.equals(testRequest.getHidden()))
-                        .build();
-                task.getTests().add(test);
-            }
-        }
-
-        taskRepository.save(task);
-        return toResponse(task, true);
+    public TaskResponse createTask(@Valid CreateTaskRequest request) {
+        if (Boolean.TRUE.equals(request.getPublished())) throw new ApiException(ApiErrorCode.INVALID_REQUEST);
+        var language = new ProblemLanguageRequest(request.getLanguage(), request.getStarterCode(), 2000, 5000, 262144, 65536);
+        var cases = request.getTests() == null ? List.<ProblemTestCaseRequest>of() : java.util.stream.IntStream.range(0, request.getTests().size())
+                .mapToObj(index -> {
+                    var test = request.getTests().get(index);
+                    return new ProblemTestCaseRequest(index, test.getInputData(), test.getExpectedOutput(), Boolean.TRUE.equals(test.getHidden()));
+                }).toList();
+        return author(teacher.create(new ProblemDraftRequest(0L, request.getTitle(), request.getTopic(), request.getDifficulty(),
+                request.getDescription(), "", "", "", OutputComparison.IGNORE_TRAILING_LINE_ENDINGS,
+                ContentVisibility.AUTHENTICATED, List.of(language), cases)));
     }
 
-    @Transactional(readOnly = true)
     public List<TaskResponse> getPublicTasks() {
-        return taskRepository.findByPublishedTrue()
-                .stream()
-                .map(task -> toResponse(task, false))
-                .toList();
+        return student.list(0, 50).items().stream().map(summary -> student(student.get(summary.id(), null))).toList();
+    }
+    public TaskResponse getTaskForStudent(Long id) { return student(student.get(id, null)); }
+    public TaskResponse getTaskForTeacher(Long id) { return author(teacher.get(id)); }
+
+    private TaskResponse author(ProblemAuthorResponse response) {
+        var version = response.version();
+        var first = version.languages().stream().findFirst().orElse(null);
+        return TaskResponse.builder().id(response.id()).title(version.title()).topic(version.topic()).difficulty(version.difficulty())
+                .description(version.statement()).language(first == null ? "unspecified" : first.languageKey())
+                .starterCode(first == null ? null : first.starterCode()).published(response.publishedVersionId() != null)
+                .tests(version.tests().stream().map(test -> TaskResponse.TaskTestResponse.builder().id(test.id()).inputData(test.inputData())
+                        .expectedOutput(test.expectedOutput()).hidden(test.hidden()).build()).toList()).build();
     }
 
-    @Transactional(readOnly = true)
-    public TaskResponse getTaskForStudent(Long id) throws ChangeSetPersister.NotFoundException {
-        Task task = taskRepository.findById(id)
-                .orElseThrow(ChangeSetPersister.NotFoundException::new);
-
-        if (!Boolean.TRUE.equals(task.getPublished())) {
-            throw new ChangeSetPersister.NotFoundException();
-        }
-
-        return toResponse(task, false);
-    }
-
-    @Transactional(readOnly = true)
-    public TaskResponse getTaskForTeacher(Long id) throws ChangeSetPersister.NotFoundException {
-        Task task = taskRepository.findById(id)
-                .orElseThrow(ChangeSetPersister.NotFoundException::new);
-        return toResponse(task, true);
-    }
-
-    private TaskResponse toResponse(Task task, boolean includeHiddenTests) {
-        return TaskResponse.builder()
-                .id(task.getId())
-                .title(task.getTitle())
-                .topic(task.getTopic())
-                .difficulty(task.getDifficulty())
-                .language(task.getLanguage())
-                .description(task.getDescription())
-                .starterCode(task.getStarterCode())
-                .published(task.getPublished())
-                .tests(
-                        task.getTests().stream()
-                                .filter(t -> includeHiddenTests || !Boolean.TRUE.equals(t.getHidden()))
-                                .map(t -> TaskResponse.TaskTestResponse.builder()
-                                        .id(t.getId())
-                                        .inputData(t.getInputData())
-                                        .expectedOutput(t.getExpectedOutput())
-                                        .hidden(t.getHidden())
-                                        .build())
-                                .toList()
-                )
-                .build();
+    private TaskResponse student(ProblemResponse response) {
+        var first = response.languages().stream().findFirst().orElse(null);
+        return TaskResponse.builder().id(response.id()).title(response.title()).topic(response.topic()).difficulty(response.difficulty())
+                .description(response.statement()).language(first == null ? "unspecified" : first.languageKey())
+                .starterCode(first == null ? null : first.starterCode()).published(true)
+                .tests(response.samples().stream().map(sample -> TaskResponse.TaskTestResponse.builder().inputData(sample.inputData())
+                        .expectedOutput(sample.expectedOutput()).hidden(false).build()).toList()).build();
     }
 }

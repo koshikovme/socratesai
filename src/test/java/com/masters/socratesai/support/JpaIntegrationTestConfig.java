@@ -34,7 +34,6 @@ import java.util.Map;
         InteractionLogRepository.class
 })
 @ComponentScan(basePackageClasses = {
-        TaskService.class,
         StudentTaskSessionService.class,
         InteractionLogService.class
 })
@@ -54,6 +53,7 @@ public class JpaIntegrationTestConfig {
         bean.setDataSource(dataSource);
         bean.setPackagesToScan(
                 Task.class.getPackageName(),
+                com.masters.socratesai.task.verification.ReferenceVerification.class.getPackageName(),
                 StudentTaskSession.class.getPackageName(),
                 InteractionLog.class.getPackageName()
         );

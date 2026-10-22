@@ -3,10 +3,12 @@ package com.masters.socratesai.config;
 import com.masters.socratesai.security.CustomUserDetailsService;
 import com.masters.socratesai.security.JwtAuthFilter;
 import jakarta.servlet.DispatcherType;
-import jakarta.servlet.http.HttpServletResponse;
+import com.masters.socratesai.common.api.ApiErrorCode;
+import com.masters.socratesai.common.api.ApiErrors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.*;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -34,14 +36,10 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {
-                            if (!response.isCommitted()) {
-                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-                            }
+                            ApiErrors.write(ApiErrorCode.AUTHENTICATION_REQUIRED, request, response);
                         })
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
-                            if (!response.isCommitted()) {
-                                response.sendError(HttpServletResponse.SC_FORBIDDEN);
-                            }
+                            ApiErrors.write(ApiErrorCode.FORBIDDEN, request, response);
                         })
                 )
                 .authorizeHttpRequests(auth -> auth
@@ -57,7 +55,10 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
                         .requestMatchers("/api/tasks/public/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/problems", "/api/problems/*", "/api/problems/*/versions/*",
+                                "/api/collections", "/api/collections/*", "/api/languages").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/teacher/**").hasAnyRole("TEACHER", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())

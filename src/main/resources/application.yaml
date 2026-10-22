@@ -31,6 +31,18 @@ logging:
     liquibase: info
 
 app:
+  authoring:
+    verification:
+      timeout: ${APP_REFERENCE_VERIFICATION_TIMEOUT:30s}
+      evidence-ttl: ${APP_REFERENCE_VERIFICATION_EVIDENCE_TTL:30m}
+      max-concurrent: ${APP_REFERENCE_VERIFICATION_MAX_CONCURRENT:4}
+      batch-size: ${APP_REFERENCE_VERIFICATION_BATCH_SIZE:5}
+  admin:
+    bootstrap:
+      enabled: ${APP_ADMIN_BOOTSTRAP_ENABLED:false}
+      email: ${APP_ADMIN_BOOTSTRAP_EMAIL:}
+      password: ${APP_ADMIN_BOOTSTRAP_PASSWORD:}
+      full-name: ${APP_ADMIN_BOOTSTRAP_FULL_NAME:}
   execution:
     judge0:
       enabled: ${APP_JUDGE0_ENABLED:false}

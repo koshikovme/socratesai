@@ -57,6 +57,8 @@ public class Judge0Properties {
                 && spec.providerName != null && spec.providerName.length() <= 200 && spec.providerName.contains(spec.version)));
         require(runtimes.stream().map(RuntimeSpec::getKey).distinct().count() == runtimes.size());
         require(runtimes.stream().map(RuntimeSpec::getLanguageId).distinct().count() == runtimes.size());
+        require(runtimes.stream().map(RuntimeSpec::getLanguageKey).distinct().count() == runtimes.size());
+        require(runtimes.stream().allMatch(spec -> spec.entryPoint == null || spec.entryPoint.length() <= 120));
     }
 
     public URI endpoint() {
@@ -88,5 +90,6 @@ public class Judge0Properties {
         private String version;
         private int languageId;
         private String providerName;
+        private String entryPoint;
     }
 }

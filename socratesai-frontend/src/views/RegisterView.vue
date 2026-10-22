@@ -26,11 +26,6 @@
             required
         />
 
-        <select v-model="role" required>
-          <option value="STUDENT">Student</option>
-          <option value="MENTOR">Mentor</option>
-        </select>
-
         <button class="primary-btn" :disabled="loading">
           {{ loading ? 'Creating account...' : 'Register' }}
         </button>
@@ -58,7 +53,6 @@ const auth = useAuthStore()
 const fullName = ref('')
 const email = ref('')
 const password = ref('')
-const role = ref('STUDENT')
 const loading = ref(false)
 const error = ref('')
 
@@ -71,7 +65,7 @@ async function handleRegister() {
       fullName: fullName.value,
       email: email.value,
       password: password.value,
-      role: role.value
+      role: 'STUDENT'
     })
 
     auth.setAuth(data)

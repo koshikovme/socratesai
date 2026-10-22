@@ -9,4 +9,5 @@ public interface ProblemLanguageConfigRepository extends JpaRepository<ProblemLa
     List<ProblemLanguageConfig> findAllByProblemVersion_IdOrderByLanguageKey(Long problemVersionId);
 
     Optional<ProblemLanguageConfig> findByProblemVersion_IdAndLanguageKey(Long problemVersionId, String languageKey);
+    void deleteAllByProblemVersion_Id(Long problemVersionId);
 }

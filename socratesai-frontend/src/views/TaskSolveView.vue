@@ -7,7 +7,7 @@
           <p class="eyebrow">Workspace</p>
           <h2>{{ task.title }}</h2>
           <p class="solve-meta">{{ task.topic }} / {{ task.language }} / {{ task.difficulty }}</p>
-          <p class="muted">{{ task.description }}</p>
+          <SafeMarkdown class="muted" :content="task.description" />
         </div>
 
         <div class="solve-hero-actions">
@@ -91,6 +91,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import AppHeader from '../components/AppHeader.vue'
+import SafeMarkdown from '../components/SafeMarkdown.vue'
 import FeedbackPanel from '../components/FeedbackPanel.vue'
 import CodeEditorPanel from '../components/CodeEditorPanel.vue'
 import { fetchTaskById } from '../services/taskService'

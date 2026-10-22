@@ -18,6 +18,6 @@ public record ProblemResponse(
         String outputFormat,
         String constraintsText,
         OutputComparison comparisonMode,
-        List<ProblemLanguageResponse> languages,
+        List<StudentProblemLanguageResponse> languages,
         List<ProblemSampleResponse> samples
 ) {}

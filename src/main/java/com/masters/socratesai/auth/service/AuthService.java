@@ -10,7 +10,9 @@ import com.masters.socratesai.user.model.UserRole;
 import com.masters.socratesai.user.model.UserSettings;
 import com.masters.socratesai.user.repo.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
+import com.masters.socratesai.common.api.ApiException;
+import com.masters.socratesai.common.api.ApiErrorCode;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.authentication.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,18 +28,20 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
-    public AuthResponse register(RegisterRequest request) throws BadRequestException {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new BadRequestException("Email already exists");
+    @Transactional
+    public AuthResponse register(RegisterRequest request) {
+        if (request.getRole() != null && request.getRole() != UserRole.STUDENT) {
+            throw new ApiException(ApiErrorCode.INVALID_REQUEST);
         }
-
-        UserRole role = request.getRole() == null ? UserRole.STUDENT : request.getRole();
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new ApiException(ApiErrorCode.CONFLICT);
+        }
 
         User user = User.builder()
                 .email(request.getEmail())
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
                 .fullName(request.getFullName())
-                .role(role)
+                .role(UserRole.STUDENT)
                 .settings(UserSettings.builder().build())
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -56,7 +60,7 @@ public class AuthService {
                 .build();
     }
 
-    public AuthResponse login(LoginRequest request) throws BadRequestException {
+    public AuthResponse login(LoginRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -65,7 +69,7 @@ public class AuthService {
         );
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new BadRequestException("Invalid credentials"));
+                .orElseThrow(() -> new ApiException(ApiErrorCode.AUTHENTICATION_REQUIRED));
 
         String token = jwtService.generateToken(new SecurityUserDetails(user));
 

@@ -65,4 +65,11 @@ public class ProblemVersion extends VersionedEntity {
     private Boolean legacySnapshot = false;
 
     private java.time.OffsetDateTime publishedAt;
+
+    private java.util.UUID referenceVerificationId;
+
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private com.masters.socratesai.common.model.ContentVisibility visibility = com.masters.socratesai.common.model.ContentVisibility.AUTHENTICATED;
 }

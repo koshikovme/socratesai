@@ -1,8 +1,8 @@
 # SocratesAI evolution: architecture blueprint and implementation checklist
 
-**Status:** Plan approved. The authorized Steps 1–2 schema scope and Step 3 sandbox adapter/comparator are implemented and locally verified. Actual sandbox hosting/execution and remaining tasks stay explicitly unchecked.
+**Status:** Plan approved. The authorized Steps 1–2 schema scope, Step 3 adapter and Step 4 secure authoring APIs are implemented and locally verified. Actual sandbox hosting/execution, the frontend catalog transition and remaining phases stay explicitly unchecked.
 **Prepared:** 2026-10-21.
-**Last updated:** 2026-10-22. See [result-1-schema.md](./result-1-schema.md) for schema/contracts and [result-3-sandbox.md](./result-3-sandbox.md) for adapter verification and the missing execution host.
+**Last updated:** 2026-10-22. See [result-1-schema.md](./result-1-schema.md) for schema/contracts and [result-3-sandbox.md](./result-3-sandbox.md) for adapter verification and the missing execution host. See [result-4-authoring.md](./result-4-authoring.md) for role provisioning, authoring, publication and collection contracts/tests.
 **Workspace:** `/home/koshikovalimzhan/IdeaProjects/socratesai`.
 **Task folder:** `tasks/socrates-evolution/` relative to the repository root. The requested `/tasks/...` paths refer to this repository folder, not an operating-system directory.
 **Requirements source:** [task-context.md](./task-context.md), read before preparing this plan.
@@ -491,18 +491,18 @@ Work proceeds in the order below. Each stage ends with a scoped reviewable chang
 
 **Depends on:** Step 2 and Step 3 for verification/publication. **Primary areas:** auth/security, problem/task, collection modules.
 
-- [ ] **P4.1** Restrict public registration to students and add privilege-escalation regression tests.
-- [ ] **P4.2** Implement audited first-admin provisioning and admin-only role changes with no default credentials.
-- [ ] **P4.3** Centralize current-user/resource policies and test teacher A/teacher B/student/admin access.
-- [ ] **P4.4** Implement own-content listing, draft creation/read/update/deletion, nested validation, pagination, and optimistic conflict handling.
-- [ ] **P4.5** Implement version cloning and immutable publication; validate runtime/test/statement/limit requirements.
-- [ ] **P4.6** Queue staff reference verification through the sandbox; require verification of the exact draft hash before publication.
-- [ ] **P4.7** Implement collection CRUD, bounded member selection, transactional reorder, pinned versions, publish validation, and archive.
-- [ ] **P4.8** Implement student/public projections that never serialize hidden tests, staff reference code, or private authoring fields.
-- [ ] **P4.9** Add native catalog/detail/language endpoints and same-policy legacy task adapters; deprecate the external catalog path intentionally.
-- [ ] **P4.10** Add integration tests for foreign ownership, unpublished access, stale edits, invalid membership, missing tests, and archive/delete references.
-- [ ] **P4.11** Verify raw stored statement/output content is safely rendered/encoded and errors do not leak data.
-- [ ] **P4.12** Write `result-4-authoring.md` with endpoints, permissions, publication behavior, and test evidence.
+- [x] **P4.1** Restrict public registration to students and add privilege-escalation regression tests. Implemented in validation/service; public staff signup is rejected, and the registration UI offers only student signup.
+- [x] **P4.2** Implement audited first-admin provisioning and admin-only role changes with no default credentials. External opt-in bootstrap, serialized last-admin protection, atomic append-only audit, expected-role conflicts and stale-JWT role revocation verified.
+- [x] **P4.3** Centralize current-user/resource policies and test teacher A/teacher B/student/admin access. CurrentActor, problem/collection ownership guards and same-policy legacy facade implemented; broader WS/research authorization remains Step 6.
+- [x] **P4.4** Implement own-content listing, draft creation/read/update/deletion, nested validation, pagination, and optimistic conflict handling. Bounded pages and root revision tokens with @Version are implemented/tested.
+- [x] **P4.5** Implement version cloning and immutable publication; validate runtime/test/statement/limit requirements. Draft edits preserve the current published snapshot; publication transaction updates verified language flags and the pinned root pointer atomically.
+- [x] **P4.6** Queue staff reference verification through the sandbox; require verification of the exact draft hash before publication. After-commit bounded coordinator executes all language/batch snapshots through CodeExecutionPort; persisted proof/hash/TTL gates publication. Restarted pending work fails closed by deadline; generic durable worker recovery remains Step 5. Live execution still requires Step 3 infrastructure.
+- [x] **P4.7** Implement collection CRUD, bounded member selection, transactional reorder, pinned versions, publish validation, and archive. Same-revision concurrent reorders have one winner; invalid selection rolls back, public collections cannot disclose restricted members.
+- [x] **P4.8** Implement student/public projections that never serialize hidden tests, staff reference code, or private authoring fields. Separate student language/collection DTOs and sample-only queries; public sample ordinals do not expose hidden case positions.
+- [ ] **P4.9** Add native catalog/detail/language endpoints and same-policy legacy task adapters; deprecate the external catalog path intentionally. Partial: native APIs and secure compatibility facade are implemented; frontend LeetCode catalog replacement/deprecation stays with Step 7. Legacy unverified content is excluded until a new version passes verification.
+- [x] **P4.10** Add integration tests for foreign ownership, unpublished access, stale edits, invalid membership, missing tests, and archive/delete references. PostgreSQL HTTP matrix, concurrency, audit rollback, hash/TTL gates and projection privacy all pass.
+- [x] **P4.11** Verify raw stored statement/output content is safely rendered/encoded and errors do not leak data. SafeMarkdown uses escaped Vue text interpolation; malicious content tests and structured safe error envelopes pass.
+- [x] **P4.12** Write result-4-authoring.md with endpoints, permissions, publication behavior, and test evidence. Report complete; initial delivery left changes uncommitted, and the subsequent user request authorizes Git publication.
 
 **Exit:** Staff can create and publish verified native content; students can read only permitted projections; public registration cannot create staff.
 
@@ -671,9 +671,9 @@ New smoke/benchmark/experiment outputs use a new directory or prefix, never over
 | Shared DB disruption | Isolated fixtures/tests and explicit permission before any unsafe shared mutation/load. |
 | Missing visual references or ambiguous product scope | Conventional initial UX; record open decisions; obtain references only if exact visual matching is required. |
 
-**Current progress:** Step 0 and the authorized DTO/schema scope of Steps 1–2 are complete and accepted by the user. Step 3 adapter/comparator/polling/privacy implementation is complete and locally verified; infrastructure feasibility and actual isolated execution are still open. The latest backend verification and scope boundaries are recorded in `result-3-sandbox.md`. Steps 4–10, actual sandbox execution, model retraining, shared/production migration, hosting, and production smoke testing are not completed.
+**Current progress:** Step 0, the accepted Steps 1–2 DTO/schema scope, Step 3 adapter and the requested Step 4 authoring/security scope are implemented and locally verified. Latest backend clean verify: 216 tests, no failures/errors, one existing opt-in experiment skipped; frontend: 15 passing tests and successful production build. See `result-4-authoring.md`. P4.9 remains partial because the frontend external catalog transition belongs to Step 7. Actual isolated execution, general durable orchestration (Step 5), WS/ML adaptation, production migration/hosting and production smoke testing remain open.
 
-**Next action:** Establish the dedicated sandbox and approve its image/runtime catalog (P3.1/2/4), then perform real execution/isolation/overhead tests (P3.6/8/9/10/11). Teacher APIs can proceed separately where they do not require verified execution; publication and public execution remain gated. Keep legacy mappings, atomic native session counters, staging rollback and durable Step 5 worker orchestration explicitly pending. The adapter is not connected to controllers/jobs/WS yet.
+**Next action:** Review the Step 4 working-directory delivery. Actual author reference execution/publication requires the dedicated sandbox and remaining P3 infrastructure checks. Continue with Step 5 durable run/submission orchestration when requested; preserve existing reference proof/ownership/privacy gates and plan reference recovery integration. P4.9 frontend catalog migration remains Step 7; legacy identity reconciliation, atomic session counters, staging rollback and WS evidence semantics remain explicitly pending.
 
 **How to maintain this file:** Mark a task complete only after its code and required verification exist. Append a dated factual session entry with changed files, decisions, commands/results, artifact locations, open blockers, and the next task ID. Keep rationale and decisions concise; do not store secrets, private student data, or speculative results.
 
@@ -710,3 +710,20 @@ New smoke/benchmark/experiment outputs use a new directory or prefix, never over
 - Verification, actual test counts, operational defaults and missing host/image/runtime evidence are recorded in `result-3-sandbox.md`; application integration and operator configuration are in `docs/sandbox.md`. Shared databases 21/22 were not accessed.
 - Final local verification: `bash mvnw -B verify` on Java 21; BUILD SUCCESS, 178 tests, zero failures/errors, one existing opt-in experiment skipped. All 79 new sandbox cases (26 HTTP) and 5 added regression cases passed; global/core JaCoCo gates passed without threshold changes.
 - Step 3 infrastructure exit is deliberately open: no deployment digest, installed compiler, host isolation, real runtime quota or throughput evidence is claimed. No student execution endpoint or production deployment is enabled by this delivery.
+
+### Secure authoring implementation session — 2026-10-22
+
+- User accepted Step 3 logic and authorized Step 4 implementation, isolated verification, report/checklist updates and working-directory changes only. The latest no-commit/no-push instruction supersedes prior publication authorization for this delivery.
+- Added strict student signup, external one-time admin bootstrap, audited admin-only role assignment and current database role/owner checks; protected the last admin and role/audit transaction atomicity.
+- Added V10 without altering V1–V9 or ML log fields. Added secure problem draft CRUD/cloning, per-version visibility, bounded asynchronous all-language reference verification, exact-content hash/TTL proof and atomic immutable publication.
+- Added owned collection CRUD/publish/archive, pinned published versions, validated transactional reorder and optimistic conflicts. Separate student projections omit hidden/source/provider/authoring details and fail closed for invalid or archived members. Legacy task endpoints now delegate to these same policies and cannot publish directly.
+- Added escaped-text SafeMarkdown rendering to the current solver, removed non-student role selection from signup, and standardized safe API errors including security filter responses. Full native UI/catalog replacement remains Step 7.
+- Final Java 21 `bash mvnw -B clean verify`: BUILD SUCCESS, 216 tests, zero failures/errors, one existing opt-in experiment skipped; existing global/core coverage gates passed. New backend cases: 27 PostgreSQL HTTP security + 4 bootstrap unit + 6 reference coordinator + 1 PostgreSQL bootstrap/audit = 38.
+- Node 22.23.1 npm ci/test/build: 15 tests passed and production build succeeded. No dependency/lockfile changes. Shared databases 21/22, private datasets, production services and real student execution were not used; only disposable PostgreSQL/H2 and synthetic execution fixtures.
+- Report: `result-4-authoring.md`. Generic durable execution recovery, actual sandbox/runtime certification, full WS/ML wiring and hosting remain open. Git index/history/remotes and unrelated existing research artifacts were left untouched.
+
+### Step 4 publication request — 2026-10-22
+
+- User explicitly requested a push after the working-directory delivery. This supersedes the earlier no-commit/no-push restriction for the Step 4 changes.
+- Publish the verified authoring/security implementation, its tests, frontend escaping changes and task documentation as one semantic commit on the current branch. Exclude unrelated research artifacts and local configuration.
+- Application code is unchanged since the successful Java 21 clean verify (216 tests, no failures/errors, one existing opt-in skip) and frontend test/build verification (15 passing tests). Only publication notes changed afterward.

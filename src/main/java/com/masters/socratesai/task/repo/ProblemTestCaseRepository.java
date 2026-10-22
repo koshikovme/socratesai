@@ -10,4 +10,5 @@ public interface ProblemTestCaseRepository extends JpaRepository<ProblemTestCase
     List<ProblemTestCase> findAllByProblemVersion_IdAndHiddenFalseOrderByPosition(Long problemVersionId);
 
     long countByProblemVersion_Id(Long problemVersionId);
+    void deleteAllByProblemVersion_Id(Long problemVersionId);
 }

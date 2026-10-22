@@ -14,4 +14,6 @@ public interface ProblemVersionRepository extends JpaRepository<ProblemVersion, 
                                                                                  ProblemVersionStatus status);
 
     Slice<ProblemVersion> findAllByProblem_IdOrderByVersionNumberDesc(Long problemId, Pageable pageable);
+    Optional<ProblemVersion> findFirstByProblem_IdOrderByVersionNumberDesc(Long problemId);
+    long countByProblem_Id(Long problemId);
 }

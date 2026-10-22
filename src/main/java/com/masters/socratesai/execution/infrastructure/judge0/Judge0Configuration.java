@@ -70,7 +70,7 @@ public class Judge0Configuration {
 
     @Bean
     CodeExecutionPort codeExecutionPort(Judge0Properties properties, Judge0HttpClient client,
-                                       SandboxAsyncRuntime runtime, @Qualifier("judge0Clock") Clock clock) {
+                                       @Qualifier("judge0AsyncRuntime") SandboxAsyncRuntime runtime, @Qualifier("judge0Clock") Clock clock) {
         return new Judge0ExecutionAdapter(properties, client, new Judge0RuntimeRegistry(properties, clock),
                 new SandboxRequestValidator(properties), new Judge0ResultMapper(new OutputComparator()),
                 new ExecutionResultAggregator(), runtime, new BackoffPolicy(properties.getInitialBackoff(), properties.getMaxBackoff()));

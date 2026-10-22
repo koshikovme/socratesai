@@ -24,6 +24,9 @@ class ApiFlowE2ETest {
 
     @Autowired
     private MockMvc mockMvc;
+    @Autowired private com.masters.socratesai.user.repo.UserRepository users;
+    @Autowired private org.springframework.security.crypto.password.PasswordEncoder passwords;
+    @Autowired private com.masters.socratesai.security.JwtService jwt;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -39,14 +42,14 @@ class ApiFlowE2ETest {
                                   "language": "java",
                                   "description": "desc",
                                   "starterCode": "class Main {}",
-                                  "published": true
+                                  "published": false
                                 }
                                 """))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    void shouldRegisterTeacherAndCreatePublishedTask() throws Exception {
+    void provisionedTeacherCanCreateDraftThroughLegacyFacade() throws Exception {
         String token = registerTeacher("teacher-midterm-1@example.com");
 
         mockMvc.perform(post("/api/tasks")
@@ -60,16 +63,16 @@ class ApiFlowE2ETest {
                                   "language": "java",
                                   "description": "Count numbers",
                                   "starterCode": "class Main {}",
-                                  "published": true
+                                  "published": false
                                 }
                                 """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Midterm Published Task"))
-                .andExpect(jsonPath("$.published").value(true));
+                .andExpect(jsonPath("$.published").value(false));
     }
 
     @Test
-    void shouldExposePublishedTaskInPublicListingAfterTeacherCreation() throws Exception {
+    void draftCreatedThroughLegacyFacadeIsNotPublic() throws Exception {
         String token = registerTeacher("teacher-midterm-2@example.com");
 
         mockMvc.perform(post("/api/tasks")
@@ -83,7 +86,7 @@ class ApiFlowE2ETest {
                                   "language": "java",
                                   "description": "Check sign",
                                   "starterCode": "class Main {}",
-                                  "published": true
+                                  "published": false
                                 }
                                 """))
                 .andExpect(status().isOk());
@@ -94,24 +97,14 @@ class ApiFlowE2ETest {
                 .getResponse()
                 .getContentAsString();
 
-        assertThat(body).contains("Visible Public Task");
+        assertThat(body).doesNotContain("Visible Public Task");
     }
 
-    private String registerTeacher(String email) throws Exception {
-        MvcResult result = mockMvc.perform(post("/api/auth/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                  "email": "%s",
-                                  "password": "password123",
-                                  "fullName": "Midterm Teacher",
-                                  "role": "TEACHER"
-                                }
-                                """.formatted(email)))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        JsonNode json = objectMapper.readTree(result.getResponse().getContentAsString());
-        return json.get("token").asText();
+    private String registerTeacher(String email) {
+        var teacher = users.save(com.masters.socratesai.user.model.User.builder().email(email).fullName("Synthetic teacher")
+                .passwordHash(passwords.encode("test-fixture-password"))
+                .role(com.masters.socratesai.user.model.UserRole.TEACHER).createdAt(java.time.LocalDateTime.now())
+                .settings(com.masters.socratesai.user.model.UserSettings.builder().build()).build());
+        return jwt.generateToken(new com.masters.socratesai.security.SecurityUserDetails(teacher));
     }
 }

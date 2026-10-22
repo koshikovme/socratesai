@@ -58,6 +58,31 @@ class ContesterSchemaPostgresTest {
     private JdbcTemplate jdbc;
     private String schema;
 
+    @Test
+    void bootstrapsAdministratorOnceAndPersistsAnImmutableAuditOnPostgres() {
+        migrate("10");
+        var properties = new com.masters.socratesai.admin.service.AdminBootstrapProperties();
+        properties.setEnabled(true);
+        properties.setEmail("operator-fixture@example.test"); properties.setFullName("Synthetic operator");
+        String fixturePassword = UUID.randomUUID() + "-test-only";
+        properties.setPassword(fixturePassword);
+        var encoder = new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder();
+        try (var context = repositories()) {
+            var service = new com.masters.socratesai.admin.service.AdminBootstrapService(properties,
+                    context.getBean(com.masters.socratesai.admin.repo.AdministrationStateRepository.class),
+                    context.getBean(com.masters.socratesai.user.repo.UserRepository.class),
+                    context.getBean(com.masters.socratesai.admin.repo.RoleChangeAuditRepository.class), encoder);
+            transactions(context).executeWithoutResult(status -> service.initialize());
+            transactions(context).executeWithoutResult(status -> service.initialize());
+        }
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM users WHERE role='ADMIN'", Integer.class)).isEqualTo(1);
+        assertThat(encoder.matches(fixturePassword, jdbc.queryForObject("SELECT password_hash FROM users WHERE role='ADMIN'", String.class))).isTrue();
+        assertThat(jdbc.queryForObject("SELECT bootstrap_completed FROM administration_state WHERE id=1", Boolean.class)).isTrue();
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM role_change_audit WHERE action='BOOTSTRAP' AND actor_id IS NULL", Integer.class)).isEqualTo(1);
+        assertThatThrownBy(() -> jdbc.update("UPDATE role_change_audit SET reason='tampered'"))
+                .isInstanceOf(DataIntegrityViolationException.class);
+    }
+
     @BeforeEach
     void createIsolatedSchema() {
         schema = "contester_" + UUID.randomUUID().toString().replace("-", "");
@@ -72,9 +97,9 @@ class ContesterSchemaPostgresTest {
 
     @Test
     void migratesEmptyDatabaseAndValidatesAllJpaMappingsAndRepositories() {
-        assertThat(flyway("9").migrate().migrationsExecuted).isEqualTo(9);
-        assertThat(flyway("9").migrate().migrationsExecuted).isZero();
-        assertThat(flyway("9").validateWithResult().validationSuccessful).isTrue();
+        assertThat(flyway("10").migrate().migrationsExecuted).isEqualTo(10);
+        assertThat(flyway("10").migrate().migrationsExecuted).isZero();
+        assertThat(flyway("10").validateWithResult().validationSuccessful).isTrue();
         try (var context = repositories()) {
             assertThat(context.getBean(ProblemVersionRepository.class)).isNotNull();
             assertThat(context.getBean(SubmissionRepository.class)).isNotNull();
@@ -161,6 +186,9 @@ class ContesterSchemaPostgresTest {
         assertThat(jdbc.queryForObject("SELECT context_source FROM interaction_logs WHERE interaction_id = ?", String.class, interaction))
                 .isEqualTo("LEGACY_UNKNOWN");
         assertThat(flyway("9").migrate().migrationsExecuted).isZero();
+        migrate("10");
+        assertThat(jdbc.queryForMap("SELECT * FROM interaction_logs WHERE interaction_id = ?", interaction)).containsAllEntriesOf(oldLog);
+        assertThat(jdbc.queryForMap("SELECT * FROM expert_action_labels WHERE interaction_id = ?", interaction)).isEqualTo(oldLabel);
     }
 
     @Test
@@ -358,6 +386,7 @@ class ContesterSchemaPostgresTest {
     }
 
     private AnnotationConfigApplicationContext repositories() {
+        migrate("10");
         var context = new AnnotationConfigApplicationContext();
         context.registerBean("dataSource", DataSource.class, () -> dataSource);
         context.register(RepositoryConfig.class);
