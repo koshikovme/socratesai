@@ -6,4 +6,6 @@ import lombok.Builder;
 public record SubmissionDetailResponse(
         SubmissionResponse submission,
         String sourceCode
-) {}
+) {
+    @Override public String toString() { return "SubmissionDetailResponse[redacted]"; }
+}

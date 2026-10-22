@@ -510,18 +510,20 @@ Work proceeds in the order below. Each stage ends with a scoped reviewable chang
 
 **Depends on:** Steps 2–4. **Primary areas:** submission/execution services, repositories, profile/progress.
 
-- [ ] **P5.1** Implement authenticated/idempotent sample-run and submission creation with source/version/runtime snapshots and `202` responses.
-- [ ] **P5.2** Assign formal attempt numbers server-side; do not count typing, mentor requests, sample runs, or duplicate POST retries as new submissions.
-- [ ] **P5.3** Atomically claim bounded jobs and implement lease ownership/generation fencing without long network-held DB transactions.
-- [ ] **P5.4** Persist token/case mappings and implement poll/backoff, total deadlines, safe retries, and provider-create ambiguity handling.
-- [ ] **P5.5** Normalize/store results and aggregate only complete required evidence; terminalize infrastructure failures distinctly.
-- [ ] **P5.6** Implement owner-scoped run/submission status/history endpoints and authorized teacher review projections.
-- [ ] **P5.7** Mask hidden outputs/diagnostics and prevent direct test ID/provider token enumeration through student APIs.
-- [ ] **P5.8** Derive solved progress from real accepted submissions and update profile/collection progress accordingly; label historical heuristic results as legacy.
-- [ ] **P5.9** Publish safe completion events after commit while retaining HTTP polling as the recovery path.
-- [ ] **P5.10** Add per-user/global queue limits, admission control, job cleanup, sample-result TTL, and bounded source/diagnostic retention.
-- [ ] **P5.11** Test duplicate submit, partial case failure, empty suite, timeout, provider outage, lost worker lease, restart recovery, concurrent workers, and stale completion.
-- [ ] **P5.12** Write `result-5-submissions.md` with state-machine behavior, failure semantics, capacity measurements, and test evidence.
+- [x] **P5.1** Implement authenticated/idempotent sample-run and submission creation with source/version/runtime snapshots and `202` responses.
+- [x] **P5.2** Assign formal attempt numbers server-side; do not count typing, mentor requests, sample runs, or duplicate POST retries as new submissions.
+- [x] **P5.3** Atomically claim bounded jobs and implement lease ownership/generation fencing without long network-held DB transactions.
+- [x] **P5.4** Persist token/case mappings and implement poll/backoff, total deadlines, safe retries, and provider-create ambiguity handling.
+- [x] **P5.5** Normalize/store results and aggregate only complete required evidence; terminalize infrastructure failures distinctly.
+- [x] **P5.6** Implement owner-scoped run/submission status/history endpoints and authorized teacher review projections.
+- [x] **P5.7** Mask hidden outputs/diagnostics and prevent direct test ID/provider token enumeration through student APIs.
+- [x] **P5.8** Derive solved progress from real accepted submissions and update profile/collection progress accordingly; label historical heuristic results as legacy.
+- [x] **P5.9** Publish safe completion events after commit while retaining HTTP polling as the recovery path.
+- [ ] **P5.10** Add per-user/global queue limits, admission control, job cleanup, sample-result TTL, and bounded source/diagnostic retention. **Partial:** shared admission quotas, deadline/budget sweeper, bounded sample cleanup/TTL, per-source ceilings and zero retained diagnostic bodies are implemented. Institution-approved long-term graded-source deletion/retention policy remains `[AUTHOR INPUT REQUIRED]`; grading/progress evidence is preserved.
+- [x] **P5.11** Test duplicate submit, partial case failure, empty suite, timeout, provider outage, lost worker lease, restart recovery, concurrent workers, and stale completion.
+- [x] **P5.12** Write `result-5-submissions.md` with state-machine behavior, failure semantics, capacity measurements, and test evidence.
+
+**Implementation status (2026-10-22):** Requested submission backend plus sample runs implemented and verified: 245 tests, no failures/errors, one opt-in experiment skipped. See `result-5-submissions.md` for the checkpoint/lease state machine, retryScheduled semantics, API/config contracts and isolated test evidence. Completion events are internal after-commit notifications; WS delivery belongs to Step 6. Stable case checkpoints use generation 0, while job generation/token fence every lease owner. Staff reference verification retains the accepted Step 4 deadline/fail-closed mechanism; migrating that separate workflow to the shared recovery journal remains open. P5.10 long-term graded-source policy remains partial. No actual Judge0 or production capacity claim.
 
 **Exit:** Restart-safe judging produces correct protected verdicts; mentor estimates cannot grant accepted status or corrupt attempt/progress counts.
 
@@ -671,9 +673,9 @@ New smoke/benchmark/experiment outputs use a new directory or prefix, never over
 | Shared DB disruption | Isolated fixtures/tests and explicit permission before any unsafe shared mutation/load. |
 | Missing visual references or ambiguous product scope | Conventional initial UX; record open decisions; obtain references only if exact visual matching is required. |
 
-**Current progress:** Step 0, the accepted Steps 1–2 DTO/schema scope, Step 3 adapter and the requested Step 4 authoring/security scope are implemented and locally verified. Latest backend clean verify: 216 tests, no failures/errors, one existing opt-in experiment skipped; frontend: 15 passing tests and successful production build. See `result-4-authoring.md`. P4.9 remains partial because the frontend external catalog transition belongs to Step 7. Actual isolated execution, general durable orchestration (Step 5), WS/ML adaptation, production migration/hosting and production smoke testing remain open.
+**Current progress:** Steps 0–4 and the requested Step 5 backend scope are implemented and locally verified. Latest backend clean verify: 245 tests, no failures/errors, one existing opt-in experiment skipped; all JaCoCo gates pass. See `result-5-submissions.md`. Frontend's last recorded checks remain the Step 4 15 tests/build; frontend was not changed in Step 5. P4.9 frontend catalog transition remains Step 7; P5.10 long-term graded-source policy remains partial. Real isolated execution, WS/ML adaptation, hosting/CI/CD and production smoke remain open.
 
-**Next action:** Review the Step 4 working-directory delivery. Actual author reference execution/publication requires the dedicated sandbox and remaining P3 infrastructure checks. Continue with Step 5 durable run/submission orchestration when requested; preserve existing reference proof/ownership/privacy gates and plan reference recovery integration. P4.9 frontend catalog migration remains Step 7; legacy identity reconciliation, atomic session counters, staging rollback and WS evidence semantics remain explicitly pending.
+**Next action:** Continue with Step 6 native WS/ML context when requested, preserving formal attempt/progress ownership in the new submission workflow. Provision/verify a separate Judge0 before claiming actual execution or publication readiness. Institution retention policy and staff reference recovery integration remain recorded follow-ups. No shared or production databases were accessed.
 
 **How to maintain this file:** Mark a task complete only after its code and required verification exist. Append a dated factual session entry with changed files, decisions, commands/results, artifact locations, open blockers, and the next task ID. Keep rationale and decisions concise; do not store secrets, private student data, or speculative results.
 
@@ -727,3 +729,13 @@ New smoke/benchmark/experiment outputs use a new directory or prefix, never over
 - User explicitly requested a push after the working-directory delivery. This supersedes the earlier no-commit/no-push restriction for the Step 4 changes.
 - Publish the verified authoring/security implementation, its tests, frontend escaping changes and task documentation as one semantic commit on the current branch. Exclude unrelated research artifacts and local configuration.
 - Application code is unchanged since the successful Java 21 clean verify (216 tests, no failures/errors, one existing opt-in skip) and frontend test/build verification (15 passing tests). Only publication notes changed afterward.
+
+### Step 5 implementation — 2026-10-22
+
+- Implemented owner-scoped idempotent formal submissions and public-sample runs with 202/Location, validated immutable source/version/runtime snapshots and shared PostgreSQL admission quotas.
+- Added V11 stable dispatch/ticket/deadline checkpoints and real student/problem progress; formal attempt allocation is atomic and unrelated to ML/WS/session estimates. Preserved V1–V10 and interaction_logs contracts.
+- Added transactional SKIP LOCKED claims, generation/token/expiry fencing, bounded async coordinator, lease heartbeat, total deadline/budget sweeper, safe GET-only recovery and fail-closed ambiguous POST handling. Network calls are outside store transactions.
+- Added complete-suite aggregation, atomic accepted progress, exact-version collection progress, safe history/staff review, internal after-commit events and bounded expired sample cleanup. Hidden-dependent diagnostics are neither retained nor serialized.
+- Added 26 disposable-PostgreSQL submission cases and 3 event tests; updated schema validation through V11 and the regression that prohibits heuristic solved progress. Latest Java 21 `bash mvnw -B clean verify`: 245 tests, 0 failures/errors, 1 existing opt-in replay skipped; all coverage gates pass. Build log `/tmp/socrates-step5-verify.log`; Surefire/JaCoCo under target.
+- Wrote `result-5-submissions.md` with endpoints, state transitions, retry/ambiguity semantics, local concurrency observations, configuration and remaining operational boundaries. Judge0 isolation/production capacity are not validated; staff reference work retains Step 4 fail-closed deadline handling. Long-term graded-source policy remains P5.10 `[AUTHOR INPUT REQUIRED]`.
+- Current user request authorizes a scoped semantic commit and push. Pre-existing untracked datasets, AGENTS.md, ML experiments and paper packages are excluded. No provisioning, deployment or shared DB mutations are included.

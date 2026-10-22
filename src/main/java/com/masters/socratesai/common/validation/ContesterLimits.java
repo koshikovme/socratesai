@@ -6,6 +6,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class ContesterLimits {
     public static final int SOURCE_CHARACTERS = 20000;
+    public static final int SOURCE_BYTES = 4 * SOURCE_CHARACTERS;
     public static final int STATEMENT_CHARACTERS = 50000;
     public static final int TEST_DATA_CHARACTERS = 65536;
     public static final int TEST_CASES = 100;

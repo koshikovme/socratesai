@@ -13,6 +13,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface SubmissionRepository extends JpaRepository<Submission, UUID> {
+    @Query("""
+        select distinct s.snapshot.problemVersionId from Submission s where s.studentId = :studentId
+        and s.snapshot.problemVersionId in :versionIds and s.status = com.masters.socratesai.execution.model.ExecutionStatus.FINISHED
+        and s.verdict = com.masters.socratesai.execution.model.ExecutionVerdict.ACCEPTED
+        """)
+    java.util.Set<Long> acceptedVersions(Long studentId, Collection<Long> versionIds);
     Optional<Submission> findByIdAndStudentId(UUID id, Long studentId);
 
     Optional<Submission> findByStudentIdAndIdempotencyKey(Long studentId, UUID idempotencyKey);

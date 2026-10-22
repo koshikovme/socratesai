@@ -18,6 +18,9 @@ spring:
         format_sql: false
 
 app:
+  execution:
+    worker:
+      enabled: false
   jwt:
     secret: c29jcmF0ZXNhaS10ZXN0LWp3dC1zZWNyZXQtbWluaW11bS02NC1ieXRlcy1vbmx5LWZvci10ZXN0cy0yMDI2
     expiration-ms: 86400000

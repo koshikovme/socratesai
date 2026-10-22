@@ -10,6 +10,7 @@ import java.util.Map;
 @Data
 @Builder
 public class StudentProgressResponse {
+    @Builder.Default private String progressSource = "JUDGED_SUBMISSION";
     private UserProfileResponse profile;
     private Summary summary;
     private Map<String, Long> feedbackActions;
@@ -53,6 +54,7 @@ public class StudentProgressResponse {
     @Data
     @Builder
     public static class RecentActivity {
+        private String evidenceOrigin;
         private Long taskId;
         private String taskTitle;
         private Integer attemptNo;

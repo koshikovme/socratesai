@@ -44,6 +44,18 @@ app:
       password: ${APP_ADMIN_BOOTSTRAP_PASSWORD:}
       full-name: ${APP_ADMIN_BOOTSTRAP_FULL_NAME:}
   execution:
+    worker:
+      enabled: ${APP_JUDGING_ENABLED:true}
+      concurrency: ${APP_JUDGING_CONCURRENCY:4}
+      batch-size: ${APP_JUDGING_BATCH_SIZE:5}
+      max-attempts: ${APP_JUDGING_MAX_ATTEMPTS:3}
+      max-per-user: ${APP_JUDGING_MAX_PER_USER:5}
+      max-queued: ${APP_JUDGING_MAX_QUEUED:1000}
+      lease: ${APP_JUDGING_LEASE:15s}
+      deadline: ${APP_JUDGING_DEADLINE:5m}
+      sample-ttl: ${APP_JUDGING_SAMPLE_TTL:15m}
+      initial-backoff: ${APP_JUDGING_INITIAL_BACKOFF:1s}
+      max-backoff: ${APP_JUDGING_MAX_BACKOFF:10s}
     judge0:
       enabled: ${APP_JUDGE0_ENABLED:false}
       base-url: ${APP_JUDGE0_BASE_URL:}

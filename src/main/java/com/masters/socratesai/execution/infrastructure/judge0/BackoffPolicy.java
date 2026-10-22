@@ -9,9 +9,6 @@ public final class BackoffPolicy {
     private final Duration maximum;
 
     public Duration delay(int attempt) {
-        long initialNanos = initial.toNanos();
-        long cap = maximum.toNanos();
-        if (attempt >= 63 || initialNanos > (cap >> Math.max(0, attempt))) return maximum;
-        return Duration.ofNanos(Math.min(cap, initialNanos << Math.max(0, attempt)));
+        return new com.masters.socratesai.execution.domain.ExponentialBackoff(initial, maximum).delay(attempt);
     }
 }

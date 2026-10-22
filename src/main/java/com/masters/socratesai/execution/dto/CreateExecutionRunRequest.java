@@ -9,5 +9,8 @@ import lombok.Builder;
 public record CreateExecutionRunRequest(
         @NotNull @Positive Long problemVersionId,
         @NotBlank @Pattern(regexp = LANGUAGE_KEY) String languageKey,
-        @NotBlank @Size(max = SOURCE_CHARACTERS) String sourceCode
-) {}
+        @NotBlank @Size(max = SOURCE_CHARACTERS) String sourceCode,
+        @NotNull java.util.UUID idempotencyKey
+) {
+    @Override public String toString() { return "CreateExecutionRunRequest[redacted]"; }
+}

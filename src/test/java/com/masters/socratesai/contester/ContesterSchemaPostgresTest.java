@@ -97,9 +97,9 @@ class ContesterSchemaPostgresTest {
 
     @Test
     void migratesEmptyDatabaseAndValidatesAllJpaMappingsAndRepositories() {
-        assertThat(flyway("10").migrate().migrationsExecuted).isEqualTo(10);
-        assertThat(flyway("10").migrate().migrationsExecuted).isZero();
-        assertThat(flyway("10").validateWithResult().validationSuccessful).isTrue();
+        assertThat(flyway("11").migrate().migrationsExecuted).isEqualTo(11);
+        assertThat(flyway("11").migrate().migrationsExecuted).isZero();
+        assertThat(flyway("11").validateWithResult().validationSuccessful).isTrue();
         try (var context = repositories()) {
             assertThat(context.getBean(ProblemVersionRepository.class)).isNotNull();
             assertThat(context.getBean(SubmissionRepository.class)).isNotNull();
@@ -386,7 +386,7 @@ class ContesterSchemaPostgresTest {
     }
 
     private AnnotationConfigApplicationContext repositories() {
-        migrate("10");
+        migrate("11");
         var context = new AnnotationConfigApplicationContext();
         context.registerBean("dataSource", DataSource.class, () -> dataSource);
         context.register(RepositoryConfig.class);

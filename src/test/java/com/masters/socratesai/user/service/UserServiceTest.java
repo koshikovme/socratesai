@@ -3,6 +3,7 @@ package com.masters.socratesai.user.service;
 import com.masters.socratesai.interaction.model.InteractionLog;
 import com.masters.socratesai.interaction.repo.InteractionLogRepository;
 import com.masters.socratesai.security.SecurityUserDetails;
+import com.masters.socratesai.submission.repo.StudentProblemProgressRepository;
 import com.masters.socratesai.session.model.StudentTaskSession;
 import com.masters.socratesai.session.repo.StudentTaskSessionRepository;
 import com.masters.socratesai.task.model.Task;
@@ -41,11 +42,11 @@ class UserServiceTest {
         interactionLogRepository = mock(InteractionLogRepository.class);
         sessionRepository = mock(StudentTaskSessionRepository.class);
         taskRepository = mock(TaskRepository.class);
-        service = new UserService(userRepository, interactionLogRepository, sessionRepository, taskRepository);
+        service = new UserService(userRepository, interactionLogRepository, sessionRepository, taskRepository, mock(StudentProblemProgressRepository.class));
     }
 
     @Test
-    void shouldAggregateStudentProgressFromInteractionsAndSessions() throws Exception {
+    void heuristicLogsAndSessionCountersCannotSolveProblemsOrCreateFormalAttempts() throws Exception {
         User user = User.builder()
                 .id(7L)
                 .email("student@example.com")
@@ -99,15 +100,15 @@ class UserServiceTest {
 
         StudentProgressResponse progress = service.getMyProgress(new SecurityUserDetails(user));
 
-        assertThat(progress.getSummary().getAttemptedTasks()).isEqualTo(2);
-        assertThat(progress.getSummary().getSolvedTasks()).isEqualTo(1);
+        assertThat(progress.getSummary().getAttemptedTasks()).isZero();
+        assertThat(progress.getSummary().getSolvedTasks()).isZero();
         assertThat(progress.getSummary().getActiveSessions()).isEqualTo(1);
-        assertThat(progress.getSummary().getTotalAttempts()).isEqualTo(3);
+        assertThat(progress.getSummary().getTotalAttempts()).isZero();
         assertThat(progress.getFeedbackActions()).containsEntry("NO_FEEDBACK", 1L);
         assertThat(progress.getErrorTypes()).containsEntry("SYNTAX_ERROR", 1L);
-        assertThat(progress.getTasks())
-                .extracting(StudentProgressResponse.TaskProgress::getStatus)
-                .contains("SOLVED", "IN_PROGRESS");
+        assertThat(progress.getTasks()).isEmpty();
+        assertThat(progress.getProgressSource()).isEqualTo("JUDGED_SUBMISSION");
+        assertThat(progress.getRecentActivity()).allMatch(item -> item.getEvidenceOrigin().equals("LEGACY_HEURISTIC_ACTIVITY"));
         assertThat(progress.getRecentActivity()).hasSize(3);
     }
 

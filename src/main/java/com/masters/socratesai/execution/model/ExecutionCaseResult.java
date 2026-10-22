@@ -34,6 +34,12 @@ public class ExecutionCaseResult extends VersionedEntity {
     @Column(nullable = false, updatable = false)
     private Integer generation = 0;
 
+    /** Stable checkpoints use generation zero; job.generation fences lease owners. */
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private DispatchState dispatchState = DispatchState.PENDING;
+
     @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
@@ -45,6 +51,8 @@ public class ExecutionCaseResult extends VersionedEntity {
 
     @Column(length = 200)
     private String providerToken;
+
+    private java.time.OffsetDateTime providerDeadlineAt;
 
     @Column(columnDefinition = "TEXT")
     private String compileOutput;

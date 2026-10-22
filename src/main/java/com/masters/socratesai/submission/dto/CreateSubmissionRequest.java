@@ -13,4 +13,6 @@ public record CreateSubmissionRequest(
         @NotBlank @Pattern(regexp = LANGUAGE_KEY) String languageKey,
         @NotBlank @Size(max = SOURCE_CHARACTERS) String sourceCode,
         @NotNull UUID idempotencyKey
-) {}
+) {
+    @Override public String toString() { return "CreateSubmissionRequest[redacted]"; }
+}

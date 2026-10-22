@@ -24,6 +24,9 @@ public class ExecutionRun extends VersionedEntity {
     @Column(nullable = false, updatable = false)
     private Long requestedBy;
 
+    @Column(updatable = false)
+    private UUID idempotencyKey;
+
     @Embedded
     private ExecutionSnapshot snapshot;
 

@@ -1,6 +1,8 @@
 package com.masters.socratesai.user.service;
 
 import com.masters.socratesai.security.SecurityUserDetails;
+import com.masters.socratesai.submission.model.StudentProblemProgress;
+import com.masters.socratesai.submission.repo.StudentProblemProgressRepository;
 import com.masters.socratesai.interaction.model.InteractionLog;
 import com.masters.socratesai.interaction.repo.InteractionLogRepository;
 import com.masters.socratesai.session.model.StudentTaskSession;
@@ -18,7 +20,6 @@ import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,7 @@ public class UserService {
     private final InteractionLogRepository interactionLogRepository;
     private final StudentTaskSessionRepository sessionRepository;
     private final TaskRepository taskRepository;
+    private final StudentProblemProgressRepository progressRepository;
 
     public UserProfileResponse getMyProfile(SecurityUserDetails currentUser) throws ChangeSetPersister.NotFoundException {
         User user = getUserEntity(currentUser.getId());
@@ -47,26 +49,13 @@ public class UserService {
         List<InteractionLog> logs = interactionLogRepository.findByStudentIdOrderByCreatedAtDesc(user.getId());
         List<StudentTaskSession> sessions = sessionRepository.findByStudentIdOrderByStartedAtDesc(user.getId());
 
-        Set<Long> taskIds = Stream.concat(
-                        logs.stream().map(InteractionLog::getTaskId),
-                        sessions.stream().map(StudentTaskSession::getTaskId)
-                )
-                .collect(Collectors.toSet());
-
-        Map<Long, Task> tasksById = taskRepository.findAllById(taskIds)
-                .stream()
+        List<StudentProblemProgress> judged = progressRepository.findByStudentIdOrderByLastActivityAtDesc(user.getId());
+        Set<Long> taskIds = judged.stream().map(StudentProblemProgress::getProblemId).collect(Collectors.toSet());
+        Map<Long, Task> tasksById = taskRepository.findAllById(taskIds).stream()
                 .collect(Collectors.toMap(Task::getId, Function.identity()));
-
-        Map<Long, List<InteractionLog>> logsByTask = logs.stream()
-                .collect(Collectors.groupingBy(InteractionLog::getTaskId));
-
-        int attemptedTasks = logsByTask.size();
-        int solvedTasks = (int) logsByTask.values().stream()
-                .filter(this::hasAcceptedAttempt)
-                .count();
-        int totalAttempts = sessions.stream()
-                .mapToInt(session -> valueOrZero(session.getTotalAttempts()))
-                .sum();
+        int attemptedTasks = judged.size();
+        int solvedTasks = (int) judged.stream().filter(item -> item.getAcceptedSubmissionId() != null).count();
+        int totalAttempts = judged.stream().mapToInt(StudentProblemProgress::getFormalAttempts).sum();
         int activeSessions = (int) sessions.stream()
                 .filter(session -> session.getEndedAt() == null)
                 .count();
@@ -83,14 +72,8 @@ public class UserService {
                 .average()
                 .orElse(0.0);
 
-        List<StudentProgressResponse.TaskProgress> taskProgress = logsByTask.entrySet()
-                .stream()
-                .map(entry -> toTaskProgress(entry.getKey(), entry.getValue(), tasksById.get(entry.getKey())))
-                .sorted(Comparator.comparing(
-                        StudentProgressResponse.TaskProgress::getLastActivityAt,
-                        Comparator.nullsLast(Comparator.reverseOrder())
-                ))
-                .toList();
+        List<StudentProgressResponse.TaskProgress> taskProgress = judged.stream()
+                .map(item -> toTaskProgress(item, tasksById.get(item.getProblemId()))).toList();
 
         return StudentProgressResponse.builder()
                 .profile(mapToResponse(user))
@@ -104,14 +87,14 @@ public class UserService {
                         .resolvedInteractions(resolvedInteractions)
                         .solveRate(attemptedTasks == 0 ? 0.0 : (double) solvedTasks / attemptedTasks)
                         .meanLatencyMs(meanLatencyMs)
-                        .lastActivityAt(logs.isEmpty() ? null : logs.get(0).getCreatedAt())
+                        .lastActivityAt(judged.isEmpty() ? null : judged.get(0).getLastActivityAt())
                         .build())
                 .feedbackActions(countBy(logs.stream().map(InteractionLog::getFeedbackAction)))
                 .errorTypes(countBy(logs.stream().map(InteractionLog::getErrorType)))
                 .tasks(taskProgress)
                 .recentActivity(logs.stream()
                         .limit(12)
-                        .map(log -> toRecentActivity(log, tasksById.get(log.getTaskId())))
+                        .map(log -> toRecentActivity(log, log.getProblemId() == null ? null : tasksById.get(log.getProblemId())))
                         .toList())
                 .build();
     }
@@ -157,39 +140,26 @@ public class UserService {
                 .build();
     }
 
-    private StudentProgressResponse.TaskProgress toTaskProgress(Long taskId, List<InteractionLog> taskLogs, Task task) {
-        List<InteractionLog> ordered = taskLogs.stream()
-                .sorted(Comparator.comparing(InteractionLog::getCreatedAt).reversed())
-                .toList();
-        InteractionLog latest = ordered.get(0);
-        boolean accepted = hasAcceptedAttempt(taskLogs);
-
+    private StudentProgressResponse.TaskProgress toTaskProgress(StudentProblemProgress progress, Task task) {
         return StudentProgressResponse.TaskProgress.builder()
-                .taskId(taskId)
-                .title(task == null ? "Task #" + taskId : task.getTitle())
-                .topic(task == null ? "External practice" : task.getTopic())
+                .taskId(progress.getProblemId())
+                .title(task == null ? "Task #" + progress.getProblemId() : task.getTitle())
+                .topic(task == null ? "Native problem" : task.getTopic())
                 .difficulty(task == null ? "N/A" : task.getDifficulty().name())
-                .status(accepted ? "SOLVED" : "IN_PROGRESS")
-                .openable(task != null)
-                .attempts(ordered.size())
-                .feedbackCount(ordered.size())
-                .bestTestsPassed(ordered.stream()
-                        .map(InteractionLog::getTestsPassed)
-                        .filter(value -> value != null)
-                        .mapToInt(Integer::intValue)
-                        .max()
-                        .orElse(0))
-                .lastTestsFailed(valueOrZero(latest.getTestsFailed()))
-                .lastFeedbackAction(latest.getFeedbackAction())
-                .lastErrorType(latest.getErrorType())
-                .lastActivityAt(latest.getCreatedAt())
-                .build();
+                .status(progress.getAcceptedSubmissionId() == null ? "IN_PROGRESS" : "SOLVED")
+                .openable(task != null && task.getPublishedVersionId() != null)
+                .attempts(progress.getFormalAttempts())
+                .bestTestsPassed(progress.getBestTestsPassed())
+                .lastTestsFailed(progress.getLastTestsFailed())
+                .lastActivityAt(progress.getLastActivityAt()).build();
     }
 
     private StudentProgressResponse.RecentActivity toRecentActivity(InteractionLog log, Task task) {
         return StudentProgressResponse.RecentActivity.builder()
                 .taskId(log.getTaskId())
-                .taskTitle(task == null ? "Task #" + log.getTaskId() : task.getTitle())
+                .taskTitle(task == null ? "Legacy activity #" + log.getTaskId() : task.getTitle())
+                .evidenceOrigin(log.getEvidenceOrigin() == null || log.getEvidenceOrigin() == com.masters.socratesai.common.model.EvidenceOrigin.LEGACY_UNKNOWN
+                        ? "LEGACY_HEURISTIC_ACTIVITY" : log.getEvidenceOrigin().name())
                 .attemptNo(log.getAttemptNo())
                 .feedbackAction(log.getFeedbackAction())
                 .errorType(log.getErrorType())
@@ -201,19 +171,10 @@ public class UserService {
                 .build();
     }
 
-    private boolean hasAcceptedAttempt(List<InteractionLog> logs) {
-        return logs.stream().anyMatch(log -> Boolean.TRUE.equals(log.getCompileSuccess())
-                && valueOrZero(log.getTestsPassed()) > 0
-                && valueOrZero(log.getTestsFailed()) == 0);
-    }
-
     private Map<String, Long> countBy(Stream<String> values) {
         return values
                 .map(value -> value == null || value.isBlank() ? "N/A" : value)
                 .collect(Collectors.groupingBy(Function.identity(), LinkedHashMap::new, Collectors.counting()));
     }
 
-    private int valueOrZero(Integer value) {
-        return value == null ? 0 : value;
-    }
 }

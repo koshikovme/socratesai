@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
 public interface ExecutionRunRepository extends JpaRepository<ExecutionRun, UUID> {
+    Optional<ExecutionRun> findByRequestedByAndIdempotencyKey(Long requestedBy, UUID key);
     Optional<ExecutionRun> findByIdAndRequestedBy(UUID id, Long requestedBy);
 
     Slice<ExecutionRun> findAllByExpiresAtBeforeOrderByExpiresAt(OffsetDateTime now, Pageable pageable);

@@ -71,6 +71,10 @@ public class ExecutionJob extends VersionedEntity {
     @Column(length = 80)
     private String lastErrorCode;
 
+    @Builder.Default
+    @Column(nullable = false)
+    private Boolean retryAllowed = false;
+
     @PrePersist
     private void initializeSchedule() {
         if (nextAttemptAt == null) nextAttemptAt = getCreatedAt();
