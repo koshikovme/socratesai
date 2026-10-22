@@ -8,6 +8,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface StudentTaskSessionRepository extends JpaRepository<StudentTaskSession, UUID> {
+    Optional<StudentTaskSession> findByStudentIdAndEditorSessionIdAndEndedAtIsNull(Long studentId, UUID editorSessionId);
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @org.springframework.data.jpa.repository.Query("select s from StudentTaskSession s where s.sessionId = :id")
+    Optional<StudentTaskSession> lockById(UUID id);
     Optional<StudentTaskSession> findByStudentIdAndTaskIdAndEndedAtIsNull(Long studentId, Long taskId);
 
     List<StudentTaskSession> findByStudentIdOrderByStartedAtDesc(Long studentId);

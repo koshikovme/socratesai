@@ -41,7 +41,7 @@ public class FeedbackGenerationService {
         if (geminiFeedbackService.isEnabled()) {
             try {
                 String text = geminiFeedbackService.generateWithGemini(action, analyzer, code, taskSummary);
-                return new GeneratedFeedback(text, "gemini");
+                if (valid(text)) return new GeneratedFeedback(text, "gemini");
             } catch (Exception e) {
                 // Try the next configured provider before falling back to deterministic templates.
             }
@@ -50,7 +50,7 @@ public class FeedbackGenerationService {
         if (openAiFeedbackService.isEnabled()) {
             try {
                 String text = openAiFeedbackService.generateWithLlm(action, analyzer, taskSummary);
-                return new GeneratedFeedback(text, "openai");
+                if (valid(text)) return new GeneratedFeedback(text, "openai");
             } catch (Exception e) {
                 // Fall through to deterministic templates.
             }
@@ -58,4 +58,5 @@ public class FeedbackGenerationService {
 
         return new GeneratedFeedback(feedbackTemplateService.generate(action, analyzer), "template");
     }
+    private boolean valid(String text) { return text != null && !text.isBlank() && text.length() <= 1200 && !text.contains("```"); }
 }

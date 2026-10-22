@@ -16,6 +16,7 @@ public enum ApiErrorCode {
     UNSUPPORTED_MEDIA_TYPE(415, "Unsupported media type"),
     CAPACITY_EXCEEDED(429, "Execution capacity exceeded"),
     SANDBOX_UNAVAILABLE(503, "Execution sandbox unavailable"),
+    MENTOR_UNAVAILABLE(503, "Mentor feedback unavailable"),
     INTERNAL_ERROR(500, "Request could not be completed");
 
     private final int status;

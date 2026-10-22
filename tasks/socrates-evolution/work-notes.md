@@ -531,20 +531,22 @@ Work proceeds in the order below. Each stage ends with a scoped reviewable chang
 
 **Depends on:** Steps 2, 4, and 5 evidence contracts. **Primary areas:** WebSocket, analyzer, mentor, policy-api, sessions/interactions.
 
-- [ ] **P6.1** Enforce token validation/expiry and destination authorization on CONNECT/SEND/SUBSCRIBE; bind account identity from the principal.
-- [ ] **P6.2** Add and validate correlated editor/problem/version/language/revision fields and a documented compatibility policy.
-- [ ] **P6.3** Resolve native problem access and safe statement/sample context before analysis or session creation.
-- [ ] **P6.4** Stop trusting client identity, attempt numbers, compiler/test results, and arbitrary mentor/analyzer context; restrict any research-only raw-feedback route.
-- [ ] **P6.5** Remove in-process compilation from production formative analysis; route explicit compiler checks through the sandbox and gate language-specific static rules. Partial: JavaCompiler removed in Step 3 and static provenance markers added; actual run routing and language eligibility remain pending.
-- [ ] **P6.6** Replace fabricated grading counts with explicit heuristic/unknown evidence; preserve legacy feature contracts through a documented adapter.
-- [ ] **P6.7** Add language eligibility at backend and policy API boundaries; preserve Python model inference and clearly labeled rule/template fallback elsewhere.
-- [ ] **P6.8** Preserve low-confidence/failure semantics, bind configurable threshold, record safe fallback reasons, and verify source truncation/model version behavior.
-- [ ] **P6.9** Add debounce/dedup, bounded executors, per-editor latest-snapshot handling, cancellation/stale-result guards, rate limits, and provider concurrency/time budgets.
-- [ ] **P6.10** Keep hidden tests/reference solutions out of all prompts; redact source/provider payloads from error/fallback logs.
-- [ ] **P6.11** Preserve outcome/expert-label functionality with ownership checks and additive provenance; no typing event becomes a judged attempt.
-- [ ] **P6.12** Test spoofed IDs, anonymous/expired WS, forbidden subscriptions, oversized frames, rapid typing, cross-tab interference, old responses, ML/LLM outages, and HTTP fallback.
-- [ ] **P6.13** Run saved-model inference/contract checks without retraining; inspect affected paper claims and synchronize intended IEEE sources only if needed.
-- [ ] **P6.14** Write `result-6-mentor.md` with supported languages, protocol, feature/evidence mapping, fallback behavior, paper impact, and tests.
+- [x] **P6.1** Enforce token validation/expiry and destination authorization on CONNECT/SEND/SUBSCRIBE; bind account identity from the principal.
+- [x] **P6.2** Add and validate correlated editor/problem/version/language/revision fields and a documented compatibility policy.
+- [x] **P6.3** Resolve native problem access and safe statement/sample context before analysis or session creation.
+- [x] **P6.4** Stop trusting client identity, attempt numbers, compiler/test results, and arbitrary mentor/analyzer context; restrict any research-only raw-feedback route.
+- [x] **P6.5** Remove in-process compilation from production formative analysis; route explicit compiler checks through the sandbox and gate language-specific static rules. Completed with the Step 5 run API and Step 6 native evidence path: no in-process student compilation; Java/C++ use execution-backed rules, Python alone is eligible for the Codeforces model. Legacy analyzer routes are administrator-only research inputs.
+- [x] **P6.6** Replace fabricated grading counts with explicit heuristic/unknown evidence; preserve legacy feature contracts through a documented adapter.
+- [x] **P6.7** Add language eligibility at backend and policy API boundaries; preserve Python model inference and clearly labeled rule/template fallback elsewhere.
+- [x] **P6.8** Preserve low-confidence/failure semantics, bind configurable threshold, record safe fallback reasons, and verify source truncation/model version behavior.
+- [x] **P6.9** Add debounce/dedup, bounded executors, per-editor latest-snapshot handling, cancellation/stale-result guards, rate limits, and provider concurrency/time budgets.
+- [x] **P6.10** Keep hidden tests/reference solutions out of all prompts; redact source/provider payloads from error/fallback logs.
+- [x] **P6.11** Preserve outcome/expert-label functionality with ownership checks and additive provenance; no typing event becomes a judged attempt.
+- [x] **P6.12** Test spoofed IDs, anonymous/expired WS, forbidden subscriptions, oversized frames, rapid typing, cross-tab interference, old responses, ML/LLM outages, and HTTP fallback.
+- [x] **P6.13** Run saved-model inference/contract checks without retraining; inspect affected paper claims and synchronize intended IEEE sources only if needed.
+- [x] **P6.14** Write `result-6-mentor.md` with supported languages, protocol, feature/evidence mapping, fallback behavior, paper impact, and tests.
+
+**Implementation status (2026-10-22):** Requested WS/native mentor backend implemented and verified: 282 Java tests, 0 failures/errors, one opt-in replay skipped; 7 Python contract/saved-model smoke tests and the legacy action-model smoke pass. See `result-6-mentor.md` for the versioned snapshot protocol, null/primitive feature mapping, language eligibility, safe prompt allowlist, V12 provenance, bounded scheduling and transport evidence. Native HTTP fallback is `/api/mentor/native-feedback`; legacy raw routes are ADMIN-only research interfaces. Frontend compatibility must be completed in Step 7. Rate limits are process-local; production routing/capacity remains infrastructure work.
 
 **Exit:** Real-time formative feedback uses trusted native context and preserves model/logging boundaries without pretending to judge unexecuted code.
 
@@ -673,9 +675,9 @@ New smoke/benchmark/experiment outputs use a new directory or prefix, never over
 | Shared DB disruption | Isolated fixtures/tests and explicit permission before any unsafe shared mutation/load. |
 | Missing visual references or ambiguous product scope | Conventional initial UX; record open decisions; obtain references only if exact visual matching is required. |
 
-**Current progress:** Steps 0–4 and the requested Step 5 backend scope are implemented and locally verified. Latest backend clean verify: 245 tests, no failures/errors, one existing opt-in experiment skipped; all JaCoCo gates pass. See `result-5-submissions.md`. Frontend's last recorded checks remain the Step 4 15 tests/build; frontend was not changed in Step 5. P4.9 frontend catalog transition remains Step 7; P5.10 long-term graded-source policy remains partial. Real isolated execution, WS/ML adaptation, hosting/CI/CD and production smoke remain open.
+**Current progress:** Steps 0–5 and the requested Step 6 backend scope are implemented and locally verified. Latest Java 21 clean verify: 282 tests, no failures/errors, one existing opt-in experiment skipped; all coverage gates pass. Python: 7 contract/saved-model smoke tests plus successful action-model smoke, without training. See `result-6-mentor.md`. Frontend's last recorded checks remain Step 4; frontend was not modified in Step 6 and needs the native WS/API integration in Step 7. P4.9 frontend catalog transition and P5.10 institution-approved long-term graded-source policy remain open. Actual isolated Judge0 execution, CI/CD/hosting and production smoke remain open.
 
-**Next action:** Continue with Step 6 native WS/ML context when requested, preserving formal attempt/progress ownership in the new submission workflow. Provision/verify a separate Judge0 before claiming actual execution or publication readiness. Institution retention policy and staff reference recovery integration remain recorded follow-ups. No shared or production databases were accessed.
+**Next action:** Continue with Step 7 native frontend workspace when requested: published native IDs/versions, per-editor UUID/revision/hash correlation, safe unknown-vs-executed displays, Run/Submit and history. Use `/user/queue/feedback` and `/api/mentor/native-feedback`; do not restore client-controlled identity/analyzer results. Real Judge0, process-wide admission/routing for multiple instances, institutional retention and staff reference recovery remain documented follow-ups. No shared or production databases were accessed.
 
 **How to maintain this file:** Mark a task complete only after its code and required verification exist. Append a dated factual session entry with changed files, decisions, commands/results, artifact locations, open blockers, and the next task ID. Keep rationale and decisions concise; do not store secrets, private student data, or speculative results.
 
@@ -739,3 +741,14 @@ New smoke/benchmark/experiment outputs use a new directory or prefix, never over
 - Added 26 disposable-PostgreSQL submission cases and 3 event tests; updated schema validation through V11 and the regression that prohibits heuristic solved progress. Latest Java 21 `bash mvnw -B clean verify`: 245 tests, 0 failures/errors, 1 existing opt-in replay skipped; all coverage gates pass. Build log `/tmp/socrates-step5-verify.log`; Surefire/JaCoCo under target.
 - Wrote `result-5-submissions.md` with endpoints, state transitions, retry/ambiguity semantics, local concurrency observations, configuration and remaining operational boundaries. Judge0 isolation/production capacity are not validated; staff reference work retains Step 4 fail-closed deadline handling. Long-term graded-source policy remains P5.10 `[AUTHOR INPUT REQUIRED]`.
 - Current user request authorizes a scoped semantic commit and push. Pre-existing untracked datasets, AGENTS.md, ML experiments and paper packages are excluded. No provisioning, deployment or shared DB mutations are included.
+
+### Step 6 implementation — 2026-10-22
+
+- Bound STOMP CONNECT identity to validated JWT/account/expiry; authorized SEND/SUBSCRIBE against exact destinations, stripped bearer headers before failure paths, scoped feedback to the originating socket and added safe ERROR delivery. Root lombok.config preserves @Qualifier on generated constructors.
+- Replaced client-controlled WS body with validated native problem/version/language/editor/revision/full-buffer snapshots. Added debounce/dedup, bounded inference and STOMP executors, account/editor/session quotas, time budgets/cancellation and stale/disconnected-result guards. HTTP fallback uses the same native coordinator.
+- Added V12 editor sessions/provenance and exact owner/context/source-hash execution evidence projections. Unknown compile/tests remain null in logs/DTOs; PolicyFeatures shape is unchanged. Formal counters/SOLVED remain owned by Step 5.
+- Gated Codeforces inference to canonical python3 at backend and FastAPI boundaries; Java/C++ use RULE/templates without ML/LLM calls. Bound confidence env configuration, safe failures, bounded prediction responses and aligned trailing-line source metrics with training definitions.
+- Added allowlisted public prompt data, separate untrusted code/system instructions, header-based Gemini auth, provider timeouts and bounded template fallback. Hidden/reference/provider/secret context never enters native inference/prompts.
+- Preserved policy/expert CSV columns and appended provenance; restricted global exports/research routes to ADMIN and enforced outcome/teacher-label ownership. Updated the opt-in research operator fixture while preserving NO_POLICY ablation; did not run or overwrite benchmark artifacts.
+- Java `bash mvnw -B clean verify`: 282 tests, 0 failures/errors, 1 existing opt-in skip; global/core coverage gates pass. Python: 7 contract/saved-model smoke tests and action-model smoke pass in temporary serving venv. Evidence in `result-6-mentor.md` and local /tmp build logs; no shared DB, live student execution or paid LLM calls.
+- Inspected affected IEEE/source metrics/artifacts; no training, metric, TeX/PDF or duplicate-paper changes. Updated ml/README.md and wrote result-6-mentor.md. Current user request authorizes a scoped semantic commit/push; unrelated untracked datasets, papers and experiments remain excluded.

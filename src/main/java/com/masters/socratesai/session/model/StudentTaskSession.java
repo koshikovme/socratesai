@@ -30,6 +30,9 @@ public class StudentTaskSession {
 
     private Long problemVersionId;
 
+    private UUID editorSessionId;
+    @Version private Long lockVersion;
+
     @Column(length = 30)
     private String languageKey;
 
@@ -48,10 +51,10 @@ public class StudentTaskSession {
     private String finalStatus;
 
     @Column(name = "total_attempts", nullable = false)
-    private Integer totalAttempts = 0;
+    @Builder.Default private Integer totalAttempts = 0;
 
     @Column(name = "total_feedback_count", nullable = false)
-    private Integer totalFeedbackCount = 0;
+    @Builder.Default private Integer totalFeedbackCount = 0;
 
     @PrePersist
     public void prePersist() {

@@ -60,7 +60,7 @@ public class ExpertLabelService {
                 "rationale",
                 "created_at",
                 "error_type",
-                "feedback_action"
+                "feedback_action", "problem_id", "problem_version_id", "language_key", "evidence_origin"
         )).append('\n');
 
         for (ExpertActionLabel label : labels) {
@@ -74,7 +74,8 @@ public class ExpertLabelService {
                     escape(label.getRationale()),
                     escape(label.getCreatedAt()),
                     escape(interaction.getErrorType()),
-                    escape(interaction.getFeedbackAction())
+                    escape(interaction.getFeedbackAction()), escape(interaction.getProblemId()), escape(interaction.getProblemVersionId()),
+                    escape(interaction.getLanguageKey()), escape(interaction.getEvidenceOrigin())
             )).append('\n');
         }
 

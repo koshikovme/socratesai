@@ -18,6 +18,10 @@ public class RuleBasedPolicyEngine implements PolicySelector {
         int sameErrorCount = features.sameErrorCount();
         String lastAction = features.lastFeedbackAction();
 
+        if ("EXECUTION_UNKNOWN".equals(errorType) || "SAMPLE_PASSED".equals(errorType)) return FeedbackAction.CONCEPTUAL_HINT;
+        if (java.util.Set.of("RUNTIME_ERROR", "TIME_LIMIT_EXCEEDED", "MEMORY_LIMIT_EXCEEDED", "OUTPUT_LIMIT_EXCEEDED").contains(errorType == null ? "" : errorType))
+            return FeedbackAction.CONCEPTUAL_HINT;
+
         if ("SYNTAX_ERROR".equals(errorType) && sameErrorCount <= 1) {
             return FeedbackAction.CODE_HIGHLIGHT;
         }

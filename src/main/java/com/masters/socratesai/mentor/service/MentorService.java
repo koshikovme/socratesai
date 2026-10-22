@@ -58,7 +58,7 @@ public class MentorService {
         );
 
         long policyStart = System.currentTimeMillis();
-        PolicyDecision policyDecision = mentorPolicyService.decide(analyzer, context, request.getAttemptNo(), request.getCode());
+        PolicyDecision policyDecision = mentorPolicyService.decideForResearch(analyzer, context, request.getAttemptNo(), request.getCode(), request.getLanguageKey());
         FeedbackAction action = policyDecision.action();
         int policyTimeMs = (int) (System.currentTimeMillis() - policyStart);
 

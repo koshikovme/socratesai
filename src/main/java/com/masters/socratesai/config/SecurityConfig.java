@@ -58,6 +58,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/problems", "/api/problems/*", "/api/problems/*/versions/*",
                                 "/api/collections", "/api/collections/*", "/api/languages").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/mentor/feedback", "/api/mentor/analyze-feedback", "/api/analyzer/**",
+                                "/api/interactions/policy-dataset", "/api/interactions/expert-labels/**").hasRole("ADMIN")
                         .requestMatchers("/api/teacher/**").hasAnyRole("TEACHER", "ADMIN")
                         .anyRequest().authenticated()
                 )

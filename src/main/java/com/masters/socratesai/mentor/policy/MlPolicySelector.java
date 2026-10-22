@@ -19,22 +19,19 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
-@Component
+@Component @lombok.RequiredArgsConstructor
 public class MlPolicySelector implements PolicySelector {
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper(com.fasterxml.jackson.core.JsonFactory.builder()
+            .disable(com.fasterxml.jackson.core.StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION)
+            .streamReadConstraints(com.fasterxml.jackson.core.StreamReadConstraints.builder().maxNestingDepth(8).maxStringLength(512).build()).build());
 
     private final MentorPolicyProperties properties;
-    private final HttpClient httpClient;
-
-    public MlPolicySelector(MentorPolicyProperties properties) {
-        this.properties = properties;
-        this.httpClient = HttpClient.newBuilder()
+    private final HttpClient httpClient = HttpClient.newBuilder()
                 // Uvicorn/FastAPI receives empty bodies when the JDK client attempts h2c upgrade.
                 .version(HttpClient.Version.HTTP_1_1)
-                .connectTimeout(Duration.ofSeconds(5))
+                .connectTimeout(Duration.ofSeconds(2))
                 .build();
-    }
 
     @Override
     public FeedbackAction decide(PolicyFeatures features) {
@@ -42,14 +39,29 @@ public class MlPolicySelector implements PolicySelector {
     }
 
     public PolicyDecision decideWithMetadata(PolicyFeatures features) {
+        return decideWithMetadata(features, null, false);
+    }
+
+    public PolicyDecision decideWithMetadata(PolicyFeatures features, String languageKey, boolean executionKnown) {
         if (!properties.getMl().isEnabled()) {
             throw new IllegalStateException("ML policy mode is disabled");
         }
 
-        String payload = toJsonPayload(features);
+        if (!"python3".equals(languageKey)) throw new IllegalStateException("Unsupported mentor language");
+        String payload;
+        try {
+            var body = toPayload(features);
+            body.put("language_key", "python3"); body.put("language_variant", "Python 3"); body.put("execution_known", executionKnown);
+            if (!executionKnown) {
+                body.put("compile_success", null); body.put("tests_passed", null); body.put("tests_failed", null); body.put("passed_test_count", null);
+            }
+            payload = OBJECT_MAPPER.writeValueAsString(body);
+        } catch (JsonProcessingException ex) { throw new IllegalStateException("Invalid inference request"); }
         PredictionResponse response = requestPrediction(payload);
 
-        if (response == null || !StringUtils.hasText(response.action())) {
+        if (response == null || !StringUtils.hasText(response.action()) || (response.confidence() != null
+                && (!Double.isFinite(response.confidence()) || response.confidence() < 0 || response.confidence() > 1))
+                || (response.mentorState() != null && !java.util.Set.of("accepted", "semantic_debug", "execution_safety", "efficiency_review", "syntax_repair").contains(response.mentorState()))) {
             throw new IllegalStateException("ML policy service returned an empty action");
         }
 
@@ -70,15 +82,15 @@ public class MlPolicySelector implements PolicySelector {
     private PredictionResponse requestPrediction(String payload) {
         HttpRequest request = HttpRequest.newBuilder(predictUri())
                 .version(HttpClient.Version.HTTP_1_1)
-                .timeout(Duration.ofSeconds(10))
+                .timeout(Duration.ofSeconds(5))
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .header("Accept", MediaType.APPLICATION_JSON_VALUE)
                 .POST(HttpRequest.BodyPublishers.ofString(payload, StandardCharsets.UTF_8))
                 .build();
 
-        HttpResponse<String> response;
+        HttpResponse<byte[]> response;
         try {
-            response = httpClient.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+            response = httpClient.send(request, info -> new PredictionBodySubscriber());
         } catch (IOException e) {
             throw new IllegalStateException("Failed to call ML policy service");
         } catch (InterruptedException e) {
@@ -102,7 +114,7 @@ public class MlPolicySelector implements PolicySelector {
                     root.path("mentor_state").asText(null),
                     confidence
             );
-        } catch (JsonProcessingException e) {
+        } catch (IOException e) {
             throw new IllegalStateException("ML policy service returned invalid JSON");
         }
     }

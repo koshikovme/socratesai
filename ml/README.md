@@ -1,4 +1,4 @@
-﻿# Policy ML
+# Policy ML
 
 Runtime features come from Spring `PolicyFeatures` and are exported from `interaction_logs`.
 
@@ -68,7 +68,7 @@ python train_policy_model.py --input problem_suite_policy_dataset.csv --output-p
 uvicorn policy_api:app --host 0.0.0.0 --port 8001
 ```
 
-Spring is configured to call `http://localhost:8001/predict`.
+The legacy action endpoint remains `/predict`. The native Python mentor path defaults to `/predict-mentor-state`.
 
 To run the predictor with a non-default model:
 
@@ -330,3 +330,23 @@ Current `interaction_logs` is still weak for:
 - proving pedagogical optimality
 - claiming ground-truth labels without human review
 - learning nuanced tutoring strategy from outcome alone
+
+## Native mentor context (Step 6)
+
+The runtime Codeforces mentor-state path accepts canonical `language_key=python3` only. The backend validates the published problem version and configured language; Java/C++ and unknown language keys use RULE/templates without calling this model. `/predict-mentor-state` now requires an explicit `language_key`; `language_variant` accepts `Python 3` or `python3`. Invalid language/source requests return a fixed validation envelope without echoing source. The legacy `/predict` action-feature contract is unchanged.
+
+Native feedback uses execution evidence only when owner, problem/version, language and SHA-256 of the full buffer match a finished submission or unexpired sample run. Unknown compilation/test results stay null in HTTP/logs/mentor-state requests; primitive PolicyFeatures retain their original false/zero compatibility sentinels with explicit provenance. No model prediction grants solved progress. Text features use at most 5,000 characters; numeric source metrics use the full bounded buffer, matching the training script. Trailing LF/blank-line metrics now follow the training definitions.
+
+The confidence threshold binds `APP_POLICY_ML_MIN_CONFIDENCE` (default 0.35). Low-confidence predictions retain their state/confidence for logging while the selected action uses RULE. Native inference failures always use RULE/templates. Source-model artifacts and reported evaluation metrics were not retrained or replaced.
+
+Global CSV exports require an administrator token. Existing columns and ordering are preserved, with native provenance appended; teacher labels require ownership and the authenticated reviewer ID. Legacy raw analyzer/mentor benchmark routes are administrator-only; their student-supplied analyzer results are research inputs and cannot grade native submissions. Historical benchmark artifacts remain historical results; a new run needs an explicitly provisioned research operator.
+
+Contract and saved-model smoke checks, without training or dataset access:
+
+```bash
+pip install -r ml/requirements-test.txt
+python ml/test_policy_api.py
+python ml/test_policy_model.py
+```
+
+These checks require the pinned serving dependencies from `ml/requirements.txt` plus `httpx` for FastAPI TestClient. `test_policy_api.py` explicitly loads the repository's saved default models for its smoke test. It does not recreate Codeforces evaluation results or validate classroom effectiveness.

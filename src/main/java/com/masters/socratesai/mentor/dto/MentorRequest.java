@@ -12,6 +12,7 @@ import java.util.UUID;
 
 @Data
 public class MentorRequest {
+    private String languageKey;
     @NotNull
     private Long studentId;
     private UUID sessionId;
@@ -22,8 +23,10 @@ public class MentorRequest {
     private Integer attemptNo;
     @NotBlank
     @Size(max = 20000)
+    @lombok.ToString.Exclude
     private String code;
     @Valid
     @NotNull
+    @lombok.ToString.Exclude
     private AnalyzerResult analyzerResult;
 }

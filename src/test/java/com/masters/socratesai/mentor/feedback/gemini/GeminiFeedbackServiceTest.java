@@ -36,7 +36,7 @@ class GeminiFeedbackServiceTest {
 
     @Test
     void shouldReturnTrimmedFeedbackFromGeminiResponse() {
-        server.expect(requestTo("https://gemini.example.test/models/gemini-2.5-flash:generateContent?key=gemini-key"))
+        server.expect(requestTo("https://gemini.example.test/models/gemini-2.5-flash:generateContent"))
                 .andExpect(method(HttpMethod.POST))
                 .andRespond(withSuccess("""
                         {
@@ -65,7 +65,7 @@ class GeminiFeedbackServiceTest {
 
     @Test
     void shouldRejectEmptyGeminiFeedback() {
-        server.expect(requestTo("https://gemini.example.test/models/gemini-2.5-flash:generateContent?key=gemini-key"))
+        server.expect(requestTo("https://gemini.example.test/models/gemini-2.5-flash:generateContent"))
                 .andExpect(method(HttpMethod.POST))
                 .andRespond(withSuccess("{\"candidates\":[]}", MediaType.APPLICATION_JSON));
 

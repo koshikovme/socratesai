@@ -48,7 +48,7 @@ class MlPolicySelectorTest {
         properties.getMl().setPredictPath("/predict");
 
         MlPolicySelector selector = new MlPolicySelector(properties);
-        FeedbackAction action = selector.decide(new PolicyFeatures(
+        FeedbackAction action = selector.decideWithMetadata(new PolicyFeatures(
                 "SYNTAX_ERROR",
                 "HIGH",
                 false,
@@ -62,7 +62,7 @@ class MlPolicySelectorTest {
                 true,
                 8,
                 16
-        ));
+        ), "python3", true).action();
 
         assertThat(action).isEqualTo(FeedbackAction.CODE_HIGHLIGHT);
         assertThat(contentType.get()).contains("application/json");
@@ -120,14 +120,14 @@ class MlPolicySelectorTest {
                 analyzerResult(),
                 studentContext(),
                 2,
-                "for (int i = 0; i < n; i++) { System.out.println(i); }"
-        ));
+                "for i in range(n): print(i)"
+        ), "python3", true);
 
         assertThat(decision.action()).isEqualTo(FeedbackAction.GUIDING_QUESTION);
         assertThat(decision.mentorState()).isEqualTo("semantic_debug");
         assertThat(decision.confidence()).isEqualTo(0.61);
         assertThat(requestBody.get()).contains("\"code_model_text\"");
-        assertThat(requestBody.get()).contains("System.out.println");
+        assertThat(requestBody.get()).contains("for i in range(n)");
     }
 
     @ParameterizedTest
@@ -146,7 +146,7 @@ class MlPolicySelectorTest {
         properties.getMl().setBaseUrl("http://127.0.0.1:" + server.getAddress().getPort());
         properties.getMl().setPredictPath("/predict");
         var selector = new MlPolicySelector(properties);
-        assertThatThrownBy(() -> selector.decideWithMetadata(PolicyFeatures.from(analyzerResult(), studentContext(), 1, "private-source-echo")))
+        assertThatThrownBy(() -> selector.decideWithMetadata(PolicyFeatures.from(analyzerResult(), studentContext(), 1, "private-source-echo"), "python3", true))
                 .isInstanceOf(IllegalStateException.class).hasNoCause().hasMessageNotContaining("private-source-echo");
     }
 

@@ -11,7 +11,9 @@ public class GeminiClientConfig {
 
     @Bean
     public RestClient geminiRestClient(GeminiProperties properties) {
-        return RestClient.builder()
+        var factory = new org.springframework.http.client.SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(2000); factory.setReadTimeout(3000);
+        return RestClient.builder().requestFactory(factory)
                 .baseUrl(properties.getBaseUrl())
                 .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .build();

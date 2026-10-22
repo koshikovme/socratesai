@@ -56,7 +56,7 @@ class MentorPilotReplayExperimentTest {
 
     @Test
     void shouldReplayPilotTraceAndWriteResults() throws Exception {
-        String token = registerStudent();
+        String token = provisionResearchOperator();
         List<Scenario> scenarios = scenarios();
         List<EventRow> rows = new ArrayList<>();
 
@@ -112,21 +112,17 @@ class MentorPilotReplayExperimentTest {
         assertThat(stressStats.errors()).isZero();
     }
 
-    private String registerStudent() throws Exception {
-        MvcResult result = mockMvc.perform(post("/api/auth/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                  "email": "experiment-student@socratesai.test",
-                                  "password": "password123",
-                                  "fullName": "Experiment Student",
-                                  "role": "STUDENT"
-                                }
-                                """))
-                .andExpect(status().isOk())
-                .andReturn();
+    @Autowired private com.masters.socratesai.user.repo.UserRepository users;
+    @Autowired private com.masters.socratesai.security.JwtService jwt;
 
-        return objectMapper.readTree(result.getResponse().getContentAsString()).path("token").asText();
+    private String provisionResearchOperator() {
+        var user = users.saveAndFlush(com.masters.socratesai.user.model.User.builder()
+                .email("experiment-" + java.util.UUID.randomUUID() + "@example.test")
+                .passwordHash(java.util.UUID.randomUUID().toString()).fullName("Synthetic research operator")
+                .role(com.masters.socratesai.user.model.UserRole.ADMIN)
+                .settings(com.masters.socratesai.user.model.UserSettings.builder().build())
+                .createdAt(java.time.LocalDateTime.now()).build());
+        return jwt.generateToken(new com.masters.socratesai.security.SecurityUserDetails(user));
     }
 
     private String mentorRequest(long studentId, long taskId, int attemptNo, String code) throws Exception {

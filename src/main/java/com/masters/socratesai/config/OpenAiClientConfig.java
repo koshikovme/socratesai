@@ -12,7 +12,9 @@ public class OpenAiClientConfig {
 
     @Bean
     public RestClient openAiRestClient(OpenAiProperties properties) {
-        return RestClient.builder()
+        var factory = new org.springframework.http.client.SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(2000); factory.setReadTimeout(3000);
+        return RestClient.builder().requestFactory(factory)
                 .baseUrl(properties.getBaseUrl())
                 .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + properties.getApiKey())
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)

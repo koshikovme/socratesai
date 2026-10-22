@@ -14,6 +14,17 @@ import org.springframework.data.jpa.repository.Lock;
 import jakarta.persistence.LockModeType;
 
 public interface ExecutionJobRepository extends JpaRepository<ExecutionJob, UUID> {
+    @Query(value = """
+        SELECT j.* FROM execution_jobs j LEFT JOIN submissions s ON s.id=j.submission_id
+        LEFT JOIN execution_runs r ON r.id=j.run_id
+        WHERE j.status='FINISHED' AND j.mode IN ('SUBMISSION','SAMPLE_RUN') AND
+          ((s.student_id=:studentId AND s.problem_id=:problemId AND s.problem_version_id=:versionId
+            AND s.language_key=:language AND s.source_hash=:hash)
+          OR (r.requested_by=:studentId AND r.problem_id=:problemId AND r.problem_version_id=:versionId
+            AND r.language_key=:language AND r.source_hash=:hash AND r.expires_at>:now))
+        ORDER BY j.finished_at DESC, j.id DESC LIMIT 1
+        """, nativeQuery = true)
+    Optional<ExecutionJob> latestMentorEvidence(Long studentId, Long problemId, Long versionId, String language, String hash, OffsetDateTime now);
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select j from ExecutionJob j where j.id = :id")
     Optional<ExecutionJob> lockById(UUID id);

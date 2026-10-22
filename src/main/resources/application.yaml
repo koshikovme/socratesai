@@ -31,6 +31,17 @@ logging:
     liquibase: info
 
 app:
+  mentor:
+    realtime:
+      debounce-ms: ${APP_MENTOR_DEBOUNCE_MS:250}
+      min-interval-ms: ${APP_MENTOR_MIN_INTERVAL_MS:1000}
+      timeout-ms: ${APP_MENTOR_TIMEOUT_MS:15000}
+      concurrency: ${APP_MENTOR_CONCURRENCY:4}
+      messages-per-second: ${APP_MENTOR_MESSAGES_PER_SECOND:20}
+      sessions-per-user: ${APP_MENTOR_SESSIONS_PER_USER:4}
+      editors-per-user: ${APP_MENTOR_EDITORS_PER_USER:4}
+      max-sessions: ${APP_MENTOR_MAX_SESSIONS:1024}
+      max-editors: ${APP_MENTOR_MAX_EDITORS:1024}
   authoring:
     verification:
       timeout: ${APP_REFERENCE_VERIFICATION_TIMEOUT:30s}
@@ -100,7 +111,7 @@ app:
       base-url: ${APP_POLICY_ML_BASE_URL:http://localhost:8001}
       predict-path: ${APP_POLICY_ML_PREDICT_PATH:/predict-mentor-state}
       fallback-to-rule: ${APP_POLICY_ML_FALLBACK_TO_RULE:true}
-      min-confidence: 0.35
+      min-confidence: ${APP_POLICY_ML_MIN_CONFIDENCE:0.35}
 
   websocket:
     allowed-origins: ${APP_WEBSOCKET_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173}

@@ -51,6 +51,11 @@ public class InteractionLog {
 
     private UUID submissionId;
 
+    private UUID editorSessionId;
+    private UUID executionJobId;
+    private Boolean executionKnown;
+    @Column(length = 80) private String policyFallbackReason;
+
     @Column(name = "attempt_no", nullable = false)
     private Integer attemptNo;
 

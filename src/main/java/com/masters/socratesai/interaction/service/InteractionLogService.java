@@ -105,6 +105,8 @@ public class InteractionLogService {
                 .totalLatencyMs(totalLatency)
                 .resolvedAfterFeedback(false)
                 .directSolutionViolation(false)
+                .evidenceOrigin(com.masters.socratesai.common.model.EvidenceOrigin.STATIC_HEURISTIC)
+                .executionKnown(false)
                 .codeHash(hash(code))
                 .codeLines(analyzerResult.getCodeLines())
                 .hasSuspiciousRegion(hasText(analyzerResult.getSuspiciousRegion()))
@@ -214,12 +216,12 @@ public class InteractionLogService {
                 "feedback_helpful",
                 "feedback_rating",
                 "repeated_same_error_after_feedback",
-                "suspicious_region"
+                "suspicious_region",
+                "problem_id", "problem_version_id", "language_key", "context_source", "evidence_origin", "code_revision",
+                "editor_session_id", "execution_job_id", "execution_known", "submission_id", "policy_fallback_reason"
         )).append('\n');
 
-        for (InteractionLog row : rows) {
-            csv.append(toCsvRow(row)).append('\n');
-        }
+        rows.stream().map(this::toCsvRow).forEach(row -> csv.append(row).append('\n'));
 
         return csv.toString().getBytes(StandardCharsets.UTF_8);
     }
@@ -271,7 +273,10 @@ public class InteractionLogService {
                 escape(row.getFeedbackHelpful()),
                 escape(row.getFeedbackRating()),
                 escape(row.getRepeatedSameErrorAfterFeedback()),
-                escape(row.getSuspiciousRegion())
+                escape(row.getSuspiciousRegion()),
+                escape(row.getProblemId()), escape(row.getProblemVersionId()), escape(row.getLanguageKey()), escape(row.getContextSource()),
+                escape(row.getEvidenceOrigin()), escape(row.getCodeRevision()), escape(row.getEditorSessionId()), escape(row.getExecutionJobId()),
+                escape(row.getExecutionKnown()), escape(row.getSubmissionId()), escape(row.getPolicyFallbackReason())
         );
     }
 

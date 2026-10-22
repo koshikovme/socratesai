@@ -9,6 +9,11 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ExecutionCaseResultRepository extends JpaRepository<ExecutionCaseResult, Long> {
+    @Query("""
+        select new com.masters.socratesai.mentor.nativecontext.MentorCaseEvidence(r.status, r.verdict)
+        from ExecutionCaseResult r where r.job.id = :jobId and r.generation = 0 order by r.testCase.position
+        """)
+    List<com.masters.socratesai.mentor.nativecontext.MentorCaseEvidence> mentorEvidence(UUID jobId);
     @Modifying @Query("delete from ExecutionCaseResult r where r.job.id = :jobId")
     void deleteCheckpoints(UUID jobId);
     @EntityGraph(attributePaths = "testCase")

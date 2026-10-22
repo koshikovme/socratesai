@@ -8,7 +8,9 @@ from typing import Any
 import joblib
 import pandas as pd
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field, field_validator
 
 BASE_DIR = Path(__file__).resolve().parent
 MODEL_PATH = Path(os.getenv("POLICY_MODEL_PATH", str(BASE_DIR / "mentor_policy_model.joblib")))
@@ -55,17 +57,39 @@ class PolicyRequest(BaseModel):
 
 
 class MentorStateRequest(BaseModel):
-    code: str | None = None
-    code_model_text: str | None = None
+    code: str | None = Field(default=None, max_length=20000)
+    code_model_text: str | None = Field(default=None, max_length=20000)
     problem_rating: int | float | None = None
     tags_text: str | None = None
-    language_variant: str | None = "Python 3"
+    language_variant: str = "Python 3"
+    language_key: str
+    execution_known: bool | None = None
+
+    @field_validator("language_variant")
+    @classmethod
+    def python_variant_only(cls, value: str) -> str:
+        if value not in {"Python 3", "python3"}:
+            raise ValueError("Unsupported mentor language")
+        return "Python 3"
+
+    @field_validator("language_key")
+    @classmethod
+    def python_key_only(cls, value: str) -> str:
+        if value != "python3":
+            raise ValueError("Unsupported mentor language")
+        return value
     compile_success: bool | None = None
     tests_passed: int | float | None = None
     tests_failed: int | float | None = None
     passed_test_count: int | float | None = None
     time_consumed_ms: int | float | None = None
     memory_consumed_bytes: int | float | None = None
+
+
+@app.exception_handler(RequestValidationError)
+async def safe_validation_error(_request, _error):
+    # FastAPI's default validation response can include the raw request/source.
+    return JSONResponse(status_code=422, content={"code": "INVALID_REQUEST", "message": "Invalid inference request"})
 
 
 @app.on_event("startup")
@@ -104,10 +128,15 @@ def predict_mentor_state(request: MentorStateRequest) -> dict[str, Any]:
     if mentor_state_model is None:
         raise HTTPException(status_code=503, detail="Mentor-state model is not loaded")
 
-    frame = pd.DataFrame([build_mentor_state_features(request)])
-    mentor_state = str(mentor_state_model.predict(frame)[0])
-    class_scores, confidence = predict_scores(mentor_state_model, frame, mentor_state)
-    action = MENTOR_STATE_TO_ACTION.get(mentor_state, "CONCEPTUAL_HINT")
+    try:
+        frame = pd.DataFrame([build_mentor_state_features(request)])
+        mentor_state = str(mentor_state_model.predict(frame)[0])
+        class_scores, confidence = predict_scores(mentor_state_model, frame, mentor_state)
+        if mentor_state not in MENTOR_STATE_TO_ACTION:
+            raise ValueError("Invalid model state")
+        action = MENTOR_STATE_TO_ACTION[mentor_state]
+    except Exception:
+        raise HTTPException(status_code=503, detail="Mentor inference unavailable") from None
 
     return {
         "mentor_state": mentor_state,
@@ -127,9 +156,9 @@ def build_mentor_state_features(request: MentorStateRequest) -> dict[str, Any]:
         "problem_rating": request.problem_rating,
         "tags_text": request.tags_text or "",
         "language_variant": request.language_variant or "Python 3",
-        "passed_test_count": first_not_none(request.passed_test_count, request.tests_passed),
-        "time_consumed_ms": request.time_consumed_ms,
-        "memory_consumed_bytes": request.memory_consumed_bytes,
+        "passed_test_count": None if request.execution_known is False else first_not_none(request.passed_test_count, request.tests_passed),
+        "time_consumed_ms": None if request.execution_known is False else request.time_consumed_ms,
+        "memory_consumed_bytes": None if request.execution_known is False else request.memory_consumed_bytes,
         **metrics,
     }
 
@@ -143,13 +172,13 @@ def first_not_none(*values: Any) -> Any:
 
 def source_metrics(code: str) -> dict[str, int | float]:
     lines = code.splitlines() or [""]
-    code_lines = len(lines)
+    code_lines = code.count("\n") + 1
     code_chars = len(code)
     return {
         "code_chars": code_chars,
         "code_lines": code_lines,
-        "blank_line_count": sum(1 for line in lines if not line.strip()),
-        "comment_line_count": sum(1 for line in lines if line.strip().startswith("#")),
+        "blank_line_count": count_regex(code, r"(?m)^\s*$"),
+        "comment_line_count": count_regex(code, r"(?m)^\s*#"),
         "avg_line_length": code_chars / max(code_lines, 1),
         "max_line_length": max((len(line) for line in lines), default=0),
         "branch_count": count_regex(code, r"\b(if|elif|else)\b"),

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/mentor")
+@org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
 public class MentorController {
 
     private final MentorService mentorService;

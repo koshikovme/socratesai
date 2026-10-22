@@ -31,38 +31,8 @@ public class OpenAiFeedbackService {
             throw new IllegalStateException("OpenAI integration is disabled");
         }
 
-        String systemPrompt = """
-                You are an educational programming mentor for CS1 students.
-                Your job is to produce a SHORT feedback message.
-                Rules:
-                - Do not reveal the full solution.
-                - Do not provide complete corrected code.
-                - Keep the tone supportive and concise.
-                - Follow the requested pedagogical action exactly.
-                - Maximum 2 sentences.
-                """;
-
-        String userPrompt = """
-                Generate feedback for a beginner programming student.
-
-                Pedagogical action: %s
-                Error type: %s
-                Suspicious region: %s
-                Compile success: %s
-                Tests passed: %d
-                Tests failed: %d
-                Task summary: %s
-
-                Return only the feedback text.
-                """.formatted(
-                action.name(),
-                safe(analyzer.getErrorType()),
-                safe(analyzer.getSuspiciousRegion()),
-                analyzer.isCompileSuccess(),
-                analyzer.getTestsPassed(),
-                analyzer.getTestsFailed(),
-                safe(taskSummary)
-        );
+        String systemPrompt = com.masters.socratesai.mentor.feedback.MentorPrompt.INSTRUCTIONS;
+        String userPrompt = com.masters.socratesai.mentor.feedback.MentorPrompt.data(action, analyzer, null, taskSummary);
 
         OpenAiResponseRequest body = new OpenAiResponseRequest(
                 properties.getModel(),

@@ -43,16 +43,30 @@ public class ProblemAccess {
     }
 
     public ProblemVersion published(Long problemId, Long versionId) {
+        return published(problemId, versionId, readableVisibilities());
+    }
+
+    /** Async callers supply server-established visibility, never a client role. */
+    public ProblemVersion publishedAuthenticated(Long problemId, Long versionId) {
+        return published(problemId, versionId, List.of(ContentVisibility.PUBLIC, ContentVisibility.AUTHENTICATED));
+    }
+
+    private ProblemVersion published(Long problemId, Long versionId, List<ContentVisibility> visibility) {
         Task problem = problems.findById(problemId).orElseThrow(() -> new ApiException(ApiErrorCode.NOT_FOUND));
-        if (!readable(problem)) throw new ApiException(ApiErrorCode.NOT_FOUND);
-        return validVersion(problem, versionId == null ? problem.getPublishedVersionId() : versionId);
+        if (problem.getStatus() != ContentStatus.PUBLISHED || !visibility.contains(problem.getVisibility()) || problem.getPublishedVersionId() == null)
+            throw new ApiException(ApiErrorCode.NOT_FOUND);
+        return validVersion(problem, versionId == null ? problem.getPublishedVersionId() : versionId, visibility);
     }
 
     public ProblemVersion validVersion(Task problem, Long versionId) {
+        return validVersion(problem, versionId, readableVisibilities());
+    }
+
+    private ProblemVersion validVersion(Task problem, Long versionId, List<ContentVisibility> visibility) {
         var version = versions.findByIdAndProblem_Id(versionId, problem.getId())
                 .orElseThrow(() -> new ApiException(ApiErrorCode.NOT_FOUND));
         if (version.getStatus() != ProblemVersionStatus.PUBLISHED || Boolean.TRUE.equals(version.getLegacySnapshot())
-                || version.getReferenceVerificationId() == null || !readableVisibilities().contains(version.getVisibility())) throw new ApiException(ApiErrorCode.NOT_FOUND);
+                || version.getReferenceVerificationId() == null || !visibility.contains(version.getVisibility())) throw new ApiException(ApiErrorCode.NOT_FOUND);
         return version;
     }
 }

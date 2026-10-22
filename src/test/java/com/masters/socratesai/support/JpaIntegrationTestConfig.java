@@ -33,7 +33,8 @@ import java.util.Map;
         StudentTaskSessionRepository.class,
         InteractionLogRepository.class
 })
-@ComponentScan(basePackageClasses = {
+@ComponentScan(excludeFilters = @ComponentScan.Filter(type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
+        classes = com.masters.socratesai.interaction.service.InteractionPermissions.class), basePackageClasses = {
         StudentTaskSessionService.class,
         InteractionLogService.class
 })

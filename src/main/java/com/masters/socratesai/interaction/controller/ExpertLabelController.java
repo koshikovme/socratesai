@@ -25,7 +25,7 @@ public class ExpertLabelController {
     }
 
     @PostMapping("/{interactionId}/expert-labels")
-    @PreAuthorize("hasAnyRole('TEACHER','ADMIN')")
+    @PreAuthorize("@interactionPermissions.canLabel(#interactionId, #request)")
     public ResponseEntity<ExpertLabelResponse> upsertLabel(
             @PathVariable UUID interactionId,
             @Valid @RequestBody ExpertLabelRequest request
@@ -34,7 +34,7 @@ public class ExpertLabelController {
     }
 
     @GetMapping(value = "/expert-labels/export", produces = "text/csv")
-    @PreAuthorize("hasAnyRole('TEACHER','ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<byte[]> exportLabels() {
         byte[] csv = expertLabelService.exportLabelsCsv();
         return ResponseEntity.ok()
@@ -44,7 +44,7 @@ public class ExpertLabelController {
     }
 
     @GetMapping("/expert-labels/agreement")
-    @PreAuthorize("hasAnyRole('TEACHER','ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ExpertAgreementResponse> agreement() {
         return ResponseEntity.ok(expertLabelService.calculateAgreement());
     }

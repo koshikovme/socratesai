@@ -36,50 +36,17 @@ public class GeminiFeedbackService {
             throw new IllegalStateException("Gemini integration is disabled");
         }
 
-        String prompt = """
-                You are an educational programming mentor for CS1 students.
-                Produce a short feedback message.
-                Rules:
-                - Do not reveal the full solution.
-                - Do not provide complete corrected code.
-                - Keep it supportive and concise.
-                - If a student's response is actually correct, just congratulate him/her instead of providing useless optimization proposals and unnecessary hints
-
-                Pedagogical action: %s
-                Error type: %s
-                Suspicious region: %s
-                Compile success: %s
-                Tests passed: %d
-                Tests failed: %d
-                Code: %s
-                Task summary: %s
-
-                Return only the feedback text.
-                """.formatted(
-                action.name(),
-                safe(analyzer.getErrorType()),
-                safe(analyzer.getSuspiciousRegion()),
-                analyzer.isCompileSuccess(),
-                analyzer.getTestsPassed(),
-                analyzer.getTestsFailed(),
-                code,
-                safe(taskSummary)
-        );
-
-        GeminiGenerateContentRequest body = new GeminiGenerateContentRequest(
-                List.of(
-                        new GeminiGenerateContentRequest.Content(
-                                "user",
-                                List.of(new GeminiGenerateContentRequest.Part(prompt))
-                        )
-                )
-        );
+        String prompt = com.masters.socratesai.mentor.feedback.MentorPrompt.data(action, analyzer, code, taskSummary);
+        var body = GeminiGenerateContentRequest.builder()
+                .systemInstruction(new GeminiGenerateContentRequest.Content(null, List.of(new GeminiGenerateContentRequest.Part(
+                        com.masters.socratesai.mentor.feedback.MentorPrompt.INSTRUCTIONS))))
+                .contents(List.of(new GeminiGenerateContentRequest.Content("user", List.of(new GeminiGenerateContentRequest.Part(prompt))))).build();
 
         GeminiGenerateContentResponse response = geminiRestClient.post()
                 .uri(uriBuilder -> uriBuilder
                         .path("/models/{model}:generateContent")
-                        .queryParam("key", properties.getApiKey())
                         .build(properties.getModel()))
+                .header("x-goog-api-key", properties.getApiKey())
                 .body(body)
                 .retrieve()
                 .body(GeminiGenerateContentResponse.class);

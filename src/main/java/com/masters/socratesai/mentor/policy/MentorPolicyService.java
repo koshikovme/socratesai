@@ -6,8 +6,9 @@ import com.masters.socratesai.mentor.model.FeedbackAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
 
-@Service
+@Service @RequiredArgsConstructor
 public class MentorPolicyService {
 
     private static final Logger log = LoggerFactory.getLogger(MentorPolicyService.class);
@@ -17,16 +18,34 @@ public class MentorPolicyService {
     private final PolicyGuardrailService policyGuardrailService;
     private final MentorPolicyProperties properties;
 
-    public MentorPolicyService(
-            RuleBasedPolicyEngine ruleBasedPolicyEngine,
-            MlPolicySelector mlPolicySelector,
-            PolicyGuardrailService policyGuardrailService,
-            MentorPolicyProperties properties
-    ) {
-        this.ruleBasedPolicyEngine = ruleBasedPolicyEngine;
-        this.mlPolicySelector = mlPolicySelector;
-        this.policyGuardrailService = policyGuardrailService;
-        this.properties = properties;
+    public NativePolicyDecision decideNative(AnalyzerResult analyzer, StudentContextDto context, Integer attemptNo, String code,
+                                             String languageKey, boolean executionKnown) {
+        var features = PolicyFeatures.from(analyzer, context, attemptNo, code);
+        if (!"python3".equals(languageKey)) return nativeRule(features, "UNSUPPORTED_LANGUAGE");
+        if (code == null || code.isBlank()) return nativeRule(features, "EMPTY_SOURCE");
+        if (properties.getMode() != PolicyMode.ML) return nativeRule(features, "CONFIGURED_RULE");
+        if (!properties.getMl().isEnabled()) return nativeRule(features, "ML_DISABLED");
+        try {
+            var prediction = mlPolicySelector.decideWithMetadata(features, languageKey, executionKnown);
+            if (prediction.confidence() == null || !Double.isFinite(prediction.confidence()) || prediction.confidence() < properties.getMl().getMinConfidence()) {
+                var fallback = nativeRule(features, "LOW_CONFIDENCE");
+                return new NativePolicyDecision(new PolicyDecision(fallback.decision().action(), lowConfidencePolicyVersion(prediction.policyVersion()),
+                        prediction.mentorState(), prediction.confidence()), "RULE", "LOW_CONFIDENCE");
+            }
+            return new NativePolicyDecision(new PolicyDecision(policyGuardrailService.applyGuards(prediction.action(), features), prediction.policyVersion(),
+                    prediction.mentorState(), prediction.confidence()), "ML", null);
+        } catch (RuntimeException ex) { return nativeRule(features, "ML_UNAVAILABLE"); }
+    }
+
+    private NativePolicyDecision nativeRule(PolicyFeatures features, String reason) {
+        return new NativePolicyDecision(new PolicyDecision(policyGuardrailService.applyGuards(ruleBasedPolicyEngine.decide(features), features),
+                ruleBasedPolicyEngine.policyVersion()), "RULE", reason);
+    }
+
+    /** Preserve the explicit no-policy research ablation on administrator-only legacy routes. */
+    public PolicyDecision decideForResearch(AnalyzerResult analyzer, StudentContextDto context, Integer attemptNo, String code, String languageKey) {
+        if (properties.getMode() == PolicyMode.NO_POLICY) return new PolicyDecision(FeedbackAction.CONCEPTUAL_HINT, "no-policy-v1");
+        return decideNative(analyzer, context, attemptNo, code, languageKey, false).decision();
     }
 
     public PolicyDecision decide(AnalyzerResult analyzer, StudentContextDto context, Integer attemptNo) {

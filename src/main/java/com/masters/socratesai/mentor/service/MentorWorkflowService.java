@@ -52,6 +52,7 @@ public class MentorWorkflowService {
 
         MentorRequest mentorRequest = new MentorRequest();
         mentorRequest.setStudentId(request.getStudentId());
+        mentorRequest.setLanguageKey("python3".equalsIgnoreCase(request.getLanguage()) || "python".equalsIgnoreCase(request.getLanguage()) ? "python3" : request.getLanguage());
         mentorRequest.setSessionId(session.getSessionId());
         mentorRequest.setTaskId(request.getTaskId());
         mentorRequest.setAttemptNo(request.getAttemptNo());

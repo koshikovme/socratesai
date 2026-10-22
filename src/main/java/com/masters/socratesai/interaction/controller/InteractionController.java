@@ -23,6 +23,7 @@ public class InteractionController {
     }
 
     @PostMapping("/{interactionId}/result")
+    @org.springframework.security.access.prepost.PreAuthorize("@interactionPermissions.canReport(#interactionId)")
     public ResponseEntity<InteractionResultResponse> updateResult(
             @PathVariable UUID interactionId,
             @Valid @RequestBody InteractionResultUpdateRequest request
@@ -41,6 +42,7 @@ public class InteractionController {
     }
 
     @GetMapping(value = "/policy-dataset", produces = "text/csv")
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<byte[]> exportPolicyDataset(
             @RequestParam(defaultValue = "false") boolean resolvedOnly
     ) {

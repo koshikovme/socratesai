@@ -24,7 +24,9 @@ SELECT
     feedback_action,
     resolved_after_feedback,
     fixed_after_ms,
-    suspicious_region
+    suspicious_region,
+    problem_id, problem_version_id, language_key, context_source, evidence_origin, code_revision,
+    editor_session_id, execution_job_id, execution_known, submission_id, policy_fallback_reason
 FROM interaction_logs
 WHERE feedback_action IS NOT NULL
 ORDER BY created_at;

@@ -22,6 +22,7 @@ public record PolicyFeatures(
         int totalFeedbackCountInSession,
         String code
 ) {
+    @Override public String toString() { return "PolicyFeatures[redacted]"; }
 
     public static PolicyFeatures from(AnalyzerResult analyzer, StudentContextDto context, Integer attemptNo) {
         return from(analyzer, context, attemptNo, null);

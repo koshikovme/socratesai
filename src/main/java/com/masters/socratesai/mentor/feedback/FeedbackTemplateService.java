@@ -9,6 +9,8 @@ public class FeedbackTemplateService {
 
     public String generate(FeedbackAction action, AnalyzerResult analyzer) {
         String errorType = analyzer.getErrorType();
+        if ("EXECUTION_UNKNOWN".equals(errorType)) return "Run the public samples to obtain execution evidence for this code. No compiler or test result is available yet.";
+        if ("SAMPLE_PASSED".equals(errorType)) return "The public samples passed. Submit this code to check the complete problem test suite.";
         String region = analyzer.getSuspiciousRegion() == null ? "highlighted region" : analyzer.getSuspiciousRegion();
 
         return switch (action) {

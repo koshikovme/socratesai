@@ -34,7 +34,8 @@ public class ApiExceptionHandler {
             org.springframework.web.servlet.NoHandlerFoundException.class, org.springframework.web.servlet.resource.NoResourceFoundException.class})
     ResponseEntity<ApiError> missing(Exception ex, HttpServletRequest request) { return error(ApiErrorCode.NOT_FOUND, request); }
 
-    @ExceptionHandler({DataIntegrityViolationException.class, OptimisticLockingFailureException.class})
+    @ExceptionHandler({DataIntegrityViolationException.class, OptimisticLockingFailureException.class,
+            com.masters.socratesai.mentor.nativecontext.SupersededMentorSnapshot.class})
     ResponseEntity<ApiError> conflict(Exception ex, HttpServletRequest request) { return error(ApiErrorCode.CONFLICT, request); }
 
     @ExceptionHandler(AccessDeniedException.class)

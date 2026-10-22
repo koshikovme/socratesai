@@ -16,6 +16,7 @@ public class MentorAnalyzeRequest {
     private String language;
     @NotBlank
     @Size(max = 20000)
+    @lombok.ToString.Exclude
     private String code;
     @NotNull
     @Min(1)
