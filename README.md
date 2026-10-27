@@ -16,6 +16,16 @@ SocratesAI is a full-stack teaching assistant for programming practice. The repo
 
 `docker-compose.yml`: local PostgreSQL for development
 
+## Локальная демонстрация
+
+Для знакомства с приложением без хостинга запустите из корня репозитория (Docker Compose 2.24.4+, Bash, Python 3):
+
+```bash
+bash scripts/demo/demo.sh up
+```
+
+Откройте **http://localhost:8088**. Учебные аккаунты и примеры решений находятся в локальном файле `.delivery/demo/access.md` (секреты исключены из Git). Работают native-каталог, преподавательские экраны, Monaco, WS-ментор, очередь Run/Submit и прогресс. **Исполнение решений имитируется; студенческие программы не запускаются.** Подробный сценарий и команды остановки: [локальное демо](deploy/demo/README.md).
+
 ## Prerequisites
 
 1) Java 21

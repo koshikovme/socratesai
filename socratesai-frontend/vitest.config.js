@@ -6,7 +6,7 @@ export default defineConfig({
     test: {
         environment: 'jsdom',
         globals: true,
-        exclude: ['node_modules/**', 'e2e/**', 'dist/**'],
+        exclude: ['node_modules/**', 'e2e/**', 'demo-e2e/**', 'dist/**'],
         clearMocks: true,
         coverage: {
             provider: 'v8',

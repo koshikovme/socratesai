@@ -1,0 +1,23 @@
+# Synthetic fixture IDs, NOT installed compiler IDs. Never use in production.
+app:
+  execution:
+    judge0:
+      runtimes:
+        - key: synthetic-python
+          language-key: python3
+          language-id: 1
+          version: fixture-v1
+          provider-name: Synthetic Python demo (fixture-v1)
+          entry-point: main.py
+        - key: synthetic-java
+          language-key: java
+          language-id: 2
+          version: fixture-v1
+          provider-name: Synthetic Java demo (fixture-v1)
+          entry-point: Main.java
+        - key: synthetic-cpp
+          language-key: cpp17
+          language-id: 3
+          version: fixture-v1
+          provider-name: Synthetic C++ demo (fixture-v1)
+          entry-point: main.cpp

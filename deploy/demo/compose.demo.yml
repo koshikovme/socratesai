@@ -1,0 +1,51 @@
+# Overlay ONLY for a loopback demonstration. Do not deploy this overlay to a public host.
+services:
+  backend:
+    environment:
+      SPRING_PROFILES_ACTIVE: local-demo
+      SPRING_CONFIG_IMPORT: file:/run/config/runtime-catalog.yaml
+      SERVER_FORWARD_HEADERS_STRATEGY: framework
+      SPRINGDOC_API_DOCS_ENABLED: 'false'
+      SPRINGDOC_SWAGGER_UI_ENABLED: 'false'
+      APP_JUDGE0_ENABLED: 'true'
+      APP_JUDGE0_BASE_URL: http://demo-judge:8002
+      APP_JUDGE0_ALLOW_PLAIN_HTTP: 'true'
+      APP_JUDGING_ENABLED: 'true'
+    depends_on:
+      demo-judge:
+        condition: service_healthy
+  frontend-nginx:
+    entrypoint: [nginx, '-g', 'daemon off;']
+    ports: !override
+      - '127.0.0.1:8088:8080'
+    volumes: !override
+      - type: bind
+        source: ./deploy/demo/nginx.conf
+        target: /etc/nginx/nginx.conf
+        read_only: true
+        bind:
+          create_host_path: false
+  demo-judge:
+    image: ${POLICY_IMAGE:?Set the local policy image}
+    entrypoint: [python, /demo/synthetic_judge.py]
+    user: '10001:10001'
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: unless-stopped
+    environment:
+      SYNTHETIC_DEMO_ONLY: 'true'
+      DEMO_JUDGE_TOKEN: ${APP_JUDGE0_API_KEY:?Set the generated demo adapter token}
+    volumes:
+      - ./scripts/demo/synthetic_judge.py:/demo/synthetic_judge.py:ro
+      - ./deploy/demo/programs.json:/demo/programs.json:ro
+    networks: [backend-net]
+    mem_limit: 96m
+    cpus: 0.5
+    pids_limit: 32
+    tmpfs: ['/tmp:size=16m,mode=1777']
+    healthcheck:
+      test: [CMD, python, '-c', "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8002/health', timeout=2)"]
+      interval: 3s
+      timeout: 3s
+      retries: 10

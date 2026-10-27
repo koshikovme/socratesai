@@ -4,6 +4,12 @@ The application package contains `frontend-nginx`, `backend`, `policy-api` and P
 
 This is application packaging and release automation. A certified separate execution host, public DNS/TLS, hosting access, backups and institutional retention decisions remain deployment prerequisites. The repository does not claim a live production release or a verified Judge0 installation.
 
+## Try the complete local demonstration first
+
+Run `bash scripts/demo/demo.sh up` and open **http://localhost:8088**. Instructions in Russian, generated private account credentials, UI walkthrough, restart recovery and stop/start commands are documented in [deploy/demo/README.md](deploy/demo/README.md). Docker Compose 2.24.4+ is required for the local overlay's explicit port/volume replacements. The fixed project has its own PostgreSQL volume and only one loopback port; no public DNS/TLS or hosting account is needed.
+
+The application services and native journeys are real; the fifth, private service is an explicitly synthetic Judge0 protocol fixture. It recognizes documented templates and never executes submitted programs. Demo verdicts/resource metrics are synthetic, and the visible banner states this on every page. This overlay uses a local profile and HTTP on loopback; production configuration and HTTPS validation remain unchanged. Do not publish this overlay or treat its invented fixture language IDs as certified runtimes.
+
 ## Build and local verification
 
 Verified tools: Java 21, Node 22.23.1/npm 10.9.8, Python 3.12, Docker Engine/BuildKit and Docker Compose with health-aware `up --wait`. Dockerfiles pin their base images and Dockerfile frontend by digest. Maven wrapper distribution has a SHA-256 checksum; `package-lock.json`, hashed serving/test Python locks and `ml/models.manifest.json` are committed.

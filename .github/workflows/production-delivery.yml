@@ -113,11 +113,15 @@ jobs:
       - name: Workflow syntax, shell and immutable action references
         run: |
           docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:1.7.12@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667 -color
-          for script in scripts/delivery/*.sh deploy/backend/*.sh; do bash -n "$script"; done
+          for script in scripts/delivery/*.sh scripts/demo/*.sh deploy/backend/*.sh; do bash -n "$script"; done
           sh -n socratesai-frontend/nginx/start.sh
           sh -n deploy/postgres/10-application-role.sh
       - name: Prove private inputs cannot enter any build context
         run: python3 scripts/delivery/context_check.py
+      - name: Local demo fixture contracts (no code execution)
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python3 -m unittest discover -s tests/demo
 
   images:
     needs: [backend, frontend, policy, infrastructure]

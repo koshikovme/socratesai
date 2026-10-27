@@ -1,0 +1,5 @@
+{
+  "python3": "a, b = map(int, input().split())\nprint(a + b)\n",
+  "java": "import java.util.Scanner;\npublic class Main {\n    public static void main(String[] args) {\n        Scanner input = new Scanner(System.in);\n        long a = input.nextLong();\n        long b = input.nextLong();\n        System.out.println(a + b);\n    }\n}\n",
+  "cpp17": "#include <iostream>\nint main() {\n    long long a, b;\n    std::cin >> a >> b;\n    std::cout << a + b << '\\n';\n}\n"
+}

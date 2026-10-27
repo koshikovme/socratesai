@@ -24,3 +24,6 @@
 **/experiments/**
 **/*.tex
 **/node_modules/**
+deploy/demo/
+scripts/demo/
+.delivery/

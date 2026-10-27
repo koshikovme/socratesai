@@ -18,7 +18,8 @@ for context in [root, root / 'socratesai-frontend', root / 'ml']:
             target.write_text('allowed fixture')
         for name in ['.env', '.env.prod', 'datasets/private.csv', 'experiments/private.json', 'ieee3rd2026/paper.tex',
                      'src/main/resources/.env', 'src/nested/.env.test', 'private.key', 'public/private.key', 'src/private.pem',
-                     'src/main/resources/private.p12', 'node_modules/private.txt']:
+                     'src/main/resources/private.p12', 'node_modules/private.txt', '.delivery/demo/access.json',
+                     'deploy/demo/runtime-catalog.yaml', 'scripts/demo/synthetic_judge.py', 'demo-e2e/demo.spec.js']:
             target = fixture / name
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text('PRIVATE_BUILD_CONTEXT_SENTINEL')
@@ -27,5 +28,5 @@ for context in [root, root / 'socratesai-frontend', root / 'ml']:
         assert any(output.rglob('*')), 'Context allowlist excluded all application inputs'
         for file in output.rglob('*'):
             if file.is_file() and b'PRIVATE_BUILD_CONTEXT_SENTINEL' in file.read_bytes():
-                raise RuntimeError('A build context included a forbidden fixture')
+                raise RuntimeError(f'Build context {context.name} included a forbidden synthetic fixture: {file.relative_to(output)}')
         print('Build context allowlist passed:', context.relative_to(root) if context != root else 'backend')
