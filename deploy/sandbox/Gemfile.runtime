@@ -1,0 +1,15 @@
+source 'https://rubygems.org'
+
+# Supported framework/runtime packaging of the pinned Judge0 implementation.
+gem 'rails', '8.1.4.1'
+gem 'pg', '1.7.0', force_ruby_platform: true
+gem 'active_model_serializers', '0.10.16'
+gem 'enumerations', '3.0.1'
+gem 'httparty', '0.24.3'
+gem 'puma', '8.0.2'
+gem 'rack-cors', '3.0.0'
+gem 'redis', '6.0.0'
+gem 'resque', '3.2.0'
+gem 'resque-scheduler', '5.1.1'
+gem 'will_paginate', '4.0.1'
+gem 'logger', '1.7.0'

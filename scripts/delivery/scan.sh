@@ -7,7 +7,9 @@ mkdir -p "$report_dir"
 report_dir="$(cd "$report_dir" && pwd)"
 result=0
 image_tag="${DELIVERY_IMAGE_TAG:-delivery-test}"
-for name in backend frontend policy-api; do
+images=(backend frontend policy-api)
+if [[ "${SCAN_SANDBOX_IMAGE:-false}" == true ]]; then images+=(judge0); fi
+for name in "${images[@]}"; do
   docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v socrates-trivy-cache:/root/.cache/ \
     -v "$report_dir:/reports" "$scanner" image --quiet --scanners vuln --ignore-unfixed \
     --severity HIGH,CRITICAL --exit-code 1 --format json --output "/reports/$name.json" \

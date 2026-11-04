@@ -1,3 +1,9 @@
 *
 !Dockerfile
-!harden.rb
+!Gemfile.runtime
+!Gemfile.runtime.lock
+!modernize.rb
+!runtime-seeds.rb
+!entrypoint-modern.sh
+!server-modern.sh
+!worker-modern.sh

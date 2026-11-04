@@ -5,7 +5,7 @@ x-logs: &logs
 x-engine: &engine
   image: ${JUDGE_IMAGE:?Set the tested local Judge0 image identifier}
   restart: unless-stopped
-  privileged: true
+  privileged: false
   cgroup: host
   volumes:
     - ./private/judge0.conf:/judge0.conf:ro
@@ -16,6 +16,15 @@ services:
   server:
     <<: *engine
     networks: [execution-net, api-net]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    read_only: true
+    init: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+      - /api/tmp:size=64m,uid=1000,gid=999,mode=0755
+      - /api/log:size=16m,uid=1000,gid=999,mode=0755
+      - /home/judge0:size=16m,uid=1000,gid=999,mode=0700
     ports: ['10.93.0.2:2358:2358']
     mem_limit: 768m
     cpus: 0.5
@@ -30,7 +39,9 @@ services:
       start_period: 45s
   worker:
     <<: *engine
-    command: [./scripts/workers]
+    privileged: true
+    init: true
+    command: [/api/worker-modern.sh]
     mem_limit: 2g
     cpus: 1
     stop_grace_period: 30s
@@ -39,11 +50,27 @@ services:
   db:
     image: postgres:16-alpine@sha256:0cefaabd882e42bcb2a2f3dc56d3ce4770560ba62fd7f197f1a2e008fd5731ab
     restart: unless-stopped
+    user: '70:70'
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
     environment:
       POSTGRES_DB: ${POSTGRES_DB:?}
-      POSTGRES_USER: ${POSTGRES_USER:?}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
-    volumes: [judge_data:/var/lib/postgresql/data]
+      POSTGRES_USER: ${POSTGRES_ADMIN_USER:?Set a separate execution database operator}
+      POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD:?Set the execution database operator credential}
+      APP_DATABASE_USERNAME: ${POSTGRES_USER:?Set the non-superuser execution role}
+      APP_DATABASE_PASSWORD: ${POSTGRES_PASSWORD:?Set the execution application credential}
+    volumes:
+      - judge_data:/var/lib/postgresql/data
+      - type: bind
+        source: ${JUDGE_DATABASE_INIT_FILE:?Set the shared application-role initializer path}
+        target: /docker-entrypoint-initdb.d/10-application-role.sh
+        read_only: true
+        bind:
+          create_host_path: false
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+      - /var/run/postgresql:size=16m,uid=70,gid=70,mode=0770
     networks: [execution-net]
     mem_limit: 512m
     cpus: 0.5
@@ -57,9 +84,17 @@ services:
   redis:
     image: ${REDIS_IMAGE:?Set a pinned Redis image}
     restart: unless-stopped
-    command: [sh, -c, 'exec redis-server --appendonly no --maxmemory 96mb --maxmemory-policy noeviction --requirepass "$$REDIS_PASSWORD"']
+    user: '999:1000'
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    command: [sh, -c, 'exec redis-server --appendonly yes --appendfsync everysec --save "" --maxmemory 96mb --maxmemory-policy noeviction --requirepass "$$REDIS_PASSWORD"']
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD:?}
+    volumes:
+      - judge_redis_data:/data
+    tmpfs:
+      - /tmp:size=16m,mode=1777
     networks: [execution-net]
     mem_limit: 128m
     cpus: 0.25
@@ -77,3 +112,4 @@ networks:
     internal: true
 volumes:
   judge_data:
+  judge_redis_data:

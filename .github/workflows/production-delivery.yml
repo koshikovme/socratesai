@@ -190,7 +190,22 @@ jobs:
           cache-to: type=gha,mode=max,scope=policy-api
       - name: Cold-volume production Compose smoke with generated credentials and TLS
         run: bash scripts/delivery/smoke.sh
+      - name: Build supported Judge0 packaging without privileged execution
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: ./deploy/sandbox
+          load: true
+          tags: socratesai/judge0:delivery-test
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+          cache-from: type=gha,scope=judge0
+          cache-to: type=gha,mode=max,scope=judge0
+      - name: Verify execution startup is fail-closed without running student programs
+        run: bash scripts/delivery/sandbox_startup_smoke.sh
       - name: Gate application advisories and report upstream database findings
+        env:
+          SCAN_SANDBOX_IMAGE: 'true'
         run: bash scripts/delivery/scan.sh
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
@@ -200,7 +215,7 @@ jobs:
           retention-days: 7
       - name: Save exactly the verified images for release promotion
         if: startsWith(github.ref, 'refs/tags/v') && github.event_name == 'push'
-        run: docker save socratesai/backend:delivery-test socratesai/frontend:delivery-test socratesai/policy-api:delivery-test -o /tmp/delivery-images.tar
+        run: docker save socratesai/backend:delivery-test socratesai/frontend:delivery-test socratesai/policy-api:delivery-test socratesai/judge0:delivery-test -o /tmp/delivery-images.tar
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: startsWith(github.ref, 'refs/tags/v') && github.event_name == 'push'
         with:
@@ -240,13 +255,13 @@ jobs:
           docker load -i /tmp/release/delivery-images.tar
           IMAGE_PREFIX="ghcr.io/${GITHUB_REPOSITORY,,}"
           mkdir -p .delivery/release
-          for name in backend frontend policy-api; do
+          for name in backend frontend policy-api judge0; do
             if docker manifest inspect "$IMAGE_PREFIX/$name:$GITHUB_REF_NAME" >/dev/null 2>&1; then
               echo 'Release tag already exists; refusing to overwrite it' >&2
               exit 1
             fi
           done
-          for name in backend frontend policy-api; do
+          for name in backend frontend policy-api judge0; do
             image="$IMAGE_PREFIX/$name"
             docker tag "socratesai/$name:delivery-test" "$image:$GITHUB_REF_NAME"
             docker tag "socratesai/$name:delivery-test" "$image:sha-$GITHUB_SHA"
@@ -254,7 +269,11 @@ jobs:
             docker push "$image:sha-$GITHUB_SHA"
             reference="$(docker image inspect "$image:$GITHUB_REF_NAME" --format '{{range .RepoDigests}}{{println .}}{{end}}' | awk -v prefix="$image@" 'index($0,prefix)==1 {print; exit}')"
             [[ -n "$reference" ]]
-            printf '%s\n' "$reference" >> .delivery/release/images.txt
+            if [[ "$name" == judge0 ]]; then
+              printf '%s\n' "$reference" >> .delivery/release/execution-images.txt
+            else
+              printf '%s\n' "$reference" >> .delivery/release/images.txt
+            fi
           done
           cp ml/models.manifest.json .delivery/release/models.manifest.json
           awk '/image: postgres:16-alpine@sha256:/ {print $2}' docker-compose.prod.yml > .delivery/release/platform-images.txt

@@ -1,0 +1,23 @@
+# Verified on the dedicated execution host on 2026-11-05. Reverify before changing images.
+app:
+  execution:
+    judge0:
+      runtimes:
+      - entry-point: main.py
+        key: python3-3.12.16
+        language-id: 1001
+        language-key: python3
+        provider-name: Python (3.12.16)
+        version: 3.12.16
+      - entry-point: Main.java
+        key: java-21.0.13
+        language-id: 1002
+        language-key: java
+        provider-name: Java (OpenJDK 21.0.13)
+        version: 21.0.13
+      - entry-point: main.cpp
+        key: cpp17-12.2.0
+        language-id: 1003
+        language-key: cpp17
+        provider-name: C++ (GCC 12.2.0)
+        version: 12.2.0
