@@ -56,7 +56,8 @@ for service in postgres policy-api backend; do
   docker inspect "$container_id" --format '{{json .HostConfig.PortBindings}}' | python3 -c 'import json,sys; assert not any((json.load(sys.stdin) or {}).values()), "Private host port binding detected"'
 done
 versions="$("${compose[@]}" exec -T postgres psql -U delivery_test -d delivery_test -tAc 'select count(*) from flyway_schema_history where success')"
-[[ "$versions" -ge 12 ]]
+expected_versions="$(python3 -c 'from pathlib import Path; print(len(list(Path("src/main/resources/db/migration").glob("V*__*.sql"))))')"
+[[ "$versions" -eq "$expected_versions" ]]
 superuser="$("${compose[@]}" exec -T postgres psql -U delivery_test -d delivery_test -tAc 'select rolsuper from pg_roles where rolname=current_user')"
 [[ "$superuser" == 'f' ]]
 echo "Isolated TLS/API/STOMP/model/readiness smoke passed; Flyway migrations: $versions."
