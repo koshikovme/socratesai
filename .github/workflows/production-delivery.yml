@@ -125,6 +125,24 @@ jobs:
           python3 -m unittest discover -s tests/demo
           python3 -m unittest discover -s tests/delivery
 
+  deployment-connection:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.PRODUCTION_AUTO_DEPLOY == 'true'
+    needs: infrastructure
+    environment: production
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Verify restricted production identity without deployment
+        env:
+          DEPLOY_HEALTH_ONLY: 'true'
+          PRODUCTION_HOST: ${{ vars.PRODUCTION_HOST }}
+          PRODUCTION_SSH_KEY: ${{ secrets.PRODUCTION_SSH_KEY }}
+          PRODUCTION_KNOWN_HOSTS: ${{ secrets.PRODUCTION_KNOWN_HOSTS }}
+        run: python3 scripts/delivery/ssh_promote.py
+
   images:
     needs: [backend, frontend, policy, infrastructure]
     runs-on: ubuntu-24.04
