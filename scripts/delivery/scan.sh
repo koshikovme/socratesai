@@ -6,14 +6,15 @@ report_dir="${1:-.delivery/scans}"
 mkdir -p "$report_dir"
 report_dir="$(cd "$report_dir" && pwd)"
 result=0
+image_tag="${DELIVERY_IMAGE_TAG:-delivery-test}"
 for name in backend frontend policy-api; do
   docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v socrates-trivy-cache:/root/.cache/ \
     -v "$report_dir:/reports" "$scanner" image --quiet --scanners vuln --ignore-unfixed \
     --severity HIGH,CRITICAL --exit-code 1 --format json --output "/reports/$name.json" \
-    "socratesai/$name:delivery-test" || result=1
+    "socratesai/$name:$image_tag" || result=1
   docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v socrates-trivy-cache:/root/.cache/ \
     -v "$report_dir:/reports" "$scanner" image --quiet --format cyclonedx --output "/reports/$name.cdx.json" \
-    "socratesai/$name:delivery-test"
+    "socratesai/$name:$image_tag"
 done
 # Record the stock database image separately: its unused gosu Go helper has upstream advisories.
 # Do not suppress those findings or silently claim an all-stack zero. Runtime is explicitly UID 70.

@@ -1,0 +1,11 @@
+[Unit]
+Description=Encrypted SocratesAI PostgreSQL backup
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash /opt/socratesai/current/deploy/host/backup.sh
+UMask=0077
+Nice=10
+IOSchedulingClass=idle

@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 class FeedbackGenerationServiceTest {
 
@@ -114,6 +116,24 @@ class FeedbackGenerationServiceTest {
 
         assertThat(result.text()).isEqualTo("Template only");
         assertThat(result.source()).isEqualTo("template");
+    }
+
+    @Test
+    void nativePhrasingUsesServerIdentityForQuotaAndFallsBackWhenExhausted() {
+        var analyzer = analyzer();
+        when(geminiFeedbackService.isEnabled()).thenReturn(true);
+        when(geminiFeedbackService.generateForStudent(42L, FeedbackAction.CONCEPTUAL_HINT, analyzer, "code", "task"))
+                .thenThrow(new IllegalStateException("Phrasing allowance unavailable"));
+        when(templateService.generate(FeedbackAction.CONCEPTUAL_HINT, analyzer)).thenReturn("Template fallback");
+        assertThat(service.generateNativeWithMetadata(42L, FeedbackAction.CONCEPTUAL_HINT, analyzer, "code", "task").source())
+                .isEqualTo("template");
+        verify(geminiFeedbackService).generateForStudent(42L, FeedbackAction.CONCEPTUAL_HINT, analyzer, "code", "task");
+    }
+
+    @Test
+    void noFeedbackDoesNotSpendProviderAllowance() {
+        service.generateNativeWithMetadata(42L, FeedbackAction.NO_FEEDBACK, analyzer(), "code", "task");
+        verifyNoInteractions(geminiFeedbackService, openAiFeedbackService);
     }
 
     private AnalyzerResult analyzer() {

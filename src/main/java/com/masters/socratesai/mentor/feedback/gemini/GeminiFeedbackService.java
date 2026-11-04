@@ -6,24 +6,25 @@ import com.masters.socratesai.mentor.feedback.dto.gemini.GeminiGenerateContentRe
 import com.masters.socratesai.mentor.model.FeedbackAction;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.masters.socratesai.mentor.feedback.port.PhrasingQuotaPort;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
-@Service
+@Service @RequiredArgsConstructor
 public class GeminiFeedbackService {
 
     private final GeminiProperties properties;
     private final RestClient geminiRestClient;
-
-    public GeminiFeedbackService(GeminiProperties properties, RestClient geminiRestClient) {
-        this.properties = properties;
-        this.geminiRestClient = geminiRestClient;
-    }
+    private final PhrasingQuotaPort quota;
 
     public boolean isEnabled() {
         return properties.isEnabled()
                 && properties.getApiKey() != null
-                && !properties.getApiKey().isBlank();
+                && !properties.getApiKey().isBlank()
+                && properties.isPricingValid();
     }
 
     public String generateWithGemini(
@@ -32,17 +33,34 @@ public class GeminiFeedbackService {
             String code,
             String taskSummary
     ) {
+        return generateForStudent(null, action, analyzer, code, taskSummary);
+    }
+
+    public String generateForStudent(Long studentId, FeedbackAction action, AnalyzerResult analyzer, String code, String taskSummary) {
         if (!isEnabled()) {
             throw new IllegalStateException("Gemini integration is disabled");
         }
+        if (!quota.acquire(studentId)) throw new IllegalStateException("Phrasing allowance unavailable");
 
         String prompt = com.masters.socratesai.mentor.feedback.MentorPrompt.data(action, analyzer, code, taskSummary);
         var body = GeminiGenerateContentRequest.builder()
                 .systemInstruction(new GeminiGenerateContentRequest.Content(null, List.of(new GeminiGenerateContentRequest.Part(
                         com.masters.socratesai.mentor.feedback.MentorPrompt.INSTRUCTIONS))))
-                .contents(List.of(new GeminiGenerateContentRequest.Content("user", List.of(new GeminiGenerateContentRequest.Part(prompt))))).build();
+                .contents(List.of(new GeminiGenerateContentRequest.Content("user", List.of(new GeminiGenerateContentRequest.Part(prompt)))))
+                .generationConfig(new GeminiGenerateContentRequest.GenerationConfig(properties.getBudget().getMaxOutputTokens())).build();
 
-        GeminiGenerateContentResponse response = geminiRestClient.post()
+        var tokenRequest = Map.of("generateContentRequest", Map.of("model", "models/" + properties.getModel(),
+                "systemInstruction", body.getSystemInstruction(), "contents", body.getContents(), "generationConfig", body.getGenerationConfig()));
+        final TokenCount count;
+        try {
+            count = geminiRestClient.post().uri("/models/{model}:countTokens", properties.getModel())
+                    .header("x-goog-api-key", properties.getApiKey()).body(tokenRequest).retrieve().body(TokenCount.class);
+        } catch (RuntimeException failure) { throw new IllegalStateException("Phrasing unavailable"); }
+        if (count == null || count.totalTokens() == null || count.totalTokens() <= 0 || count.totalTokens() > properties.getBudget().getMaxInputTokens())
+            throw new IllegalStateException("Phrasing context limit exceeded");
+
+        final GeminiGenerateContentResponse response;
+        try { response = geminiRestClient.post()
                 .uri(uriBuilder -> uriBuilder
                         .path("/models/{model}:generateContent")
                         .build(properties.getModel()))
@@ -50,6 +68,7 @@ public class GeminiFeedbackService {
                 .body(body)
                 .retrieve()
                 .body(GeminiGenerateContentResponse.class);
+        } catch (RuntimeException failure) { throw new IllegalStateException("Phrasing unavailable"); }
 
         if (response == null
                 || response.getCandidates() == null
@@ -65,7 +84,6 @@ public class GeminiFeedbackService {
         return response.getCandidates().get(0).getContent().getParts().get(0).getText().trim();
     }
 
-    private String safe(String value) {
-        return value == null || value.isBlank() ? "N/A" : value;
-    }
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record TokenCount(Integer totalTokens) {}
 }

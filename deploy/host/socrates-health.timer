@@ -1,0 +1,9 @@
+[Unit]
+Description=Check SocratesAI readiness every minute
+
+[Timer]
+OnBootSec=3min
+OnUnitActiveSec=60
+
+[Install]
+WantedBy=timers.target

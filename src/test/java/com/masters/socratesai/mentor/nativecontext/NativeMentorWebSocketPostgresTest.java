@@ -190,7 +190,9 @@ class NativeMentorWebSocketPostgresTest {
         assertThat(feedback.get("executionKnown").asBoolean()).isTrue(); assertThat(feedback.get("compileSuccess").asBoolean()).isFalse();
         assertThat(feedback.get("verdict").asText()).isEqualTo("COMPILATION_ERROR"); assertThat(feedback.get("policyMode").asText()).isEqualTo("RULE");
         assertThat(feedback.get("fallbackReason").asText()).isEqualTo("UNSUPPORTED_LANGUAGE"); assertThat(predictions.get()).isZero();
-        verify(gemini, never()).generateWithGemini(any(), any(), any(), any()); verify(openai, never()).generateWithLlm(any(), any(), any());
+        verify(gemini, never()).generateWithGemini(any(), any(), any(), any());
+        verify(gemini, never()).generateForStudent(any(), any(), any(), any(), any());
+        verify(openai, never()).generateWithLlm(any(), any(), any());
     }
     @Test void evidenceFromAnotherHashOrStudentCannotBecomeCurrentCompilerEvidence() throws Exception {
         sample("python3", "print(3)"); var client = client(token); client.subscribe();
@@ -201,7 +203,7 @@ class NativeMentorWebSocketPostgresTest {
     @Test void pythonInferenceReceivesOnlyCurrentPublicEvidenceAndLlmFailureUsesTemplates() throws Exception {
         sample("python3", "print(3)"); localMl(200, "{\"action\":\"CONCEPTUAL_HINT\",\"mentor_state\":\"semantic_debug\",\"confidence\":0.9}");
         when(gemini.isEnabled()).thenReturn(true); when(openai.isEnabled()).thenReturn(true);
-        doThrow(new IllegalStateException(HIDDEN+REFERENCE)).when(gemini).generateWithGemini(any(), any(), any(), any());
+        doThrow(new IllegalStateException(HIDDEN+REFERENCE)).when(gemini).generateForStudent(any(), any(), any(), any(), any());
         doThrow(new IllegalStateException(HIDDEN+REFERENCE)).when(openai).generateWithLlm(any(), any(), any());
         var client = client(token); client.subscribe(); client.send(snapshot(UUID.randomUUID(), "python3", 1, "print(3)")); var feedback = client.feedback();
         assertThat(feedback.get("policyMode").asText()).isEqualTo("ML"); assertThat(feedback.get("feedbackSource").asText()).isEqualTo("template");

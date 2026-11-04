@@ -2,6 +2,11 @@ server {
     listen 8080;
     server_name ${APP_DOMAIN};
     location = /healthz { access_log off; return 200 'ok\n'; }
+    location ^~ /.well-known/acme-challenge/ {
+        root /var/www/acme;
+        default_type text/plain;
+        try_files $uri =404;
+    }
     location / { return 308 ${APP_PUBLIC_ORIGIN}$request_uri; }
 }
 server {

@@ -1,0 +1,17 @@
+services:
+  policy-api:
+    volumes:
+      # Docker populates this immutable bundle from the image on its first mount.
+      # Change MODEL_CACHE_ID to the reviewed manifest hash when updating models.
+      - policy_model_cache:/app/models:ro
+  frontend-nginx:
+    volumes:
+      - type: bind
+        source: /var/lib/socrates-acme
+        target: /var/www/acme
+        read_only: true
+        bind:
+          create_host_path: false
+volumes:
+  policy_model_cache:
+    name: socrates-models-${MODEL_CACHE_ID:?Set the model manifest SHA-256 prefix}

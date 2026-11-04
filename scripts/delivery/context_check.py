@@ -5,7 +5,7 @@ import subprocess
 import tempfile
 
 root = pathlib.Path(__file__).resolve().parents[2]
-for context in [root, root / 'socratesai-frontend', root / 'ml']:
+for context in [root, root / 'socratesai-frontend', root / 'ml', root / 'deploy/sandbox']:
     with tempfile.TemporaryDirectory() as tmp:
         fixture = pathlib.Path(tmp) / 'input'
         output = pathlib.Path(tmp) / 'output'
@@ -19,7 +19,8 @@ for context in [root, root / 'socratesai-frontend', root / 'ml']:
         for name in ['.env', '.env.prod', 'datasets/private.csv', 'experiments/private.json', 'ieee3rd2026/paper.tex',
                      'src/main/resources/.env', 'src/nested/.env.test', 'private.key', 'public/private.key', 'src/private.pem',
                      'src/main/resources/private.p12', 'node_modules/private.txt', '.delivery/demo/access.json',
-                     'deploy/demo/runtime-catalog.yaml', 'scripts/demo/synthetic_judge.py', 'demo-e2e/demo.spec.js']:
+                     'deploy/demo/runtime-catalog.yaml', 'scripts/demo/synthetic_judge.py', 'demo-e2e/demo.spec.js',
+                     'hosterkz/server-creds.md', 'private/judge0.conf', 'private/production.env']:
             target = fixture / name
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text('PRIVATE_BUILD_CONTEXT_SENTINEL')

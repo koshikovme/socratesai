@@ -113,7 +113,7 @@ jobs:
       - name: Workflow syntax, shell and immutable action references
         run: |
           docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:1.7.12@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667 -color
-          for script in scripts/delivery/*.sh scripts/demo/*.sh deploy/backend/*.sh; do bash -n "$script"; done
+          for script in scripts/delivery/*.sh scripts/demo/*.sh deploy/backend/*.sh deploy/host/*.sh deploy/sandbox/*.sh; do bash -n "$script"; done
           sh -n socratesai-frontend/nginx/start.sh
           sh -n deploy/postgres/10-application-role.sh
       - name: Prove private inputs cannot enter any build context
@@ -121,7 +121,9 @@ jobs:
       - name: Local demo fixture contracts (no code execution)
         env:
           PYTHONDONTWRITEBYTECODE: '1'
-        run: python3 -m unittest discover -s tests/demo
+        run: |
+          python3 -m unittest discover -s tests/demo
+          python3 -m unittest discover -s tests/delivery
 
   images:
     needs: [backend, frontend, policy, infrastructure]
@@ -245,3 +247,32 @@ jobs:
           name: release-manifest
           path: .delivery/release/
           retention-days: 30
+
+  deploy:
+    if: startsWith(github.ref, 'refs/tags/v') && github.event_name == 'push' && vars.PRODUCTION_AUTO_DEPLOY == 'true'
+    needs: publish
+    environment: production
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: read
+    concurrency:
+      group: socrates-production-promotion
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: release-manifest
+          path: /tmp/socrates-release
+      - name: Promote verified digests with backup, readiness and compatible rollback
+        env:
+          RELEASE_MANIFEST_DIRECTORY: /tmp/socrates-release
+          PRODUCTION_HOST: ${{ vars.PRODUCTION_HOST }}
+          PRODUCTION_SSH_KEY: ${{ secrets.PRODUCTION_SSH_KEY }}
+          PRODUCTION_KNOWN_HOSTS: ${{ secrets.PRODUCTION_KNOWN_HOSTS }}
+          REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 scripts/delivery/ssh_promote.py

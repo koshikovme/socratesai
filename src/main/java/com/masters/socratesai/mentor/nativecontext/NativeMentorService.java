@@ -23,7 +23,7 @@ public class NativeMentorService {
         var action = !evidence.isExecutionKnown() && decision.action() == FeedbackAction.NO_FEEDBACK ? FeedbackAction.CONCEPTUAL_HINT : decision.action();
         start = System.nanoTime();
         var generated = "ML".equals(selected.mode()) && evidence.isExecutionKnown()
-                ? generation.generateWithMetadata(action, analyzer, message.getCode().substring(0, Math.min(5000, message.getCode().length())), prepared.getPublicStatement())
+                ? generation.generateNativeWithMetadata(actor.getStudentId(), action, analyzer, message.getCode().substring(0, Math.min(5000, message.getCode().length())), prepared.getPublicStatement())
                 : new GeneratedFeedback(templates.generate(action, analyzer), "template");
         int feedbackMs = (int) ((System.nanoTime() - start) / 1000000);
         var feedback = NativeMentorFeedback.builder().sessionId(prepared.getSessionId()).editorSessionId(message.getEditorSessionId()).problemId(message.getProblemId())

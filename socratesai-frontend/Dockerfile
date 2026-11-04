@@ -10,6 +10,9 @@ ENV VITE_API_BASE_URL="" VITE_WS_BASE_URL=""
 RUN npm run build
 
 FROM nginxinc/nginx-unprivileged:stable-alpine@sha256:f5116ed4606f3eb015dd4a8e28cb9b351476dc0ad4bc6e9f93b19cec130cdf03 AS runtime
+USER root
+# Reviewed fixed packages on 2026-11-05; the upstream image has not yet rebuilt these layers.
+RUN apk add --no-cache --upgrade brotli-libs=1.2.1-r0 curl=8.23.0-r0 libcurl=8.23.0-r0 libexpat=2.10.0-r0
 COPY --from=build /workspace/dist/ /usr/share/nginx/html/
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 COPY nginx/frontend.conf.template /etc/nginx/templates/frontend.conf.template

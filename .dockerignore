@@ -27,3 +27,5 @@
 deploy/demo/
 scripts/demo/
 .delivery/
+hosterkz/
+**/server-creds.md
