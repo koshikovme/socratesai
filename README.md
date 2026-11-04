@@ -6,6 +6,20 @@ SocratesAI is a full-stack teaching assistant for programming practice. The repo
 2) A Vue 3 + Vite frontend
 3) An optional FastAPI-based ML policy service used by the mentor feedback flow
 
+## Live installation
+
+**https://socratesai.duckdns.org** hosts the native catalog, teacher authoring, Monaco workspace,
+authenticated mentor, sample runs and formal submissions. Python 3.12, Java 21 and C++17
+compile and execute on a separate isolated Judge0/Isolate VM. Accepted submissions update
+saved progress. Python mentor inference can use ML and bounded Gemini wording; Java/C++ use rules.
+
+The repository owner operates the installation. Owner account credentials are available only
+in the protected local `.delivery/production-access.md` file. Public signup grants STUDENT;
+staff roles require audited administrator provisioning.
+See the [production evidence](tasks/socrates-evolution/result-9-production.md) and
+[deployment/incident runbook](DEPLOYMENT.md) for release, backups, limits and commands.
+All recorded acceptance/load checks use synthetic accounts and do not establish classroom outcomes.
+
 ## Repository Layout
 
 `src/`: Spring Boot backend
@@ -166,4 +180,4 @@ npm run build
 
 ## Production containers and delivery
 
-See [DEPLOYMENT.md](DEPLOYMENT.md) for the four-service HTTPS deployment, mandatory external secrets/TLS, isolated network layout, reproducible images, release-tag GHCR publication and rollback limits. Production exposes only edge ports 80/443; the development ports above are not production host mappings. The separate Judge0 host remains an operator prerequisite for real judging.
+See [DEPLOYMENT.md](DEPLOYMENT.md) for the live four-service application deployment, separate execution VM, external secrets/TLS, private networking, release-tag GHCR delivery, encrypted backups and recovery commands. Application traffic uses edge ports 80/443; the development ports above are not production mappings. A main push validates; a new reviewed release tag publishes and promotes the tested application digests. Executor upgrades require separate live isolation verification.

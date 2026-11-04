@@ -1,0 +1,47 @@
+{
+  "version": "v0.9.1",
+  "source_commit": "95d2904477eb6b2a7fa519eb7c3e0b91691231c4",
+  "workflow_run": "https://github.com/koshikovme/socratesai/actions/runs/41922786265",
+  "verified_at_utc": "2026-11-04T22:25:21.152175+00:00",
+  "origin": "https://socratesai.duckdns.org",
+  "schema_version": 13,
+  "application_images": {
+    "backend": "ghcr.io/koshikovme/socratesai/backend@sha256:ad8c202d689c430ebb03f063e237e5717a917694ec113ebc5e101c11f9201f20",
+    "frontend": "ghcr.io/koshikovme/socratesai/frontend@sha256:0ea5540e5a385689b8b8d8abdc947823cfba4b730d7c881847c8f680a9deead5",
+    "policy-api": "ghcr.io/koshikovme/socratesai/policy-api@sha256:9934437454124ff31eb0c93878bd3429a75249fd4e31ece1f8bde2947fecdec9"
+  },
+  "models": {
+    "action": {
+      "file": "mentor_policy_model.joblib",
+      "sha256": "f38cb4cb0476f7544eaa006663c297e44b5025caec9305de9685ce8c2df3ddfb"
+    },
+    "mentor_state": {
+      "file": "source_code_model.joblib",
+      "sha256": "e7be65df21e20cdd005d54139cc17c1a37ee348751b17713cd7f712e00dcf13d"
+    }
+  },
+  "model_manifest_sha256": "b0311a0780e0911bce9653a8d2aafad6b3e42d74b25957d97a4d99a8f129e392",
+  "execution": {
+    "scope": "OPERATOR_CERTIFIED_LOCAL_IMAGE_SEPARATE_FROM_CI_CANDIDATE",
+    "image": "socratesai/judge0@sha256:3e554e1a3764edd2fa1acceac63854a3dcb3ea1b2359d5c4b77a5b599c1cb075",
+    "source_commit": "d0632cffaaf4fcdbf83a83e7a55ed9baf8a86db6",
+    "isolate_commit": "ad39cc4d0fbb577fb545910095c9da5ef8fc9a1a",
+    "runtime_catalog_sha256": "e40dfee5fbff382a529c09c9bc747762125f6d58883cfeabcc2d53c3abd6367e",
+    "certified_archive_sha256": "c561de10a87b2595e862c697af6a55fa54d3a51d7960b2817831df32c037c738",
+    "catalog": [
+      {
+        "id": 1003,
+        "name": "C++ (GCC 12.2.0)"
+      },
+      {
+        "id": 1002,
+        "name": "Java (OpenJDK 21.0.13)"
+      },
+      {
+        "id": 1001,
+        "name": "Python (3.12.16)"
+      }
+    ]
+  },
+  "evidence_scope": "AUTHORIZED_SYNTHETIC_ACCEPTANCE_NOT_CLASSROOM_RESEARCH"
+}

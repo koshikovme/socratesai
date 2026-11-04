@@ -52,6 +52,7 @@ class LiveApi:
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--access-file', required=True, type=Path)
+    parser.add_argument('--run-label', default='', help='Stable release label for fresh, repeatable idempotency keys')
     args = parser.parse_args()
     access = json.loads(args.access_file.read_text())
     api = LiveApi(access['base_url'])
@@ -102,11 +103,14 @@ def main():
     probe = identities['probe']['token']
     results = []
     for language, source in programs.items():
+        namespace = f"socrates-live/{resources['version_id']}/{language}"
+        if args.run_label:
+            namespace += '/' + args.run_label
         body = {'problemVersionId': resources['version_id'], 'languageKey': language, 'sourceCode': source,
-                'idempotencyKey': str(uuid.uuid5(uuid.NAMESPACE_URL, f"socrates-live/{resources['version_id']}/{language}/run"))}
+                'idempotencyKey': str(uuid.uuid5(uuid.NAMESPACE_URL, namespace + '/run'))}
         run = api.request('POST', f"/api/problems/{resources['problem_id']}/runs", body, probe, (202,))
         api.poll('/api/runs/' + run['id'], probe)
-        body['idempotencyKey'] = str(uuid.uuid5(uuid.NAMESPACE_URL, f"socrates-live/{resources['version_id']}/{language}/submit"))
+        body['idempotencyKey'] = str(uuid.uuid5(uuid.NAMESPACE_URL, namespace + '/submit'))
         body['collectionId'] = resources['collection_id']
         submission = api.request('POST', f"/api/problems/{resources['problem_id']}/submissions", body, probe, (202,))
         same = api.request('POST', f"/api/problems/{resources['problem_id']}/submissions", body, probe, (202,))

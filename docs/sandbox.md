@@ -1,6 +1,6 @@
 # Judge0 adapter: configuration and execution boundary
 
-The backend contains a Judge0-compatible HTTP adapter, not an execution host. It never compiles or runs student source locally. `APP_JUDGE0_ENABLED` defaults to `false`; there is no configured production endpoint or approved language list. The local integration tests emulate HTTP responses without running submitted programs.
+The backend delegates compilation and execution through a Judge0-compatible HTTP adapter. It never runs student source locally. `APP_JUDGE0_ENABLED` defaults to `false`. Production uses the separately isolated execution VM and verified catalog documented in [deploy/sandbox/README.md](../deploy/sandbox/README.md); local adapter tests still emulate HTTP responses without executing source.
 
 ## Application integration
 
@@ -9,7 +9,7 @@ The backend contains a Judge0-compatible HTTP adapter, not an execution host. It
 1. `submitBatch(ExecutionBatch)` validates and snapshots trusted cases, verifies the configured runtime against `GET /languages`, and sends one `POST /submissions/batch?base64_encoded=true`. It returns `SubmittedExecutionBatch` with case/token associations and the effective absolute deadline.
 2. Persist those tickets with their job/generation before calling `pollBatch(SubmittedExecutionBatch)`. Polling requests only unfinished tokens, preserves completed results, and matches responses by token. Provider order never determines case identity. Use `StudentExecutionResultMapper` for student responses.
 
-The future Step 5 worker must construct requests from immutable database versions, enforce user/job admission limits, split suites into bounded batches, persist tickets, and aggregate the complete required suite. An accepted adapter batch is not acceptance of a larger suite. This change does not add controllers, dispatch database jobs, or connect execution to WebSockets/ML.
+The durable judging coordinator constructs requests from immutable database versions, enforces user/job admission limits, splits suites into bounded batches, persists tickets, and aggregates the complete required suite. An accepted adapter batch is not acceptance of a larger suite. Lease owner/generation fencing protects completion after restart; network work occurs outside claim transactions. Mentor evidence is read from completed cases for the current source hash, without treating heuristic predictions as accepted submissions.
 
 Create requests are never automatically retried. A partial/malformed creation response, transport failure, server failure, or timeout after dispatch is an uncertain remote outcome: `SandboxException.mayHaveBeenSubmitted=true`. Do not interpret it as permission to resubmit. A definitive HTTP 4xx rejection except 408 has `mayHaveBeenSubmitted=false`. Partially returned tickets are not exposed as successful batches; remote work may remain until provider limits/retention remove it. Job reconciliation and this uncertain state must be handled before enabling public submissions.
 
@@ -51,7 +51,7 @@ Important defaults, all configurable under `app.execution.judge0` and `APP_JUDGE
 | Each stdin/expected-output UTF-8 value | 65,536 bytes |
 | Processes/threads requested from provider | 64 |
 
-These are bounded implementation defaults, not measured production capacity. The HTTP executor and its queue are bounded. The polling scheduler holds at most a deadline and pending retry per admitted operation; completion/cancellation removes timers and releases the slot. Submitting a batch releases the local slot once tickets return: this is not a global limit on remote jobs. Step 5 must enforce outstanding-job quotas.
+These are bounded implementation defaults, not measured production capacity. The HTTP executor and its queue are bounded. The polling scheduler holds at most a deadline and pending retry per admitted operation; completion/cancellation removes timers and releases the slot. Submitting a batch releases the local slot once tickets return: this is not a global limit on remote jobs. The durable coordinator separately enforces outstanding-job quotas.
 
 CPU/wall milliseconds are converted to seconds; memory stays in KiB; process/thread and aggregate process memory/time settings are explicit; networking is disabled in each request; stderr is separate; execution runs once. Provider file size is `ceil(outputLimitBytes / 1024)` KiB, at least one KiB. Decoded stdout/stderr are also capped at the exact byte limit; compile diagnostics are capped at 64 KiB. Limits are bounded by `ContesterLimits`. Compile-specific CPU/memory/file limits, real filesystem/network denial, supported process/thread counts and cleanup require configuration and verification on the execution host. Request flags alone do not establish isolation. Do not raise provider limits to make an unverified runtime appear supported.
 
@@ -75,13 +75,13 @@ Both comparison policies normalize CRLF to LF. `EXACT` then compares every chara
 
 ## Privacy and host validation
 
-Expected outputs stay in the backend and are never included in create requests. Hidden stdout/stderr/compile output are discarded after internal comparison. The student mapper omits hidden cases completely, including per-case IDs, timing, memory and diagnostics. Only aggregate status/verdict/error and public sample details are returned. Do not serialize domain/provider objects from controllers or persist hidden diagnostics through an alternative mapper.
+Expected outputs stay in the backend and are never included in create requests. Hidden stdout/stderr/compile output are discarded after internal comparison. The adapter student mapper omits hidden cases completely. The submission projection exposes only bounded case verdict/metric metadata and aggregate results, with no source, input, expected output, stdout, stderr or compile diagnostics. Neither mapper allows hidden diagnostic bodies into student responses. Do not serialize domain/provider objects from controllers or persist hidden diagnostics through an alternative mapper.
 
 Source, stdin, expected output, provider tokens and diagnostics are excluded from generated `toString()` methods. Adapter exceptions contain fixed codes with no provider bodies or original causes. ML failure logging likewise omits response bodies and exception messages. JDK HTTP wire tracing is rejected when the adapter is enabled; access proxies, APM and HTTP interception must also avoid bodies, auth headers and token-bearing query strings. Do not enable packet/body tracing for student traffic.
 
 Use a dedicated execution VM/trust zone without application credentials, database connectivity, repository/host mounts or Docker socket access from the backend. Review the chosen image's provenance/digest, kernel/cgroup/privilege prerequisites and current advisories. Upstream recorded critical escape fixes in the 1.13.1 release; this historical version is not a blanket approval of an image today. A managed compatible API needs equivalent retention/region/auth/limit checks. Primary references: [API and status table](https://ce.judge0.com/), [release notes](https://github.com/judge0/judge0/releases), [security advisories](https://github.com/judge0/judge0/security/advisories).
 
-Before enabling student execution, finish work-notes P3.1/2/4/6/8/9/10/11: approve the server/digest/runtime catalog and retention policy; verify every advertised language and resource/network/filesystem boundary in a disposable sandbox; measure overhead; and implement durable Step 5 orchestration. No such host was available for this delivery.
+Production activation gates and dated evidence are recorded in [result-9-production.md](../tasks/socrates-evolution/result-9-production.md). The official legacy container was rejected after a complete vulnerability scan. The replacement packaging pins upstream Judge0/Isolate source and uses current project-reviewed runtime dependencies. Each image/catalog change requires fresh isolation/resource/verdict checks on the dedicated VM before activation; HTTP protocol mocks and CI image builds alone do not establish execution safety.
 
 ## Local verification
 
@@ -91,4 +91,4 @@ env JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 \
   bash mvnw -B verify
 ```
 
-The suite exercises real localhost HTTP framing with JDK `HttpServer` and uses the existing disposable PostgreSQL Testcontainers tests for schema regression. It does not connect to a real Judge0 API, run student programs, or test shared databases 21/22. Backend legacy `SyntaxCheckEngine` now supplies bounded static estimates only, tagged `compilerExecuted=false`, `testsExecuted=false`, `evidenceOrigin=STATIC_HEURISTIC`. Existing ML feature names/log fields remain compatible; their execution-evidence semantics must be migrated in Step 6.
+The suite exercises real localhost HTTP framing with JDK `HttpServer` and uses the existing disposable PostgreSQL Testcontainers tests for schema regression. It does not connect to a real Judge0 API, run student programs, or test shared databases 21/22. Backend legacy `SyntaxCheckEngine` now supplies bounded static estimates only, tagged `compilerExecuted=false`, `testsExecuted=false`, `evidenceOrigin=STATIC_HEURISTIC`. Existing ML feature names/log fields remain compatible. Native feedback uses current-source execution evidence and records additive provenance; Python can use mentor-state inference while Java/C++ use deterministic RULE fallback.
