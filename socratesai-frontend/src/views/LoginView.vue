@@ -1,31 +1,34 @@
 <template>
   <div class="auth-page">
     <div class="card auth-card">
-      <h2>Login</h2>
+      <div class="auth-language"><LanguageSwitcher /></div>
+      <h2>{{ t('Login') }}</h2>
       <form @submit.prevent="handleLogin" class="auth-form">
-        <input v-model="email" type="email" aria-label="Email" autocomplete="username" placeholder="Email" required />
-        <input v-model="password" type="password" aria-label="Password" autocomplete="current-password" placeholder="Password" required />
+        <input v-model="email" type="email" :aria-label="t('Email')" autocomplete="username" :placeholder="t('Email')" required />
+        <input v-model="password" type="password" :aria-label="t('Password')" autocomplete="current-password" :placeholder="t('Password')" required />
         <button class="primary-btn" :disabled="loading">
-          {{ loading ? 'Signing in...' : 'Login' }}
+          {{ t(loading ? 'Signing in...' : 'Login') }}
         </button>
       </form>
 
-      <p v-if="error" class="error-text">{{ error }}</p>
+      <p v-if="error" class="error-text">{{ t(error) }}</p>
 
-      <p class="auth-switch">
-        Don't have an account?
-        <RouterLink to="/register">Register</RouterLink>
+      <p class="auth-switch"> {{ t('Don\'t have an account?') }} <RouterLink to="/register">{{ t('Register') }}</RouterLink>
       </p>
     </div>
   </div>
 </template>
 
 <script setup>
+import { useI18n } from '../i18n'
+import LanguageSwitcher from '../components/LanguageSwitcher.vue'
 import { ref, onBeforeUnmount } from 'vue'
 import { apiErrorMessage } from '../services/errors'
 import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { login } from '../services/authService'
+
+const { t } = useI18n()
 
 const router = useRouter()
 const auth = useAuthStore()

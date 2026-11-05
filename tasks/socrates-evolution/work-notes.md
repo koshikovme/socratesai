@@ -818,3 +818,11 @@ New smoke/benchmark/experiment outputs use a new directory or prefix, never over
 - [x] Patched executor activated by immutable local image ID with data volumes preserved; three languages, nine isolation/resource probes and three unfinished starters passed. Fresh health/encrypted backup/off-host checksum checks passed; bounded credential/source/JWT log audit found no matches. See `result-mentor-v2.md`.
 
 - Delivery follow-up: v0.9.2 publication was blocked by newly reported APT CVE-2026-109518 in Debian-based ML/executor images. Verified the primary CI artifact digest, upgraded apt/libapt-pkg6.0 to 2.6.2 over HTTPS and confirmed all four images pass with a fresh advisory cache. Added safe per-image scan summaries and fail-closed parser tests (six delivery tests pass). Corrected v0.9.3 tag passed all gates and deployed; failed v0.9.2 remains immutable and undeployed.
+
+### Interface localization — 2026-11-05
+
+- [x] English, Russian and Kazakh plain-text translations across student, teacher and administrator screens, including safe errors and accessible labels.
+- [x] Language selector before/after login; browser initialization, persisted preference, document language and locale-aware profile dates.
+- [x] Preserve code buffers, revisions, draft data and native API enum values during switching. Keep the language preference through logout while clearing session/source data.
+- [x] 107 tests/coverage, lint, production build and three Chromium fixture journeys passed, including mobile three-language editing and hidden-output safety.
+- [ ] Automatic release and live three-role localization verification. See `result-ui-localization.md`.

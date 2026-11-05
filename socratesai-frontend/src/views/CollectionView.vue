@@ -1,4 +1,5 @@
 <script setup>
+import { useI18n } from '../i18n'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import AppHeader from '../components/AppHeader.vue'
@@ -6,6 +7,8 @@ import SafeMarkdown from '../components/SafeMarkdown.vue'
 import { fetchCollection, fetchCollectionProgress } from '../services/catalogService'
 import { apiErrorMessage } from '../services/errors'
 import { useAuthStore } from '../stores/auth'
+
+const { t } = useI18n()
 
 const route = useRoute()
 const auth = useAuthStore()
@@ -50,26 +53,26 @@ onBeforeUnmount(() => request?.abort())
   <div class="page-shell">
     <AppHeader />
     <main class="page-content" :aria-busy="loading">
-      <router-link to="/dashboard">← Catalog</router-link>
-      <p v-if="loading" role="status">Loading collection…</p>
-      <p v-else-if="error" class="error-text" role="alert">{{ error }}</p>
+      <router-link to="/dashboard">{{ t('← Catalog') }}</router-link>
+      <p v-if="loading" role="status">{{ t('Loading collection…') }}</p>
+      <p v-else-if="error" class="error-text" role="alert">{{ t(error) }}</p>
       <template v-else-if="collection">
         <section class="card collection-heading">
-          <div class="section-head"><h1>{{ collection.title }}</h1><button class="ghost-btn" @click="load">Refresh progress</button></div>
+          <div class="section-head"><h1>{{ collection.title }}</h1><button class="ghost-btn" @click="load">{{ t('Refresh progress') }}</button></div>
           <SafeMarkdown :content="collection.description || ''" />
-          <p v-if="progress" class="success-text" data-testid="collection-progress">{{ progress.solved }} of {{ progress.total }} solved</p>
-          <p class="muted">Progress requires an accepted submission for the exact published version in this collection.</p>
-          <p v-if="progressError" class="error-text" role="status">Progress unavailable: {{ progressError }}</p>
+          <p v-if="progress" class="success-text" data-testid="collection-progress">{{ t('{solved} of {total} solved', { solved: progress.solved, total: progress.total }) }}</p>
+          <p class="muted">{{ t('Progress requires an accepted submission for the exact published version in this collection.') }}</p>
+          <p v-if="progressError" class="error-text" role="status">{{ t('Progress unavailable: {error}', { error: t(progressError) }) }}</p>
         </section>
         <ol class="collection-problems">
           <li v-for="problem in members" :key="`${problem.problemId}:${problem.problemVersionId}`" class="card">
-            <div><h2>{{ problem.title }}</h2><p v-if="solvedVersions.has(`${problem.problemId}:${problem.problemVersionId}`)" class="success-text" data-testid="solved">✓ SOLVED</p></div>
-            <router-link class="primary-btn" :to="{ path: `/problems/${problem.problemId}`, query: { version: String(problem.problemVersionId), collection: String(collection.id) } }">Open problem</router-link>
+            <div><h2>{{ problem.title }}</h2><p v-if="solvedVersions.has(`${problem.problemId}:${problem.problemVersionId}`)" class="success-text" data-testid="solved">{{ t('✓ SOLVED') }}</p></div>
+            <router-link class="primary-btn" :to="{ path: `/problems/${problem.problemId}`, query: { version: String(problem.problemVersionId), collection: String(collection.id) } }">{{ t('Open problem') }}</router-link>
           </li>
         </ol>
-        <p v-if="!members.length" class="muted">This collection has no problems yet.</p>
+        <p v-if="!members.length" class="muted">{{ t('This collection has no problems yet.') }}</p>
       </template>
-      <button v-if="error" class="ghost-btn" @click="load">Retry</button>
+      <button v-if="error" class="ghost-btn" @click="load">{{ t('Retry') }}</button>
     </main>
   </div>
 </template>

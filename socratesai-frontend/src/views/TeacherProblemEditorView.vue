@@ -1,4 +1,5 @@
 <script setup>
+import { useI18n } from '../i18n'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router'
 import AppHeader from '../components/AppHeader.vue'
@@ -8,6 +9,8 @@ import { blankProblemDraft, languageDefaults, problemDraft, problemRequest, vali
 import { apiErrorMessage } from '../services/errors'
 import { registerSessionCleanup } from '../services/sessionLifecycle'
 import '../components/teacher/authoring.css'
+
+const { t } = useI18n()
 
 const route = useRoute()
 const router = useRouter()
@@ -55,8 +58,8 @@ function clear() {
 }
 const unregister = registerSessionCleanup(clear)
 onBeforeUnmount(() => { unregister(); clear() })
-onBeforeRouteLeave(() => !dirty.value || window.confirm('Leave without saving this draft?'))
-onBeforeRouteUpdate((to, from) => to.params.id === from.params.id || !dirty.value || window.confirm('Leave without saving this draft?'))
+onBeforeRouteLeave(() => !dirty.value || window.confirm(t('Leave without saving this draft?')))
+onBeforeRouteUpdate((to, from) => to.params.id === from.params.id || !dirty.value || window.confirm(t('Leave without saving this draft?')))
 watch(() => route.params.id, async () => {
   controller.abort()
   controller = new AbortController()
@@ -145,11 +148,11 @@ async function cloneDraft() {
   })
 }
 async function archive() {
-  if (!window.confirm('Archive this problem and remove it from the student catalog?')) return
+  if (!window.confirm(t('Archive this problem and remove it from the student catalog?'))) return
   await action(async (config) => { const result = await teacherService.archiveProblem(record.value.id, record.value.lockVersion, config); if (!config.signal.aborted) applyRecord(result) })
 }
 async function removeDraft() {
-  if (!window.confirm('Permanently delete this draft?')) return
+  if (!window.confirm(t('Permanently delete this draft?'))) return
   await action(async (config) => {
     await teacherService.deleteProblem(record.value.id, record.value.lockVersion, !!record.value.publishedVersionId, config)
     if (config.signal.aborted) return
@@ -158,7 +161,7 @@ async function removeDraft() {
   })
 }
 async function reload() {
-  if (dirty.value && !window.confirm('Discard your local changes and reload the latest draft?')) return
+  if (dirty.value && !window.confirm(t('Discard your local changes and reload the latest draft?'))) return
   await action(async (config) => { const result = await teacherService.problem(record.value.id, config); if (!config.signal.aborted) { applyRecord(result); verification.value = null } })
 }
 </script>
@@ -167,84 +170,84 @@ async function reload() {
   <div class="page-shell"><AppHeader />
     <main class="page-content authoring-page">
       <section class="card">
-        <RouterLink to="/teacher">← Teaching workspace</RouterLink>
+        <RouterLink to="/teacher">{{ t('← Teaching workspace') }}</RouterLink>
         <div class="section-head">
-          <h1>{{ record ? `Problem #${record.id}` : 'New problem' }}</h1>
-          <span v-if="record" class="compact-chip">{{ record.status }} · version {{ record.version.versionNumber }} ({{ record.version.status }})</span>
+          <h1>{{ record ? t('Problem #{id}', { id: record.id }) : t('New problem') }}</h1>
+          <span v-if="record" class="compact-chip">{{ t(record.status) }} · {{ t('version {version}', { version: record.version.versionNumber }) }} ({{ t(record.version.status) }})</span>
         </div>
-        <p v-if="error" class="error-text" role="alert">{{ error }} <button v-if="record" class="ghost-btn" :disabled="busy" @click="reload">Reload latest</button></p>
-        <p v-if="notice" role="status">{{ notice }}</p>
+        <p v-if="error" class="error-text" role="alert">{{ t(error) }} <button v-if="record" class="ghost-btn" :disabled="busy" @click="reload">{{ t('Reload latest') }}</button></p>
+        <p v-if="notice" role="status">{{ t(notice) }}</p>
         <div class="authoring-actions">
-          <button v-if="record && !editable" class="primary-btn" :disabled="busy" @click="cloneDraft">Create new draft version</button>
-          <button v-if="record && record.status !== 'ARCHIVED'" class="ghost-btn" :disabled="busy || verifying || dirty" @click="archive">Archive problem</button>
-          <button v-if="record && editable" class="ghost-btn" :disabled="busy || verifying" @click="removeDraft">Delete draft</button>
-          <span v-if="dirty" class="muted">Unsaved changes</span>
+          <button v-if="record && !editable" class="primary-btn" :disabled="busy" @click="cloneDraft">{{ t('Create new draft version') }}</button>
+          <button v-if="record && record.status !== 'ARCHIVED'" class="ghost-btn" :disabled="busy || verifying || dirty" @click="archive">{{ t('Archive problem') }}</button>
+          <button v-if="record && editable" class="ghost-btn" :disabled="busy || verifying" @click="removeDraft">{{ t('Delete draft') }}</button>
+          <span v-if="dirty" class="muted">{{ t('Unsaved changes') }}</span>
         </div>
       </section>
       <form class="authoring-form" @submit.prevent="save">
         <fieldset class="card" :disabled="busy || verifying || !editable">
-          <legend>Problem statement</legend>
+          <legend>{{ t('Problem statement') }}</legend>
           <div class="authoring-grid">
-            <label>Title<input v-model="form.title" required maxlength="180" name="title" /></label>
-            <label>Topic<input v-model="form.topic" required maxlength="120" name="topic" /></label>
-            <label>Difficulty<select v-model="form.difficulty" aria-label="Difficulty"><option>EASY</option><option>MEDIUM</option><option>HARD</option></select></label>
-            <label>Visibility<select v-model="form.visibility" aria-label="Visibility"><option value="AUTHENTICATED">Signed-in students</option><option value="PUBLIC">Public</option></select></label>
+            <label>{{ t('Title') }}<input v-model="form.title" required maxlength="180" name="title" /></label>
+            <label>{{ t('Topic') }}<input v-model="form.topic" required maxlength="120" name="topic" /></label>
+            <label>{{ t('Difficulty') }}<select v-model="form.difficulty" :aria-label="t('Difficulty')"><option value="EASY">{{ t('EASY') }}</option><option value="MEDIUM">{{ t('MEDIUM') }}</option><option value="HARD">{{ t('HARD') }}</option></select></label>
+            <label>{{ t('Visibility') }}<select v-model="form.visibility" :aria-label="t('Visibility')"><option value="AUTHENTICATED">{{ t('Signed-in students') }}</option><option value="PUBLIC">{{ t('Public') }}</option></select></label>
           </div>
-          <label>Statement<textarea v-model="form.statement" required maxlength="50000" rows="8" name="statement" /></label>
+          <label>{{ t('Statement') }}<textarea v-model="form.statement" required maxlength="50000" rows="8" name="statement" /></label>
           <div class="authoring-grid">
-            <label>Input format<textarea v-model="form.inputFormat" maxlength="50000" rows="3" /></label>
-            <label>Output format<textarea v-model="form.outputFormat" maxlength="50000" rows="3" /></label>
+            <label>{{ t('Input format') }}<textarea v-model="form.inputFormat" maxlength="50000" rows="3" /></label>
+            <label>{{ t('Output format') }}<textarea v-model="form.outputFormat" maxlength="50000" rows="3" /></label>
           </div>
-          <label>Constraints<textarea v-model="form.constraintsText" maxlength="50000" rows="3" /></label>
-          <details><summary>Safe statement preview</summary><SafeMarkdown :content="form.statement" /></details>
-          <label>Output comparison<select v-model="form.comparisonMode" aria-label="Output comparison"><option value="EXACT">Exact (CRLF normalized)</option><option value="IGNORE_TRAILING_LINE_ENDINGS">Ignore trailing line endings</option></select></label>
+          <label>{{ t('Constraints') }}<textarea v-model="form.constraintsText" maxlength="50000" rows="3" /></label>
+          <details><summary>{{ t('Safe statement preview') }}</summary><SafeMarkdown :content="form.statement" /></details>
+          <label>{{ t('Output comparison') }}<select v-model="form.comparisonMode" :aria-label="t('Output comparison')"><option value="EXACT">{{ t('Exact (CRLF normalized)') }}</option><option value="IGNORE_TRAILING_LINE_ENDINGS">{{ t('Ignore trailing line endings') }}</option></select></label>
         </fieldset>
         <fieldset class="card" :disabled="busy || verifying || !editable">
-          <legend>Languages and sandbox limits</legend>
-          <p class="muted">Configured runtimes require successful reference verification before publication.</p>
-          <div v-for="language in form.languages" :key="language.languageKey" class="authoring-entry" role="group" :aria-label="`${language.languageKey} configuration`">
-            <div class="section-head"><h3>{{ language.languageKey }}</h3><button class="ghost-btn" type="button" @click="removeLanguage(language.languageKey)">Remove language</button></div>
+          <legend>{{ t('Languages and sandbox limits') }}</legend>
+          <p class="muted">{{ t('Configured runtimes require successful reference verification before publication.') }}</p>
+          <div v-for="language in form.languages" :key="language.languageKey" class="authoring-entry" role="group" :aria-label="t('{language} configuration', { language: language.languageKey })">
+            <div class="section-head"><h3>{{ language.languageKey }}</h3><button class="ghost-btn" type="button" @click="removeLanguage(language.languageKey)">{{ t('Remove language') }}</button></div>
             <div class="authoring-grid">
-              <label>CPU time (ms)<input v-model.number="language.timeLimitMs" type="number" min="1" max="30000" required /></label>
-              <label>Wall time (ms)<input v-model.number="language.wallTimeLimitMs" type="number" :min="language.timeLimitMs" max="60000" required /></label>
-              <label>Memory (KiB)<input v-model.number="language.memoryLimitKb" type="number" min="1" max="1048576" required /></label>
-              <label>Output (bytes)<input v-model.number="language.outputLimitBytes" type="number" min="1" max="65536" required /></label>
+              <label>{{ t('CPU time (ms)') }}<input v-model.number="language.timeLimitMs" type="number" min="1" max="30000" required /></label>
+              <label>{{ t('Wall time (ms)') }}<input v-model.number="language.wallTimeLimitMs" type="number" :min="language.timeLimitMs" max="60000" required /></label>
+              <label>{{ t('Memory (KiB)') }}<input v-model.number="language.memoryLimitKb" type="number" min="1" max="1048576" required /></label>
+              <label>{{ t('Output (bytes)') }}<input v-model.number="language.outputLimitBytes" type="number" min="1" max="65536" required /></label>
             </div>
-            <label>Starter code<textarea v-model="language.starterCode" class="code-input" maxlength="20000" rows="5" spellcheck="false" /></label>
+            <label>{{ t('Starter code') }}<textarea v-model="language.starterCode" class="code-input" maxlength="20000" rows="5" spellcheck="false" /></label>
           </div>
           <div class="authoring-actions">
-            <label>Add language<select v-model="nextLanguage" aria-label="Add language"><option value="">Choose runtime</option><option v-for="language in availableLanguages" :key="language.languageKey" :value="language.languageKey">{{ language.languageKey }} · {{ language.runtimeVersion }}</option></select></label>
-            <button class="ghost-btn" type="button" :disabled="!nextLanguage || form.languages.length >= 10" @click="addLanguage">Add language</button>
+            <label>{{ t('Add language') }}<select v-model="nextLanguage" :aria-label="t('Add language')"><option value="">{{ t('Choose runtime') }}</option><option v-for="language in availableLanguages" :key="language.languageKey" :value="language.languageKey">{{ language.languageKey }} · {{ language.runtimeVersion }}</option></select></label>
+            <button class="ghost-btn" type="button" :disabled="!nextLanguage || form.languages.length >= 10" @click="addLanguage">{{ t('Add language') }}</button>
           </div>
         </fieldset>
         <fieldset class="card" :disabled="busy || verifying || !editable">
-          <legend>Public samples and hidden tests</legend>
-          <p class="muted">At least one sample and one hidden test are required for publication. Only sample inputs and expected outputs are visible to students.</p>
+          <legend>{{ t('Public samples and hidden tests') }}</legend>
+          <p class="muted">{{ t('At least one sample and one hidden test are required for publication. Only sample inputs and expected outputs are visible to students.') }}</p>
           <div v-for="(test, index) in form.tests" :key="index" class="authoring-entry">
-            <div class="section-head"><h3>Test {{ index + 1 }}</h3><button class="ghost-btn" type="button" @click="form.tests.splice(index, 1)">Remove test {{ index + 1 }}</button></div>
-            <label class="check-label"><input v-model="test.hidden" type="checkbox" /> Hidden test</label>
+            <div class="section-head"><h3>{{ t('Test {number}', { number: index + 1 }) }}</h3><button class="ghost-btn" type="button" @click="form.tests.splice(index, 1)">{{ t('Remove test {number}', { number: index + 1 }) }}</button></div>
+            <label class="check-label"><input v-model="test.hidden" type="checkbox" /> {{ t('Hidden test') }}</label>
             <div class="authoring-grid">
-              <label>Input<textarea v-model="test.inputData" class="code-input" maxlength="65536" rows="4" spellcheck="false" /></label>
-              <label>Expected output<textarea v-model="test.expectedOutput" class="code-input" maxlength="65536" rows="4" spellcheck="false" /></label>
+              <label>{{ t('Input') }}<textarea v-model="test.inputData" class="code-input" maxlength="65536" rows="4" spellcheck="false" /></label>
+              <label>{{ t('Expected output') }}<textarea v-model="test.expectedOutput" class="code-input" maxlength="65536" rows="4" spellcheck="false" /></label>
             </div>
           </div>
-          <button class="ghost-btn" type="button" :disabled="form.tests.length >= 100" @click="form.tests.push({ inputData: '', expectedOutput: '', hidden: false })">Add test</button>
+          <button class="ghost-btn" type="button" :disabled="form.tests.length >= 100" @click="form.tests.push({ inputData: '', expectedOutput: '', hidden: false })">{{ t('Add test') }}</button>
         </fieldset>
-        <button v-if="editable" class="primary-btn" :disabled="busy || verifying || (!!route.params.id && !record)" type="submit">{{ busy ? 'Saving…' : 'Save draft' }}</button>
+        <button v-if="editable" class="primary-btn" :disabled="busy || verifying || (!!route.params.id && !record)" type="submit">{{ t(busy ? 'Saving…' : 'Save draft') }}</button>
       </form>
       <section v-if="record && editable" class="card authoring-form">
-        <h2>Reference verification</h2>
-        <p class="muted">Save the draft, then provide one reference solution for every configured language. Reference source is kept in this page’s memory and cleared when you leave.</p>
-        <label v-for="language in form.languages" :key="language.languageKey">Reference source · {{ language.languageKey }}
+        <h2>{{ t('Reference verification') }}</h2>
+        <p class="muted">{{ t('Save the draft, then provide one reference solution for every configured language. Reference source is kept in this page’s memory and cleared when you leave.') }}</p>
+        <label v-for="language in form.languages" :key="language.languageKey">{{ t('Reference source · {language}', { language: language.languageKey }) }}
           <textarea v-model="reference[language.languageKey]" class="code-input" rows="7" maxlength="20000" spellcheck="false" :disabled="busy || verifying" />
         </label>
         <div class="authoring-actions">
-          <button class="ghost-btn" :disabled="busy || verifying || !canVerify" @click="verify">{{ verifying ? 'Verifying…' : 'Verify reference solution' }}</button>
-          <button class="primary-btn" :disabled="busy || verifying || !canPublish" @click="publish">Publish verified version</button>
-          <button v-if="verification && !verifying && !['FINISHED', 'SYSTEM_ERROR'].includes(verification.status)" class="ghost-btn" :disabled="busy || dirty" @click="resumeVerification">Check verification status</button>
+          <button class="ghost-btn" :disabled="busy || verifying || !canVerify" @click="verify">{{ t(verifying ? 'Verifying…' : 'Verify reference solution') }}</button>
+          <button class="primary-btn" :disabled="busy || verifying || !canPublish" @click="publish">{{ t('Publish verified version') }}</button>
+          <button v-if="verification && !verifying && !['FINISHED', 'SYSTEM_ERROR'].includes(verification.status)" class="ghost-btn" :disabled="busy || dirty" @click="resumeVerification">{{ t('Check verification status') }}</button>
         </div>
-        <p v-if="verification" class="authoring-status" role="status">{{ verification.status }}{{ verification.verdict ? ` · ${verification.verdict}` : '' }} · {{ verification.testsPassed }} / {{ verification.testsTotal }} checks passed<span v-if="verification.verdict === 'ACCEPTED' && !canPublish"> · Verification expired or draft changed; verify again.</span></p>
-        <p v-if="verification?.status === 'SYSTEM_ERROR'" class="error-text">Verification could not finish. Check sandbox availability and try again.</p>
+        <p v-if="verification" class="authoring-status" role="status">{{ t(verification.status) }}{{ verification.verdict ? ` · ${t(verification.verdict)}` : '' }} · {{ t('{passed} / {total} checks passed', { passed: verification.testsPassed, total: verification.testsTotal }) }}<span v-if="verification.verdict === 'ACCEPTED' && !canPublish"> · {{ t('Verification expired or draft changed; verify again.') }}</span></p>
+        <p v-if="verification?.status === 'SYSTEM_ERROR'" class="error-text">{{ t('Verification could not finish. Check sandbox availability and try again.') }}</p>
       </section>
     </main>
   </div>

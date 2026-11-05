@@ -141,9 +141,11 @@ a {
     align-items: center;
     gap: 12px;
     flex-wrap: wrap;
+    max-width: 100%;
+    min-width: 0;
 }
 
-.header-nav { display: flex; align-items: center; gap: 4px; }
+.header-nav { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
 
 .header-link {
     background: transparent;
@@ -583,6 +585,7 @@ a {
     background: var(--app-bg);
 }
 
+.auth-language { display: flex; justify-content: flex-end; margin-bottom: 12px; }
 .auth-card {
     width: 100%;
     max-width: 420px;

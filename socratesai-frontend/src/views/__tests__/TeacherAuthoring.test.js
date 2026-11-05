@@ -7,6 +7,7 @@ import AdminUsersView from '../AdminUsersView.vue'
 import { teacherService } from '../../services/teacherService'
 import { clearSessionResources } from '../../services/sessionLifecycle'
 import { collectionRequest, problemDraft, validateProblemDraft, verificationAllowsPublish } from '../../services/authoringForms'
+import { setLocale, t } from '../../i18n'
 
 const navigation = vi.hoisted(() => ({ route: null, push: vi.fn(), replace: vi.fn() }))
 vi.mock('vue-router', () => ({
@@ -55,9 +56,27 @@ beforeEach(() => {
     { id: 7, problemVersionId: 27, title: 'Sum v2' }, { id: 9, problemVersionId: 19, title: 'Divide' },
   ] })
 })
-afterEach(() => { wrappers.forEach((wrapper) => wrapper.unmount()); wrappers = []; vi.useRealTimers(); vi.restoreAllMocks() })
+afterEach(() => { wrappers.forEach((wrapper) => wrapper.unmount()); wrappers = []; vi.useRealTimers(); vi.restoreAllMocks(); setLocale('en') })
 
 describe('teacher problem authoring', () => {
+  it.each(['ru', 'kk'])('keeps draft data and API enum values intact while translating authoring (%s)', async locale => {
+    const wrapper = render(TeacherProblemEditorView)
+    await flushPromises()
+    await wrapper.find('input[name="title"]').setValue('My original task title')
+    setLocale(locale)
+    await flushPromises()
+    expect(button(wrapper, t('Save draft'))).toBeDefined()
+    const difficulty = wrapper.findAll('select').find(field => field.find('option[value="HARD"]').exists())
+    await difficulty.setValue('HARD')
+    expect(difficulty.find('option[value="HARD"]').text()).toBe(t('HARD'))
+    teacherService.saveProblem.mockResolvedValue(problem())
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+    expect(teacherService.saveProblem).toHaveBeenCalledWith(7, expect.objectContaining({
+      title: 'My original task title', difficulty: 'HARD', visibility: 'AUTHENTICATED', comparisonMode: 'EXACT',
+    }), expect.any(Object))
+  })
+
   it('publishes only the saved exact version after complete reference verification', async () => {
     const wrapper = render(TeacherProblemEditorView)
     await flushPromises()
@@ -211,7 +230,8 @@ describe('authoring contracts', () => {
     expect(collectionRequest(collection()).problems[0]).toEqual({ problemId: 7, problemVersionId: 17 })
   })
 
-  it('admin role changes send expected role and a mandatory audit reason', async () => {
+  it.each(['en', 'ru', 'kk'])('admin role changes preserve expected role and audit reason in %s', async locale => {
+    setLocale(locale)
     const wrapper = render(AdminUsersView)
     await wrapper.get('input').setValue('42')
     await wrapper.get('textarea').setValue('Teaching appointment')
@@ -219,6 +239,6 @@ describe('authoring contracts', () => {
     await wrapper.get('form').trigger('submit')
     await flushPromises()
     expect(teacherService.changeRole).toHaveBeenCalledWith(42, { expectedRole: 'STUDENT', role: 'TEACHER', reason: 'Teaching appointment' }, expect.any(Object))
-    expect(wrapper.text()).toContain('recorded in the audit log')
+    expect(wrapper.text()).toContain(t('Role for user #{id} changed to {role}. The action was recorded in the audit log.', { id: 42, role: t('TEACHER') }))
   })
 })

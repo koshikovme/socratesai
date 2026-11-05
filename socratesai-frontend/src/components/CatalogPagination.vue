@@ -1,5 +1,8 @@
 <script setup>
+import { useI18n } from '../i18n'
 import { computed } from 'vue'
+
+const { t } = useI18n()
 
 const props = defineProps({
   page: { type: Number, required: true },
@@ -12,12 +15,11 @@ const pages = computed(() => Math.max(1, Math.ceil(props.total / props.size)))
 </script>
 
 <template>
-  <nav class="catalog-pagination" aria-label="Catalog pages">
-    <button class="ghost-btn" :disabled="loading || page <= 0" @click="$emit('page', page - 1)">Previous</button>
-    <span aria-live="polite">Page {{ page + 1 }} of {{ pages }} · {{ total }} total</span>
-    <button class="ghost-btn" :disabled="loading || page + 1 >= pages || page >= 10000" @click="$emit('page', page + 1)">Next</button>
-    <label>Per page
-      <select :value="size" :disabled="loading" @change="$emit('size', Number($event.target.value))">
+  <nav class="catalog-pagination" :aria-label="t('Catalog pages')">
+    <button class="ghost-btn" :disabled="loading || page <= 0" @click="$emit('page', page - 1)">{{ t('Previous') }}</button>
+    <span aria-live="polite">{{ t('Page {page} of {pages} · {total} total', { page: page + 1, pages, total }) }}</span>
+    <button class="ghost-btn" :disabled="loading || page + 1 >= pages || page >= 10000" @click="$emit('page', page + 1)">{{ t('Next') }}</button>
+    <label>{{ t('Per page') }} <select :value="size" :disabled="loading" @change="$emit('size', Number($event.target.value))">
         <option :value="10">10</option><option :value="20">20</option><option :value="50">50</option>
       </select>
     </label>

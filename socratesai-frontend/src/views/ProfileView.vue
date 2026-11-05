@@ -5,32 +5,32 @@
     <main class="page-content profile-page">
       <section class="card profile-hero">
         <div>
-          <p class="eyebrow">My profile</p>
-          <h2>{{ profile.fullName || auth.fullName || 'Student' }}</h2>
+          <p class="eyebrow">{{ t('My profile') }}</p>
+          <h2>{{ profile.fullName || auth.fullName || t('Student') }}</h2>
           <p class="profile-subtitle">{{ profile.email || auth.email }}</p>
           <div class="profile-meta-row">
-            <span>{{ profile.role || auth.role || 'STUDENT' }}</span>
-            <span>{{ profile.university || 'University not set' }}</span>
-            <span>{{ profile.groupName || 'Group not set' }}</span>
+            <span>{{ t(profile.role || auth.role || 'STUDENT') }}</span>
+            <span>{{ profile.university || t('University not set') }}</span>
+            <span>{{ profile.groupName || t('Group not set') }}</span>
           </div>
         </div>
 
         <div class="profile-actions">
           <button class="ghost-btn" :disabled="loading" @click="loadProgress">
-            {{ loading ? 'Refreshing...' : 'Refresh' }}
+            {{ t(loading ? 'Refreshing...' : 'Refresh') }}
           </button>
           <button class="primary-btn" @click="toggleThemeMode">
-            {{ theme === 'dark' ? 'Use light mode' : 'Use dark mode' }}
+            {{ t(theme === 'dark' ? 'Use light mode' : 'Use dark mode') }}
           </button>
         </div>
       </section>
 
       <section v-if="loading && !progress" class="card">
-        <p class="muted">Loading progress...</p>
+        <p class="muted">{{ t('Loading progress...') }}</p>
       </section>
 
       <section v-else-if="error" class="card">
-        <p class="error-text">{{ error }}</p>
+        <p class="error-text">{{ t(error) }}</p>
       </section>
 
       <template v-else-if="progress">
@@ -46,8 +46,8 @@
           <section class="card progress-panel task-progress-panel">
             <div class="section-head">
               <div>
-                <p class="eyebrow">Tasks</p>
-                <h2>Progress by task</h2>
+                <p class="eyebrow">{{ t('Tasks') }}</p>
+                <h2>{{ t('Progress by task') }}</h2>
               </div>
             </div>
 
@@ -55,27 +55,27 @@
               <div v-for="task in tasks" :key="task.taskId" class="task-progress-row">
                 <div>
                   <h3>{{ task.title }}</h3>
-                  <p class="muted">{{ task.topic }} / {{ task.difficulty }}</p>
+                  <p class="muted">{{ task.topic }} / {{ t(task.difficulty) }}</p>
                   <p class="task-progress-meta">
-                    {{ task.attempts }} attempts / {{ task.feedbackCount }} feedback events / best {{ task.bestTestsPassed }} tests
+                    {{ t('{attempts} attempts / {feedback} feedback events / best {tests} tests', { attempts: task.attempts, feedback: task.feedbackCount, tests: task.bestTestsPassed }) }}
                   </p>
                 </div>
                 <div class="task-progress-side">
                   <span class="signal-pill" :class="task.status === 'SOLVED' ? 'signal-good' : 'signal-neutral'">
-                    {{ task.status === 'SOLVED' ? 'Solved' : 'In progress' }}
+                    {{ t(task.status === 'SOLVED' ? 'Solved' : 'In progress') }}
                   </span>
-                  <router-link v-if="task.openable" class="ghost-btn" :to="`/problems/${task.taskId}`">Open</router-link>
-                  <span v-else class="compact-chip">Unavailable</span>
+                  <router-link v-if="task.openable" class="ghost-btn" :to="`/problems/${task.taskId}`">{{ t('Open') }}</router-link>
+                  <span v-else class="compact-chip">{{ t('Unavailable') }}</span>
                 </div>
               </div>
             </div>
 
-            <p v-else class="muted">No graded attempts yet. Submit a solution to record judged progress.</p>
+            <p v-else class="muted">{{ t('No graded attempts yet. Submit a solution to record judged progress.') }}</p>
           </section>
 
           <section class="card progress-panel">
-            <p class="eyebrow">Policy behavior</p>
-            <h2>Feedback actions</h2>
+            <p class="eyebrow">{{ t('Policy behavior') }}</p>
+            <h2>{{ t('Feedback actions') }}</h2>
             <div class="bar-list">
               <div v-for="[label, count] in actionEntries" :key="label" class="bar-row">
                 <div class="bar-row-head">
@@ -88,7 +88,7 @@
               </div>
             </div>
 
-            <p class="eyebrow secondary-eyebrow">Analyzer signals</p>
+            <p class="eyebrow secondary-eyebrow">{{ t('Analyzer signals') }}</p>
             <div class="compact-chip-list">
               <span v-for="[label, count] in errorEntries" :key="label" class="compact-chip">
                 {{ formatLabel(label) }}: {{ count }}
@@ -97,8 +97,8 @@
           </section>
 
           <section class="card progress-panel recent-panel">
-            <p class="eyebrow">Recent activity</p>
-            <h2>Latest mentor events</h2>
+            <p class="eyebrow">{{ t('Recent activity') }}</p>
+            <h2>{{ t('Latest mentor events') }}</h2>
             <div v-if="recentActivity.length" class="activity-list">
               <div v-for="item in recentActivity" :key="`${item.taskId}-${item.createdAt}-${item.attemptNo}`" class="activity-row">
                 <div>
@@ -108,12 +108,12 @@
                   </p>
                 </div>
                 <div class="activity-side">
-                  <span>{{ item.testsPassed == null ? 'Execution unknown' : `${item.testsPassed}/${item.testsPassed + (item.testsFailed ?? 0)} tests` }} · {{ item.evidenceOrigin || 'Legacy' }}</span>
+                  <span>{{ item.testsPassed == null ? t('Execution unknown') : t('{passed}/{total} tests', { passed: item.testsPassed, total: item.testsPassed + (item.testsFailed ?? 0) }) }} · {{ t(item.evidenceOrigin || 'Legacy') }}</span>
                   <small>{{ formatDate(item.createdAt) }}</small>
                 </div>
               </div>
             </div>
-            <p v-else class="muted">No recent activity yet.</p>
+            <p v-else class="muted">{{ t('No recent activity yet.') }}</p>
           </section>
         </div>
       </template>
@@ -122,6 +122,7 @@
 </template>
 
 <script setup>
+import { useI18n } from '../i18n'
 import { computed, onMounted, onBeforeUnmount, ref } from 'vue'
 import AppHeader from '../components/AppHeader.vue'
 import { useAuthStore } from '../stores/auth'
@@ -130,6 +131,8 @@ import { applyTheme, getStoredTheme, toggleTheme } from '../services/themeServic
 
 import { apiErrorMessage } from '../services/errors'
 import { registerSessionCleanup } from '../services/sessionLifecycle'
+
+const { t, dateLocale } = useI18n()
 const controller = new AbortController()
 const auth = useAuthStore()
 const progress = ref(null)
@@ -147,24 +150,24 @@ const actionTotal = computed(() => actionEntries.value.reduce((sum, [, count]) =
 
 const metrics = computed(() => [
   {
-    label: 'Solved tasks',
+    label: t('Solved tasks'),
     value: `${summary.value.solvedTasks ?? 0}/${summary.value.attemptedTasks ?? 0}`,
-    detail: `${formatPercent(summary.value.solveRate)} solve rate`
+    detail: t('{rate} solve rate', { rate: formatPercent(summary.value.solveRate) })
   },
   {
-    label: 'Attempts',
+    label: t('Attempts'),
     value: summary.value.totalAttempts ?? 0,
-    detail: `${summary.value.activeSessions ?? 0} active sessions`
+    detail: t('{count} active sessions', { count: summary.value.activeSessions ?? 0 })
   },
   {
-    label: 'Feedback events',
+    label: t('Feedback events'),
     value: summary.value.totalFeedback ?? 0,
-    detail: `${summary.value.resolvedInteractions ?? 0} marked resolved`
+    detail: t('{count} marked resolved', { count: summary.value.resolvedInteractions ?? 0 })
   },
   {
-    label: 'Mean latency',
-    value: `${Math.round(summary.value.meanLatencyMs ?? 0)} ms`,
-    detail: summary.value.lastActivityAt ? `Last: ${formatDate(summary.value.lastActivityAt)}` : 'No activity yet'
+    label: t('Mean latency'),
+    value: `${Math.round(summary.value.meanLatencyMs ?? 0)} ${t('ms')}`,
+    detail: summary.value.lastActivityAt ? t('Last: {date}', { date: formatDate(summary.value.lastActivityAt) }) : t('No activity yet')
   }
 ])
 
@@ -207,12 +210,12 @@ function formatPercent(value) {
 }
 
 function formatLabel(value) {
-  if (!value) return 'N/A'
-  return String(value)
+  if (!value) return t('N/A')
+  return t(String(value)
       .toLowerCase()
       .split('_')
       .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-      .join(' ')
+      .join(' '))
 }
 
 function barWidth(count, total) {
@@ -221,8 +224,8 @@ function barWidth(count, total) {
 }
 
 function formatDate(value) {
-  if (!value) return 'N/A'
-  return new Intl.DateTimeFormat(undefined, {
+  if (!value) return t('N/A')
+  return new Intl.DateTimeFormat(dateLocale.value, {
     month: 'short',
     day: 'numeric',
     hour: '2-digit',

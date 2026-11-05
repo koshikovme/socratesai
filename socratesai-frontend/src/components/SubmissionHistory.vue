@@ -1,8 +1,11 @@
 <script setup>
+import { useI18n } from '../i18n'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { fetchSubmissions } from '../services/judgingService'
 import { apiErrorMessage } from '../services/errors'
 import { registerSessionCleanup } from '../services/sessionLifecycle'
+
+const { t } = useI18n()
 defineProps({ disabled: Boolean })
 defineEmits(['select'])
 const page = ref(0)
@@ -32,23 +35,23 @@ onMounted(() => load())
 onBeforeUnmount(() => { clear(); unregister() })
 </script>
 <template>
-  <section class="card" aria-label="Submission history">
-    <h2>My submission history</h2>
-    <p class="muted">All problems · submitted code is not stored in this browser.</p>
-    <button class="ghost-btn" :disabled="loading" @click="load()">Refresh history</button>
-    <p v-if="error" role="alert" class="error-text">{{ error }}</p>
-    <p v-if="!loading && !data.items.length">No graded submissions yet.</p>
+  <section class="card" :aria-label="t('Submission history')">
+    <h2>{{ t('My submission history') }}</h2>
+    <p class="muted">{{ t('All problems · submitted code is not stored in this browser.') }}</p>
+    <button class="ghost-btn" :disabled="loading" @click="load()">{{ t('Refresh history') }}</button>
+    <p v-if="error" role="alert" class="error-text">{{ t(error) }}</p>
+    <p v-if="!loading && !data.items.length">{{ t('No graded submissions yet.') }}</p>
     <ul class="history-list">
       <li v-for="item in data.items" :key="item.id">
-        <RouterLink :to="`/problems/${item.problemId}?version=${item.problemVersionId}`">Problem {{ item.problemId }}</RouterLink>
-        · {{ item.languageKey }} · Attempt {{ item.attemptNumber }} · {{ item.verdict || item.status }}
-        <button class="ghost-btn" :disabled="disabled" @click="$emit('select', item)">Check status</button>
+        <RouterLink :to="`/problems/${item.problemId}?version=${item.problemVersionId}`">{{ t('Problem {id}', { id: item.problemId }) }}</RouterLink>
+        · {{ item.languageKey }} · {{ t('Attempt {number}', { number: item.attemptNumber }) }} · {{ t(item.verdict || item.status) }}
+        <button class="ghost-btn" :disabled="disabled" @click="$emit('select', item)">{{ t('Check status') }}</button>
       </li>
     </ul>
-    <nav class="pagination" aria-label="History pages">
-      <button class="ghost-btn" :disabled="page === 0 || loading" @click="load(page - 1)">Previous</button>
-      <span>Page {{ page + 1 }}</span>
-      <button class="ghost-btn" :disabled="(page + 1) * 10 >= data.totalElements || loading" @click="load(page + 1)">Next</button>
+    <nav class="pagination" :aria-label="t('History pages')">
+      <button class="ghost-btn" :disabled="page === 0 || loading" @click="load(page - 1)">{{ t('Previous') }}</button>
+      <span>{{ t('Page {page}', { page: page + 1 }) }}</span>
+      <button class="ghost-btn" :disabled="(page + 1) * 10 >= data.totalElements || loading" @click="load(page + 1)">{{ t('Next') }}</button>
     </nav>
   </section>
 </template>

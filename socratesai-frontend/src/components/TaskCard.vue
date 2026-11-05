@@ -1,4 +1,7 @@
 <script setup>
+import { useI18n } from '../i18n'
+
+const { t } = useI18n()
 defineProps({ task: { type: Object, required: true }, solved: Boolean })
 </script>
 
@@ -6,13 +9,11 @@ defineProps({ task: { type: Object, required: true }, solved: Boolean })
   <article class="card task-card">
     <div class="task-top">
       <h3>{{ task.title }}</h3>
-      <span v-if="task.difficulty" class="badge" :class="task.difficulty.toLowerCase()">{{ task.difficulty }}</span>
+      <span v-if="task.difficulty" class="badge" :class="task.difficulty.toLowerCase()">{{ t(task.difficulty) }}</span>
     </div>
-    <p class="task-topic">{{ task.topic || 'Programming' }}</p>
-    <p v-if="solved" class="success-text" data-testid="solved">✓ SOLVED · accepted submission</p>
-    <router-link class="primary-btn" :to="{ path: `/problems/${task.id}`, query: { version: String(task.problemVersionId) } }">
-      Open problem
-    </router-link>
+    <p class="task-topic">{{ task.topic || t('Programming') }}</p>
+    <p v-if="solved" class="success-text" data-testid="solved">{{ t('✓ SOLVED · accepted submission') }}</p>
+    <router-link class="primary-btn" :to="{ path: `/problems/${task.id}`, query: { version: String(task.problemVersionId) } }"> {{ t('Open problem') }} </router-link>
   </article>
 </template>
 

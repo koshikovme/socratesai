@@ -1,4 +1,5 @@
 <script setup>
+import { useI18n } from '../i18n'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import AppHeader from '../components/AppHeader.vue'
 import CatalogPagination from '../components/CatalogPagination.vue'
@@ -6,6 +7,8 @@ import TaskList from '../components/TaskList.vue'
 import { fetchCollections, fetchJudgedProgress, fetchProblems, solvedProblemIds } from '../services/catalogService'
 import { apiErrorMessage } from '../services/errors'
 import { useAuthStore } from '../stores/auth'
+
+const { t } = useI18n()
 
 const auth = useAuthStore()
 const kind = ref('problems')
@@ -93,32 +96,32 @@ onBeforeUnmount(() => { catalogRequest?.abort(); progressRequest?.abort() })
     <AppHeader />
     <main class="page-content">
       <div class="section-head">
-        <div><p class="eyebrow">Practice programming</p><h1>Problem catalog</h1><p class="muted">Published problems and curated collections.</p></div>
-        <button class="ghost-btn" :disabled="loading" @click="refresh">Refresh</button>
+        <div><p class="eyebrow">{{ t('Practice programming') }}</p><h1>{{ t('Problem catalog') }}</h1><p class="muted">{{ t('Published problems and curated collections.') }}</p></div>
+        <button class="ghost-btn" :disabled="loading" @click="refresh">{{ t('Refresh') }}</button>
       </div>
-      <div class="catalog-tabs" aria-label="Catalog type">
-        <button :class="kind === 'problems' ? 'primary-btn' : 'ghost-btn'" :aria-pressed="kind === 'problems'" @click="setKind('problems')">Problems</button>
-        <button :class="kind === 'collections' ? 'primary-btn' : 'ghost-btn'" :aria-pressed="kind === 'collections'" @click="setKind('collections')">Collections</button>
+      <div class="catalog-tabs" :aria-label="t('Catalog type')">
+        <button :class="kind === 'problems' ? 'primary-btn' : 'ghost-btn'" :aria-pressed="kind === 'problems'" @click="setKind('problems')">{{ t('Problems') }}</button>
+        <button :class="kind === 'collections' ? 'primary-btn' : 'ghost-btn'" :aria-pressed="kind === 'collections'" @click="setKind('collections')">{{ t('Collections') }}</button>
       </div>
-      <section class="card catalog-filters" aria-label="Filter current page">
-        <label>Filter this page<input v-model="search" type="search" maxlength="200" placeholder="Title or topic" /></label>
+      <section class="card catalog-filters" :aria-label="t('Filter current page')">
+        <label>{{ t('Filter this page') }}<input v-model="search" type="search" maxlength="200" :placeholder="t('Title or topic')" /></label>
         <template v-if="kind === 'problems'">
-          <label>Difficulty<select v-model="difficulty"><option value="">All difficulties</option><option>EASY</option><option>MEDIUM</option><option>HARD</option></select></label>
-          <label>Progress<select v-model="status" :disabled="!progressReady"><option value="">All problems</option><option value="SOLVED">Solved</option><option value="UNSOLVED">Not yet solved</option></select></label>
+          <label>{{ t('Difficulty') }}<select v-model="difficulty"><option value="">{{ t('All difficulties') }}</option><option value="EASY">{{ t('EASY') }}</option><option value="MEDIUM">{{ t('MEDIUM') }}</option><option value="HARD">{{ t('HARD') }}</option></select></label>
+          <label>{{ t('Progress') }}<select v-model="status" :disabled="!progressReady"><option value="">{{ t('All problems') }}</option><option value="SOLVED">{{ t('Solved') }}</option><option value="UNSOLVED">{{ t('Not yet solved') }}</option></select></label>
         </template>
-        <p class="muted filter-help">Filters apply to the current page. Use the page controls to explore the full catalog.</p>
+        <p class="muted filter-help">{{ t('Filters apply to the current page. Use the page controls to explore the full catalog.') }}</p>
       </section>
-      <p v-if="progressError" role="status" class="error-text">Progress unavailable: {{ progressError }}</p>
-      <p v-if="error" role="alert" class="error-text">{{ error }}</p>
-      <section :aria-busy="loading" aria-label="Catalog results">
-        <p v-if="loading" role="status">Loading catalog…</p>
+      <p v-if="progressError" role="status" class="error-text">{{ t('Progress unavailable: {error}', { error: t(progressError) }) }}</p>
+      <p v-if="error" role="alert" class="error-text">{{ t(error) }}</p>
+      <section :aria-busy="loading" :aria-label="t('Catalog results')">
+        <p v-if="loading" role="status">{{ t('Loading catalog…') }}</p>
         <template v-else-if="!error">
-          <p v-if="!filtered.length" class="muted">{{ items.length ? 'No matches on this page. Adjust the filters or go to another page.' : 'No published items yet.' }}</p>
+          <p v-if="!filtered.length" class="muted">{{ t(items.length ? 'No matches on this page. Adjust the filters or go to another page.' : 'No published items yet.') }}</p>
           <TaskList v-if="kind === 'problems'" :tasks="filtered" :solved-ids="solvedIds" />
           <div v-else class="task-grid">
             <article v-for="item in filtered" :key="item.id" class="card collection-card">
               <h2>{{ item.title }}</h2>
-              <router-link class="primary-btn" :to="`/collections/${item.id}`">Open collection</router-link>
+              <router-link class="primary-btn" :to="`/collections/${item.id}`">{{ t('Open collection') }}</router-link>
             </article>
           </div>
         </template>

@@ -1,8 +1,8 @@
 <template>
   <div class="card editor-card">
     <div class="editor-toolbar">
-      <span>Language: {{ normalizedLanguage }}</span>
-      <span>Full source buffer</span>
+      <span>{{ t('Language: {language}', { language: normalizedLanguage }) }}</span>
+      <span>{{ t('Full source buffer') }}</span>
     </div>
 
     <div class="monaco-shell">
@@ -19,9 +19,12 @@
 </template>
 
 <script setup>
+import { useI18n } from '../i18n'
 import '../monaco-setup'
 import { computed } from 'vue'
 import { VueMonacoEditor } from '@guolao/vue-monaco-editor'
+
+const { t } = useI18n()
 
 const props = defineProps({
   modelValue: {

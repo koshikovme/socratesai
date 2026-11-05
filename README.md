@@ -14,6 +14,9 @@ compile and execute on a separate isolated Judge0/Isolate VM. Accepted submissio
 saved progress. Python mentor inference uses its trained classifier with bounded Gemini hints; Java/C++ use Gemini classification and hints.
 Ask mentor works from code and the public problem statement before any sample run; native feedback never silently falls back to RULE.
 
+The interface supports **English, Русский and Қазақша**. Use the language selector on the
+login page or in the header; the choice is remembered across reloads and sign-out.
+
 The repository owner operates the installation. Owner account credentials are available only
 in the protected local `.delivery/production-access.md` file. Public signup grants STUDENT;
 staff roles require audited administrator provisioning.

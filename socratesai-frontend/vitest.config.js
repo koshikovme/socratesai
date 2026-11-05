@@ -12,7 +12,7 @@ export default defineConfig({
             provider: 'v8',
             reportsDirectory: 'coverage-native',
             reporter: ['text', 'html'],
-            include: ['src/services/**/*.js', 'src/stores/**/*.js', 'src/composables/**/*.js', 'src/components/**/*.vue', 'src/views/**/*.vue', 'src/router/access.js'],
+            include: ['src/services/**/*.js', 'src/stores/**/*.js', 'src/composables/**/*.js', 'src/components/**/*.vue', 'src/views/**/*.vue', 'src/i18n/**/*.js', 'src/router/access.js'],
             exclude: ['**/__tests__/**'],
             thresholds: {
                 lines: 55,
