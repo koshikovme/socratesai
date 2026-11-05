@@ -28,6 +28,17 @@ export async function installNativeFixture(page) {
     }
     if (path === '/api/teacher/problems') return respond(route, paged(state.problem ? [state.problem] : []))
     if (path === '/api/teacher/problems/11') return respond(route, state.problem)
+    if (path === '/api/teacher/problems/11/submissions' || path === '/api/teacher/collections/31/submissions') {
+      const items = state.submissions.map(submission => ({ ...submission, studentId: 2, studentName: 'Student Test', studentEmail: 'student@example.test',
+        groupName: 'CS1', versionNumber: 1, problemTitle: state.problem.version.title, createdAt: '2026-11-05T01:00:00Z' }))
+      return respond(route, { submissions: paged(items), summary: { attempts: items.length, students: items.length ? 1 : 0, accepted: state.accepted ? 1 : 0, pending: 0 } })
+    }
+    if (path === '/api/teacher/submissions/submission-fixture') return respond(route, {
+      submission: state.submissions[0], problemTitle: state.problem.version.title,
+      student: { id: 2, fullName: 'Student Test', email: 'student@example.test', groupName: 'CS1' },
+      sourceCode: state.posts.find(post => post.path.endsWith('/submissions'))?.body.sourceCode,
+      cases: [{ position: 1, hidden: true, verdict: 'ACCEPTED', stdout: 'HIDDEN_ECHO_MUST_NOT_RENDER', stderr: 'HIDDEN_DIAGNOSTICS' }],
+    })
     if (path === '/api/teacher/problems/11/verify') { state.reference = body; return respond(route, { id: 'verification', problemVersionId: 21, status: 'QUEUED', testsTotal: 6, testsPassed: 0 }, 202) }
     if (path.includes('/verifications/')) return respond(route, { id: 'verification', problemVersionId: 21, status: 'FINISHED', verdict: 'ACCEPTED', testsTotal: 6, testsPassed: 6, validUntil: new Date(Date.now() + 300000).toISOString() })
     if (path === '/api/teacher/problems/11/publish') { state.problem.status = 'PUBLISHED'; state.problem.publishedVersionId = 21; state.problem.version.status = 'PUBLISHED'; return respond(route, state.problem) }

@@ -14,6 +14,7 @@ import org.springframework.data.jpa.repository.Query;
 import jakarta.persistence.LockModeType;
 
 public interface ProblemCollectionRepository extends JpaRepository<ProblemCollection, Long> {
+    boolean existsByIdAndOwnerId(Long id, Long ownerId);
     String READABLE = """
         c.status = com.masters.socratesai.common.model.ContentStatus.PUBLISHED and c.visibility in :visibility
         and exists (select m.id from CollectionProblem m where m.collection = c)

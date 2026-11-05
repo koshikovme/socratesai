@@ -147,9 +147,9 @@ watch(() => [route.params.id, route.query.version, route.query.collection], load
           <section v-if="language" class="card program-contract" :aria-label="t('Program format')">
             <p class="eyebrow">{{ t('How to write your solution') }}</p>
             <p>{{ t('Write a complete program: read standard input and print the answer to standard output.') }}</p>
-            <p v-if="languageKey === 'java'">{{ t('Keep class Main and public static void main(String[] args). Write your logic in solve(Scanner input). A standalone Solution method is not called automatically.') }}</p>
-            <p v-else-if="languageKey === 'python3'">{{ t('Write your logic in solve(). The starter reads input into data; parse it and print your result.') }}</p>
-            <p v-else-if="languageKey === 'cpp17'">{{ t('Keep main() and write your logic in solve(), using std::cin and std::cout.') }}</p>
+            <p v-if="languageKey === 'java'">{{ t('Keep class Main and public static void main(String[] args). Implement the function marked TODO using its parameters. Keep the input/output adapter unless the task needs a different format. A standalone Solution method is not called automatically.') }}</p>
+            <p v-else-if="languageKey === 'python3'">{{ t('Implement the function marked TODO and keep its signature. The starter explains how inputs are passed and the answer is printed.') }}</p>
+            <p v-else-if="languageKey === 'cpp17'">{{ t('Keep main() and implement the function marked TODO. The input/output adapter reads the parameters and prints the answer.') }}</p>
             <details v-if="language.starterCode"><summary>{{ t('Starter program · {entry}', { entry: language.entryPoint || languageKey }) }}</summary><pre>{{ language.starterCode }}</pre></details>
             <button class="ghost-btn" :disabled="judgingLocked || !language.starterCode || code === language.starterCode" @click="restoreStarter">{{ t('Reset to starter') }}</button>
           </section>

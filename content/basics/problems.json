@@ -1,0 +1,315 @@
+{
+  "version": 1,
+  "languages": [
+    "java",
+    "cpp17"
+  ],
+  "problems": [
+    {
+      "key": "sum-two",
+      "title": "Сумма двух чисел",
+      "topic": "Арифметика",
+      "statement": "Вычислите сумму двух целых чисел. Функция получает оба числа как отдельные параметры. Верните их сумму.",
+      "inputFormat": "Два целых числа firstNumber и secondNumber через пробел.",
+      "outputFormat": "Одно целое число — сумма.",
+      "constraintsText": "−1000 ≤ firstNumber, secondNumber ≤ 1000.",
+      "contract": {
+        "functionName": "add",
+        "returnType": "INTEGER",
+        "parameters": [
+          {
+            "name": "firstNumber",
+            "type": "INTEGER"
+          },
+          {
+            "name": "secondNumber",
+            "type": "INTEGER"
+          }
+        ]
+      },
+      "samples": [
+        {
+          "inputData": "2 3\n",
+          "expectedOutput": "5\n"
+        },
+        {
+          "inputData": "-4 7\n",
+          "expectedOutput": "3\n"
+        }
+      ]
+    },
+    {
+      "key": "rectangle-perimeter",
+      "title": "Периметр прямоугольника",
+      "topic": "Арифметика",
+      "statement": "Даны ширина и высота прямоугольника. Верните его периметр. Все величины заданы в целых единицах.",
+      "inputFormat": "Два положительных целых числа width и height.",
+      "outputFormat": "Периметр прямоугольника.",
+      "constraintsText": "1 ≤ width, height ≤ 1000.",
+      "contract": {
+        "functionName": "perimeter",
+        "returnType": "INTEGER",
+        "parameters": [
+          {
+            "name": "width",
+            "type": "INTEGER"
+          },
+          {
+            "name": "height",
+            "type": "INTEGER"
+          }
+        ]
+      },
+      "samples": [
+        {
+          "inputData": "3 4\n",
+          "expectedOutput": "14\n"
+        },
+        {
+          "inputData": "1 1\n",
+          "expectedOutput": "4\n"
+        }
+      ]
+    },
+    {
+      "key": "maximum-three",
+      "title": "Наибольшее из трёх",
+      "topic": "Условия",
+      "statement": "Найдите наибольшее из трёх целых чисел. Числа могут совпадать и быть отрицательными.",
+      "inputFormat": "Три целых числа firstNumber, secondNumber и thirdNumber.",
+      "outputFormat": "Наибольшее из трёх чисел.",
+      "constraintsText": "−1000 ≤ каждое число ≤ 1000.",
+      "contract": {
+        "functionName": "maximum",
+        "returnType": "INTEGER",
+        "parameters": [
+          {
+            "name": "firstNumber",
+            "type": "INTEGER"
+          },
+          {
+            "name": "secondNumber",
+            "type": "INTEGER"
+          },
+          {
+            "name": "thirdNumber",
+            "type": "INTEGER"
+          }
+        ]
+      },
+      "samples": [
+        {
+          "inputData": "4 9 2\n",
+          "expectedOutput": "9\n"
+        },
+        {
+          "inputData": "-3 -8 -5\n",
+          "expectedOutput": "-3\n"
+        }
+      ]
+    },
+    {
+      "key": "parity",
+      "title": "Чётное или нечётное",
+      "topic": "Условия",
+      "statement": "Определите, является ли целое число чётным. Верните слово EVEN для чётного числа и ODD для нечётного. Ноль — чётное число.",
+      "inputFormat": "Одно целое число number.",
+      "outputFormat": "Слово EVEN или ODD заглавными латинскими буквами.",
+      "constraintsText": "−1000000000 ≤ number ≤ 1000000000.",
+      "contract": {
+        "functionName": "parity",
+        "returnType": "TEXT",
+        "parameters": [
+          {
+            "name": "number",
+            "type": "INTEGER"
+          }
+        ]
+      },
+      "samples": [
+        {
+          "inputData": "4\n",
+          "expectedOutput": "EVEN\n"
+        },
+        {
+          "inputData": "7\n",
+          "expectedOutput": "ODD\n"
+        }
+      ]
+    },
+    {
+      "key": "sum-to-n",
+      "title": "Сумма от 1 до N",
+      "topic": "Циклы",
+      "statement": "Вычислите сумму всех целых чисел от 1 до limit включительно. Если limit равен нулю, сумма равна нулю. Для результата используйте длинный целочисленный тип.",
+      "inputFormat": "Одно целое неотрицательное число limit.",
+      "outputFormat": "Сумма чисел от 1 до limit.",
+      "constraintsText": "0 ≤ limit ≤ 1000000.",
+      "contract": {
+        "functionName": "sumToN",
+        "returnType": "LONG",
+        "parameters": [
+          {
+            "name": "limit",
+            "type": "INTEGER"
+          }
+        ]
+      },
+      "samples": [
+        {
+          "inputData": "5\n",
+          "expectedOutput": "15\n"
+        },
+        {
+          "inputData": "0\n",
+          "expectedOutput": "0\n"
+        }
+      ]
+    },
+    {
+      "key": "factorial",
+      "title": "Факториал",
+      "topic": "Циклы",
+      "statement": "Вычислите факториал неотрицательного числа number. Это произведение всех целых чисел от 1 до number. По определению, факториал нуля равен 1. Результат помещается в длинный целочисленный тип.",
+      "inputFormat": "Одно целое число number.",
+      "outputFormat": "Факториал числа number.",
+      "constraintsText": "0 ≤ number ≤ 20.",
+      "contract": {
+        "functionName": "factorial",
+        "returnType": "LONG",
+        "parameters": [
+          {
+            "name": "number",
+            "type": "INTEGER"
+          }
+        ]
+      },
+      "samples": [
+        {
+          "inputData": "5\n",
+          "expectedOutput": "120\n"
+        },
+        {
+          "inputData": "0\n",
+          "expectedOutput": "1\n"
+        }
+      ]
+    },
+    {
+      "key": "digit-count",
+      "title": "Количество цифр",
+      "topic": "Целочисленная арифметика",
+      "statement": "Посчитайте количество десятичных цифр в записи целого числа. Знак минус не является цифрой. Запись числа 0 содержит одну цифру.",
+      "inputFormat": "Одно целое число number.",
+      "outputFormat": "Количество цифр без учёта знака.",
+      "constraintsText": "−1000000000 ≤ number ≤ 1000000000.",
+      "contract": {
+        "functionName": "countDigits",
+        "returnType": "INTEGER",
+        "parameters": [
+          {
+            "name": "number",
+            "type": "INTEGER"
+          }
+        ]
+      },
+      "samples": [
+        {
+          "inputData": "12345\n",
+          "expectedOutput": "5\n"
+        },
+        {
+          "inputData": "0\n",
+          "expectedOutput": "1\n"
+        }
+      ]
+    },
+    {
+      "key": "array-sum",
+      "title": "Сумма элементов массива",
+      "topic": "Массивы",
+      "statement": "Найдите сумму элементов массива numbers. Массив уже прочитан в main и передаётся вашей функции. Для результата используйте длинный целочисленный тип.",
+      "inputFormat": "Сначала длина массива, затем указанное количество целых чисел. Код чтения ввода находится в шаблоне.",
+      "outputFormat": "Сумма всех элементов массива.",
+      "constraintsText": "1 ≤ длина ≤ 100; −1000000 ≤ каждый элемент ≤ 1000000.",
+      "contract": {
+        "functionName": "sumArray",
+        "returnType": "LONG",
+        "parameters": [
+          {
+            "name": "numbers",
+            "type": "INTEGER_ARRAY"
+          }
+        ]
+      },
+      "samples": [
+        {
+          "inputData": "3\n1 2 3\n",
+          "expectedOutput": "6\n"
+        },
+        {
+          "inputData": "4\n-1 5 0 -4\n",
+          "expectedOutput": "0\n"
+        }
+      ]
+    },
+    {
+      "key": "array-maximum",
+      "title": "Максимум в массиве",
+      "topic": "Массивы",
+      "statement": "Верните наибольший элемент непустого массива numbers. Все элементы могут быть отрицательными. Массив уже прочитан и передаётся вашей функции.",
+      "inputFormat": "Сначала длина массива, затем его целочисленные элементы.",
+      "outputFormat": "Наибольший элемент массива.",
+      "constraintsText": "1 ≤ длина ≤ 100; −1000000 ≤ каждый элемент ≤ 1000000.",
+      "contract": {
+        "functionName": "maxArray",
+        "returnType": "INTEGER",
+        "parameters": [
+          {
+            "name": "numbers",
+            "type": "INTEGER_ARRAY"
+          }
+        ]
+      },
+      "samples": [
+        {
+          "inputData": "5\n2 7 1 9 3\n",
+          "expectedOutput": "9\n"
+        },
+        {
+          "inputData": "3\n-5 -2 -8\n",
+          "expectedOutput": "-2\n"
+        }
+      ]
+    },
+    {
+      "key": "vowel-count",
+      "title": "Количество гласных",
+      "topic": "Строки",
+      "statement": "Посчитайте английские гласные A, E, I, O, U в слове word. Регистр не имеет значения: a и A считаются одинаково. Буква Y в этой задаче не считается гласной.",
+      "inputFormat": "Одно непустое слово word из латинских букв без пробелов.",
+      "outputFormat": "Количество гласных букв в слове.",
+      "constraintsText": "1 ≤ длина слова ≤ 100; допустимы только A–Z и a–z.",
+      "contract": {
+        "functionName": "countVowels",
+        "returnType": "INTEGER",
+        "parameters": [
+          {
+            "name": "word",
+            "type": "TEXT"
+          }
+        ]
+      },
+      "samples": [
+        {
+          "inputData": "Hello\n",
+          "expectedOutput": "2\n"
+        },
+        {
+          "inputData": "SKY\n",
+          "expectedOutput": "0\n"
+        }
+      ]
+    }
+  ]
+}

@@ -826,3 +826,11 @@ New smoke/benchmark/experiment outputs use a new directory or prefix, never over
 - [x] Preserve code buffers, revisions, draft data and native API enum values during switching. Keep the language preference through logout while clearing session/source data.
 - [x] 107 tests/coverage, lint, production build and three Chromium fixture journeys passed, including mobile three-language editing and hidden-output safety.
 - [x] v0.9.4 passed the complete release/security pipeline and automatic production promotion. Real HTTPS three-role localization passed at 390 px with original unsaved form/code preserved, zero staff writes/execution POSTs/unexpected page errors. Current manifest is `deploy/releases/v0.9.4.json`; see `result-ui-localization.md`.
+
+### Typed starters, staff results and beginner curriculum — 2026-11-05
+
+- [x] Teacher builder for named typed parameters and a runnable input/output adapter; existing versioned starter storage and full-program sandbox boundary retained.
+- [x] Staff task/collection results with paging/filtering, participant identity, counts, read-only source/case review and bounded visible-page refresh. Collection-context access does not expose unrelated attempts on copied public tasks. No manual grading workflow.
+- [x] PostgreSQL authorization/projection tests and `mvnw verify`: 322 tests, zero failures/errors, one opt-in skip; frontend tests/coverage, lint/build and three browser journeys cover builder/results/privacy/mobile behavior.
+- [x] Ten public beginner definitions and Java/C++ scaffolds prepared; all twenty starters compiled/launched exclusively on the dedicated executor. Hidden suites/reference programs stay private. Nine delivery tests cover safe import validation/replay.
+- [ ] Release, publish/verify both ten-problem collections, improve the known demo starter through an immutable new version, and run real staff/student acceptance. See `result-teaching.md`.

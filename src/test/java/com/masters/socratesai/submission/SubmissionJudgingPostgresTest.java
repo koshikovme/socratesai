@@ -349,6 +349,69 @@ class SubmissionJudgingPostgresTest {
         api(get("/api/collections/{id}/progress", collectionId), otherToken, null).andExpect(status().isOk()).andExpect(jsonPath("$.solved").value(0));
     }
 
+    @Test void staffResultsArePagedFilteredAndExcludeSourceDiagnosticsAndSampleRuns() throws Exception {
+        student.setFullName("Learner_100% Alim"); student.setGroupName("CS1"); users.saveAndFlush(student);
+        UUID accepted = submit(request(UUID.randomUUID())); coordinator.start(claim()); awaitStatus(accepted, ExecutionStatus.FINISHED);
+        verdict.set(ExecutionVerdict.WRONG_ANSWER);
+        UUID wrong = submit(request(UUID.randomUUID())); coordinator.start(claim()); awaitStatus(wrong, ExecutionStatus.FINISHED);
+        api(post("/api/problems/{id}/submissions", problemId), otherToken, request(UUID.randomUUID())).andExpect(status().isAccepted());
+        api(post("/api/problems/{id}/runs", problemId), studentToken, request(UUID.randomUUID())).andExpect(status().isAccepted());
+        var response = api(get("/api/teacher/problems/{id}/submissions", problemId).param("size", "2"), teacherToken, null)
+                .andExpect(status().isOk()).andExpect(jsonPath("$.summary.attempts").value(3)).andExpect(jsonPath("$.summary.students").value(2))
+                .andExpect(jsonPath("$.summary.accepted").value(1)).andExpect(jsonPath("$.summary.pending").value(1))
+                .andExpect(jsonPath("$.submissions.totalElements").value(3)).andExpect(jsonPath("$.submissions.items.length()").value(2)).andReturn();
+        assertThat(response.getResponse().getContentAsString()).doesNotContain(SOURCE, SECRET, "sourceCode", "stdout", "stderr", "providerToken", "expectedOutput");
+        api(get("/api/teacher/problems/{id}/submissions", problemId).param("query", "_100%"), teacherToken, null)
+                .andExpect(status().isOk()).andExpect(jsonPath("$.summary.attempts").value(2));
+        api(get("/api/teacher/problems/{id}/submissions", problemId).param("studentId", student.getId().toString())
+                .param("verdict", "WRONG_ANSWER").param("status", "FINISHED").param("languageKey", "python3")
+                .param("problemVersionId", Long.toString(versionId)), teacherToken, null)
+                .andExpect(status().isOk()).andExpect(jsonPath("$.summary.attempts").value(1))
+                .andExpect(jsonPath("$.submissions.items[0].id").value(wrong.toString()));
+        var detail = api(get("/api/teacher/submissions/{id}", wrong), teacherToken, null).andExpect(status().isOk())
+                .andExpect(jsonPath("$.sourceCode").value(SOURCE)).andExpect(jsonPath("$.student.fullName").value("Learner_100% Alim"))
+                .andExpect(jsonPath("$.cases.length()").value(2)).andReturn();
+        assertThat(detail.getResponse().getContentAsString()).doesNotContain(SECRET, "stdout", "stderr", "expectedOutput", "providerToken");
+    }
+
+    @Test void staffResultsRequireResourceOwnershipAndValidateBoundedFilters() throws Exception {
+        api(get("/api/teacher/problems/{id}/submissions", problemId), null, null).andExpect(status().isUnauthorized());
+        api(get("/api/teacher/problems/{id}/submissions", problemId), studentToken, null).andExpect(status().isForbidden());
+        api(get("/api/teacher/problems/{id}/submissions", problemId), otherTeacherToken, null).andExpect(status().isNotFound());
+        api(get("/api/teacher/problems/{id}/submissions", problemId), adminToken, null).andExpect(status().isOk())
+                .andExpect(jsonPath("$.summary.attempts").value(0)).andExpect(jsonPath("$.summary.students").value(0))
+                .andExpect(jsonPath("$.summary.accepted").value(0)).andExpect(jsonPath("$.summary.pending").value(0));
+        api(get("/api/teacher/problems/{id}/submissions", problemId).param("size", "51"), teacherToken, null).andExpect(status().isBadRequest());
+        api(get("/api/teacher/problems/{id}/submissions", problemId).param("page", "10001"), teacherToken, null).andExpect(status().isBadRequest());
+        api(get("/api/teacher/problems/{id}/submissions", problemId).param("studentId", "-1"), teacherToken, null).andExpect(status().isBadRequest());
+        api(get("/api/teacher/problems/{id}/submissions", problemId).param("verdict", "invented"), teacherToken, null).andExpect(status().isBadRequest());
+        api(get("/api/teacher/problems/{id}/submissions", problemId).param("query", "x".repeat(121)), teacherToken, null).andExpect(status().isBadRequest());
+        api(get("/api/teacher/problems/{id}/submissions", problemId).param("problemId", Long.toString(problemId + 1)), teacherToken, null).andExpect(status().isBadRequest());
+    }
+
+    @Test void collectionOwnerReviewsOnlyExplicitCollectionAttemptsEvenWhenAnotherTeacherOwnsTheProblem() throws Exception {
+        UUID direct = submit(request(UUID.randomUUID()));
+        var body = Map.of("lockVersion", 0, "title", "Other teacher class", "description", "", "visibility", "AUTHENTICATED",
+                "problems", List.of(Map.of("problemId", problemId, "problemVersionId", versionId)));
+        long collectionId = tree(api(post("/api/teacher/collections"), otherTeacherToken, body).andExpect(status().isCreated()).andReturn()).get("id").asLong();
+        var published = tree(api(post("/api/teacher/collections/{id}/publish", collectionId), otherTeacherToken, Map.of("lockVersion", 0)).andExpect(status().isOk()).andReturn());
+        var withCollection = new HashMap<>(request(UUID.randomUUID())); withCollection.put("collectionId", collectionId);
+        UUID tagged = submit(withCollection);
+        api(get("/api/teacher/collections/{id}/submissions", collectionId), studentToken, null).andExpect(status().isForbidden());
+        api(get("/api/teacher/collections/{id}/submissions", collectionId), teacherToken, null).andExpect(status().isNotFound());
+        api(get("/api/teacher/collections/{id}/submissions", collectionId), otherTeacherToken, null)
+                .andExpect(status().isOk()).andExpect(jsonPath("$.summary.attempts").value(1))
+                .andExpect(jsonPath("$.submissions.items[0].id").value(tagged.toString()));
+        api(get("/api/teacher/submissions/{id}", direct), otherTeacherToken, null).andExpect(status().isNotFound());
+        api(get("/api/teacher/submissions/{id}", tagged), otherTeacherToken, null).andExpect(status().isOk()).andExpect(jsonPath("$.sourceCode").value(SOURCE));
+        api(get("/api/teacher/submissions/{id}", direct), adminToken, null).andExpect(status().isOk());
+        api(post("/api/teacher/collections/{id}/archive", collectionId), otherTeacherToken,
+                Map.of("lockVersion", published.get("lockVersion").asLong())).andExpect(status().isOk());
+        api(get("/api/teacher/collections/{id}/submissions", collectionId), otherTeacherToken, null).andExpect(status().isOk()).andExpect(jsonPath("$.summary.attempts").value(1));
+        api(get("/api/teacher/collections/{id}/submissions", collectionId).param("problemId", Long.toString(problemId + 1)), otherTeacherToken, null)
+                .andExpect(status().isOk()).andExpect(jsonPath("$.summary.attempts").value(0));
+    }
+
     @Test void partialInfrastructureFailurePreservesFinishedCasesAndRepollsOnlyUnfinishedTickets() throws Exception {
         UUID id = submit(request(UUID.randomUUID())); var lease = claim(); var created = tickets(store.next(lease).create()); store.tickets(lease, created);
         var sample = result(created).getCases().getFirst();

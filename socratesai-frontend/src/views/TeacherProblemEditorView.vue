@@ -4,6 +4,7 @@ import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router'
 import AppHeader from '../components/AppHeader.vue'
 import SafeMarkdown from '../components/SafeMarkdown.vue'
+import StarterCodeBuilder from '../components/teacher/StarterCodeBuilder.vue'
 import { teacherService } from '../services/teacherService'
 import { blankProblemDraft, languageDefaults, problemDraft, problemRequest, validateProblemDraft, verificationAllowsPublish } from '../services/authoringForms'
 import { apiErrorMessage } from '../services/errors'
@@ -178,6 +179,7 @@ async function reload() {
         <p v-if="error" class="error-text" role="alert">{{ t(error) }} <button v-if="record" class="ghost-btn" :disabled="busy" @click="reload">{{ t('Reload latest') }}</button></p>
         <p v-if="notice" role="status">{{ t(notice) }}</p>
         <div class="authoring-actions">
+          <RouterLink v-if="record" class="ghost-btn" :to="`/teacher/problems/${record.id}/results`">{{ t('Student results') }}</RouterLink>
           <button v-if="record && !editable" class="primary-btn" :disabled="busy" @click="cloneDraft">{{ t('Create new draft version') }}</button>
           <button v-if="record && record.status !== 'ARCHIVED'" class="ghost-btn" :disabled="busy || verifying || dirty" @click="archive">{{ t('Archive problem') }}</button>
           <button v-if="record && editable" class="ghost-btn" :disabled="busy || verifying" @click="removeDraft">{{ t('Delete draft') }}</button>
@@ -214,6 +216,7 @@ async function reload() {
               <label>{{ t('Output (bytes)') }}<input v-model.number="language.outputLimitBytes" type="number" min="1" max="65536" required /></label>
             </div>
             <label>{{ t('Starter code') }}<textarea v-model="language.starterCode" class="code-input" maxlength="20000" rows="5" spellcheck="false" /></label>
+            <StarterCodeBuilder :language-key="language.languageKey" :current-source="language.starterCode" @apply="language.starterCode = $event" />
           </div>
           <div class="authoring-actions">
             <label>{{ t('Add language') }}<select v-model="nextLanguage" :aria-label="t('Add language')"><option value="">{{ t('Choose runtime') }}</option><option v-for="language in availableLanguages" :key="language.languageKey" :value="language.languageKey">{{ language.languageKey }} · {{ language.runtimeVersion }}</option></select></label>

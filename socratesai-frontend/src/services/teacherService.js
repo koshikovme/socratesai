@@ -25,4 +25,6 @@ export const teacherService = {
   deleteCollection: (id, lockVersion, config = {}) => data(api.delete(collectionPath(id), { ...config, params: { lockVersion } })),
   publishedProblems: (page = 0, config = {}) => data(api.get('/api/problems', { ...config, params: { page, size: 20 } })),
   changeRole: (id, request, config) => data(api.patch(`/api/admin/users/${id}/role`, request, config)),
+  results: (kind, id, params, config = {}) => data(api.get(`${kind === 'collections' ? collectionPath(id) : problemPath(id)}/submissions`, { ...config, params })),
+  submission: (id, config) => data(api.get(`/api/teacher/submissions/${id}`, config)),
 }

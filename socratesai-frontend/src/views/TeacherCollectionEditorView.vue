@@ -132,6 +132,7 @@ async function reload() {
         <p v-if="notice" role="status">{{ t(notice) }}</p>
         <p v-if="dirty" class="muted">{{ t('Unsaved changes. Saving commits the entire order atomically.') }}</p>
         <div class="authoring-actions">
+          <RouterLink v-if="record" class="ghost-btn" :to="`/teacher/collections/${record.id}/results`">{{ t('Student results') }}</RouterLink>
           <button v-if="record && !archived" class="primary-btn" :disabled="busy || dirty || !form.problems.length || record.status === 'PUBLISHED'" @click="publish">{{ t('Publish collection') }}</button>
           <button v-if="record && !archived" class="ghost-btn" :disabled="busy || dirty" @click="archive">{{ t('Archive collection') }}</button>
           <button v-if="record?.status === 'DRAFT'" class="ghost-btn" :disabled="busy" @click="remove">{{ t('Delete draft') }}</button>

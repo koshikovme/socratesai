@@ -68,7 +68,7 @@ onMounted(() => load())
             <thead><tr><th scope="col">{{ t('Title') }}</th><th scope="col">{{ t('Status') }}</th><th scope="col">{{ t('Visibility') }}</th><th scope="col">{{ t('Action') }}</th></tr></thead>
             <tbody><tr v-for="item in items" :key="item.id">
               <td>{{ item.title }}</td><td>{{ t(item.status) }}</td><td>{{ t(item.visibility) }}</td>
-              <td><RouterLink :to="`/teacher/${tab}/${item.id}`">{{ t('Open') }}<span class="muted"> #{{ item.id }}</span></RouterLink></td>
+              <td><div class="authoring-actions"><RouterLink :to="`/teacher/${tab}/${item.id}`">{{ t('Open') }}<span class="muted"> #{{ item.id }}</span></RouterLink><RouterLink :to="`/teacher/${tab}/${item.id}/results`">{{ t('Student results') }}</RouterLink></div></td>
             </tr></tbody>
           </table>
         </div>
