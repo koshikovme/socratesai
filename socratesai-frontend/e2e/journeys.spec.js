@@ -69,11 +69,11 @@ test('teacher publishes verified multilingual problem/collection; student edits,
   const initialId = state.snapshots.at(-1).editorSessionId
   const initialRevision = state.snapshots.at(-1).codeRevision
   await expect(page.getByText('Review your input parsing (WS).', { exact: true })).toBeVisible()
-  await expect(page.locator('.policy-mode')).toHaveText('ML')
+  await expect(page.locator('.policy-mode')).toContainText('ML classification')
   await page.getByLabel('Language', { exact: true }).selectOption('java')
   await writeCode(page, 'class Main { public static void main(String[] args) {} }')
   await expect.poll(() => state.snapshots.at(-1)?.languageKey).toBe('java')
-  await expect(page.locator('.policy-mode')).toContainText('RULE')
+  await expect(page.locator('.policy-mode')).toContainText('Gemini')
   await page.getByLabel('Language', { exact: true }).selectOption('cpp17')
   await writeCode(page, 'int main() { return 0; }')
   await expect.poll(() => state.snapshots.at(-1)?.code).toBe('int main() { return 0; }')

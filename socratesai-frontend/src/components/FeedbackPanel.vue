@@ -6,24 +6,26 @@
           <p class="eyebrow">Mentor feedback</p>
           <h3>{{ actionLabel }}</h3>
         </div>
-        <span class="signal-pill" :class="feedback?.compileSuccess === true ? 'signal-good' : 'signal-neutral'">
-          {{ feedback?.compileSuccess == null ? 'Execution unknown' : (feedback.compileSuccess ? 'Compiled' : 'Compile error') }}
+        <span class="signal-pill" :class="executionSignal">
+          {{ executionLabel }}
         </span>
       </div>
 
-      <p v-if="feedback" class="policy-mode">{{ feedback.policyMode === 'ML' ? 'ML' : 'RULE' }}<span v-if="feedback.fallbackReason"> · {{ fallbackLabel }}</span></p>
+      <p v-if="feedback" class="policy-mode">{{ modeLabel }}</p>
+      <p v-if="feedback?.verdict === 'RUNTIME_ERROR' && feedback?.compileSuccess" class="muted">Compilation succeeded, but the program failed when it started or ran. Compilation alone does not mean execution succeeded.</p>
       <p v-if="feedback" class="feedback-text">{{ feedback.feedbackText }}</p>
       <p v-else-if="loading" class="muted">Generating mentor feedback...</p>
+      <p v-else-if="error" role="alert" class="error-text">{{ error }}</p>
       <p v-else class="muted">Ask the mentor or keep typing with realtime assist enabled.</p>
 
       <div v-if="feedback" class="feedback-meta-grid">
         <div class="meta-card">
           <span class="meta-label">Evidence</span>
-          <strong>{{ feedback.evidenceOrigin || 'Unknown' }}</strong>
+          <strong>{{ evidenceLabel }}</strong>
         </div>
         <div class="meta-card">
-          <span class="meta-label">Mentor state</span>
-          <strong>{{ feedback.mentorState || 'Unavailable' }}</strong>
+          <span class="meta-label">Suggested feedback focus</span>
+          <strong>{{ focusLabel }}</strong>
         </div>
         <div class="meta-card">
           <span class="meta-label">Tests</span>
@@ -39,13 +41,13 @@
     <section class="card feedback-card feedback-support">
       <div class="feedback-head compact">
         <div>
-          <p class="eyebrow">Feedback loop</p>
-          <h3>Improve the next label</h3>
+          <p class="eyebrow">Your feedback</p>
+          <h3>Was this helpful?</h3>
         </div>
         <span class="signal-pill signal-neutral">{{ connectionLabel }}</span>
       </div>
 
-      <p v-if="error" class="error-text">{{ error }}</p>
+      <p v-if="error && feedback" class="error-text">{{ error }}</p>
       <p v-else class="muted">
         You can record whether this hint helped. This does not change your judged progress.
       </p>
@@ -69,7 +71,6 @@
 
       <p v-if="reviewState === 'resolved'" class="success-text">Marked as helpful.</p>
       <p v-if="reviewState === 'stuck'" class="muted">Marked as not resolved yet.</p>
-      <p v-if="feedback?.sessionId" class="session-note">Session {{ feedback.sessionId }}</p>
     </section>
   </div>
 </template>
@@ -116,12 +117,25 @@ const actionLabel = computed(() => {
 })
 
 const sourceLabel = computed(() => {
-  const transport = props.feedback?.transport === 'WS' ? 'Realtime' : 'Manual'
+  const transport = props.feedback?.transport === 'WS' ? 'Realtime' : 'Request'
   if (!props.feedback?.feedbackSource) return transport
-  return `${transport} / ${props.feedback.feedbackSource}`
+  const source = { gemini: 'Gemini', execution: 'Judged result', onboarding: 'Getting started' }[props.feedback.feedbackSource] || props.feedback.feedbackSource
+  return `${transport} / ${source}`
 })
 
-const fallbackLabel = computed(() => ({ UNSUPPORTED_LANGUAGE: 'Rules for this language', ML_UNAVAILABLE: 'Model unavailable', LOW_CONFIDENCE: 'Low model confidence', ML_DISABLED: 'Model disabled', CONFIGURED_RULE: 'Rule mode configured', EMPTY_SOURCE: 'Empty buffer' }[props.feedback?.fallbackReason] || 'Rule fallback'))
+const modeLabel = computed(() => ({ ML: 'Python ML classification · Gemini hint', GEMINI: 'Gemini classification and hint', READY: 'AI mentor ready', JUDGED: 'Verified submission result' }[props.feedback?.policyMode] || 'Mentor feedback'))
+const evidenceLabel = computed(() => ({ STATIC_HEURISTIC: 'Code only · no execution', SAMPLE_RUN: 'Public sample run', JUDGED_SUBMISSION: 'Graded submission', SUBMISSION: 'Graded submission' }[props.feedback?.evidenceOrigin] || 'No execution evidence'))
+const focusLabel = computed(() => ({ syntax_repair: 'Syntax and program structure', execution_safety: 'Startup and runtime', semantic_debug: 'Logic and output', efficiency_review: 'Time and memory', accepted: 'Review and refinement' }[props.feedback?.mentorState] || 'Ready for your code'))
+const executionLabel = computed(() => {
+  const value = props.feedback
+  if (!value?.executionKnown && value?.compileSuccess == null) return 'Code review only'
+  return { RUNTIME_ERROR: 'Runtime error', COMPILATION_ERROR: 'Compile error', TIME_LIMIT_EXCEEDED: 'Time limit exceeded',
+    MEMORY_LIMIT_EXCEEDED: 'Memory limit exceeded', OUTPUT_LIMIT_EXCEEDED: 'Output limit exceeded', WRONG_ANSWER: 'Wrong answer',
+    ACCEPTED: value?.evidenceOrigin === 'JUDGED_SUBMISSION' ? 'Accepted' : 'Samples passed' }[value?.verdict]
+    || (value?.compileSuccess === false ? 'Compile error' : 'Compilation succeeded')
+})
+const executionSignal = computed(() => props.feedback?.verdict && props.feedback.verdict !== 'ACCEPTED' ? 'signal-error'
+  : props.feedback?.verdict === 'ACCEPTED' ? 'signal-good' : 'signal-neutral')
 
 const canReview = computed(() => Boolean(props.feedback?.interactionId))
 </script>

@@ -17,6 +17,7 @@ public enum ApiErrorCode {
     CAPACITY_EXCEEDED(429, "Execution capacity exceeded"),
     SANDBOX_UNAVAILABLE(503, "Execution sandbox unavailable"),
     MENTOR_UNAVAILABLE(503, "Mentor feedback unavailable"),
+    MENTOR_ALLOWANCE_UNAVAILABLE(429, "AI hint allowance is temporarily unavailable"),
     INTERNAL_ERROR(500, "Request could not be completed");
 
     private final int status;

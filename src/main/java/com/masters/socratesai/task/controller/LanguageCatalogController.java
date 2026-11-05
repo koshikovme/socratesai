@@ -1,6 +1,7 @@
 package com.masters.socratesai.task.controller;
 
 import com.masters.socratesai.execution.domain.ExecutionRuntimeCatalogPort;
+import com.masters.socratesai.task.service.StarterCodeTemplates;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -12,7 +13,8 @@ public class LanguageCatalogController {
     /** Configuration discovery, not a sandbox liveness or language-certification claim. */
     @GetMapping("/api/languages")
     public List<ConfiguredLanguageResponse> languages() {
-        return catalog.configured().stream().map(runtime -> new ConfiguredLanguageResponse(runtime.languageKey(), runtime.runtimeVersion())).toList();
+        return catalog.configured().stream().map(runtime -> new ConfiguredLanguageResponse(runtime.languageKey(), runtime.runtimeVersion(),
+                StarterCodeTemplates.forLanguage(runtime.languageKey()))).toList();
     }
-    public record ConfiguredLanguageResponse(String languageKey, String runtimeVersion) {}
+    public record ConfiguredLanguageResponse(String languageKey, String runtimeVersion, String starterCode) {}
 }

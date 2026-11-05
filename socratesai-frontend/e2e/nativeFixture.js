@@ -66,7 +66,7 @@ export async function installNativeFixture(page) {
   })
   function mentorFeedback(snapshot, source = 'WS') {
     return { ...Object.fromEntries(['problemId', 'problemVersionId', 'languageKey', 'editorSessionId', 'codeRevision'].map(key => [key, snapshot[key]])),
-      codeHash: createHash('sha256').update(snapshot.code).digest('hex'), policyMode: snapshot.languageKey === 'python3' ? 'ML' : 'RULE',
+      codeHash: createHash('sha256').update(snapshot.code).digest('hex'), policyMode: snapshot.languageKey === 'python3' ? 'ML' : 'GEMINI',
       fallbackReason: snapshot.languageKey === 'python3' ? null : 'UNSUPPORTED_LANGUAGE', executionKnown: false, compileSuccess: null, testsPassed: null, testsFailed: null,
       interactionId: 'interaction-fixture', feedbackText: `Review your input parsing (${source}).`, action: 'CONCEPTUAL_HINT' }
   }

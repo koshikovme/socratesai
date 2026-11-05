@@ -52,6 +52,7 @@ beforeEach(() => {
 afterEach(() => {
   wrappers.splice(0).forEach(wrapper => wrapper.unmount())
   clearSessionResources()
+  vi.useRealTimers()
   vi.restoreAllMocks()
 })
 
@@ -75,6 +76,35 @@ async function mountWorkspace(path = '/problems/1?version=11') {
 }
 
 describe('native problem workspace', () => {
+  it('explains the complete-program contract and resets only the selected buffer with confirmation', async () => {
+    const { wrapper, editor } = await mountWorkspace()
+    expect(wrapper.text()).toContain('Running samples first is optional')
+    await wrapper.find('textarea').setValue('my python draft')
+    await wrapper.find('select').setValue('java')
+    expect(wrapper.text()).toContain('A standalone Solution method is not called automatically')
+    await wrapper.find('textarea').setValue('my java draft')
+    const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false)
+    await button(wrapper, 'Reset to starter').trigger('click')
+    expect(wrapper.find('textarea').element.value).toBe('my java draft')
+    confirm.mockReturnValue(true)
+    await button(wrapper, 'Reset to starter').trigger('click')
+    expect(wrapper.find('textarea').element.value).toBe('class Main {}')
+    expect(editor.contexts[contextKey({ problemId: 1, problemVersionId: 11, languageKey: 'java' })].codeRevision).toBe(2)
+    await wrapper.find('select').setValue('python3')
+    expect(wrapper.find('textarea').element.value).toBe('my python draft')
+  })
+
+  it('asks for a code-only mentor hint without posting any run or submission', async () => {
+    vi.useFakeTimers()
+    transport.send.mockReturnValue(true)
+    const { wrapper } = await mountWorkspace()
+    transport.createMentorSocket.mock.calls[0][0].onConnect()
+    await wrapper.find('textarea').setValue('print(0)')
+    await button(wrapper, 'Ask mentor').trigger('click')
+    await vi.advanceTimersByTimeAsync(1500)
+    expect(transport.send).toHaveBeenCalledWith(expect.objectContaining({ code: 'print(0)', languageKey: 'python3' }))
+    expect(transport.post).not.toHaveBeenCalled()
+  })
   it('preserves independent language buffers and monotonically revises each editor context', async () => {
     const { wrapper, editor } = await mountWorkspace()
     const pythonKey = contextKey({ problemId: 1, problemVersionId: 11, languageKey: 'python3' })

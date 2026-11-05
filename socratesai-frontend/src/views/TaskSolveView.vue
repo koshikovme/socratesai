@@ -28,6 +28,7 @@ const history = ref(null)
 const savingOutcome = ref(false)
 const reviewState = ref('')
 const outcomeError = ref('')
+const automaticHints = ref(true)
 let controller
 let loadGeneration = 0
 let outcomeController
@@ -41,7 +42,7 @@ const snapshot = computed(() => !buffer.value || tooLong.value ? null : {
   languageKey: buffer.value.languageKey, editorSessionId: buffer.value.editorSessionId,
   codeRevision: buffer.value.codeRevision, code: buffer.value.code,
 })
-const mentor = useNativeMentor({ snapshot, token: () => auth.token, advanceRevision: () => editor.advanceRevision(key.value) })
+const mentor = useNativeMentor({ snapshot, token: () => auth.token, advanceRevision: () => editor.advanceRevision(key.value), automatic: automaticHints })
 const judging = useJudging({
   onCreated: (operation, submitted) => {
     if (operation.kind === 'submission') { editor.markSubmitted(submitted); history.value?.refresh() }
@@ -114,6 +115,12 @@ async function markFeedbackResolved(resolvedAfterFeedback) {
   finally { if (!current.signal.aborted) savingOutcome.value = false }
 }
 function canLeave() { return !auth.token || !unsaved.value || window.confirm('Code is held in memory only. Leave this workspace? Reloading or signing out will discard it.') }
+function restoreStarter() {
+  const starter = language.value?.starterCode
+  if (!buffer.value || !starter || code.value === starter) return
+  if (code.value.trim() && !window.confirm('Replace this language buffer with the starter program? Copy any code you want to keep first.')) return
+  editor.update(key.value, starter)
+}
 function beforeUnload(event) { if (unsaved.value) { event.preventDefault(); event.returnValue = '' } }
 function clear() { loading.value = false; loadGeneration++; controller?.abort(); outcomeController?.abort(); problem.value = null; languageKey.value = ''; error.value = ''; outcomeError.value = ''; reviewState.value = ''; savingOutcome.value = false }
 const unregister = registerSessionCleanup(clear)
@@ -132,7 +139,18 @@ watch(() => [route.params.id, route.query.version, route.query.collection], load
       <p v-if="loading" role="status">Loading problem…</p>
       <p v-if="error" role="alert" class="error-text">{{ error }}</p>
       <div v-if="problem" class="workspace-grid">
-        <ProblemStatement :problem="problem" />
+        <div class="workspace-description">
+          <ProblemStatement :problem="problem" />
+          <section v-if="language" class="card program-contract" aria-label="Program format">
+            <p class="eyebrow">How to write your solution</p>
+            <p>Write a complete program: read standard input and print the answer to standard output.</p>
+            <p v-if="languageKey === 'java'">Keep <code>class Main</code> and <code>public static void main(String[] args)</code>. Write your logic in <code>solve(Scanner input)</code>. A standalone <code>Solution</code> method is not called automatically.</p>
+            <p v-else-if="languageKey === 'python3'">Write your logic in <code>solve()</code>. The starter reads input into <code>data</code>; parse it and print your result.</p>
+            <p v-else-if="languageKey === 'cpp17'">Keep <code>main()</code> and write your logic in <code>solve()</code>, using <code>std::cin</code> and <code>std::cout</code>.</p>
+            <details v-if="language.starterCode"><summary>Starter program · {{ language.entryPoint || languageKey }}</summary><pre>{{ language.starterCode }}</pre></details>
+            <button class="ghost-btn" :disabled="judgingLocked || !language.starterCode || code === language.starterCode" @click="restoreStarter">Reset to starter</button>
+          </section>
+        </div>
         <section class="workspace-code" aria-label="Solution workspace">
           <div class="card workspace-controls">
             <label>Language
@@ -140,7 +158,7 @@ watch(() => [route.params.id, route.query.version, route.query.collection], load
                 <option v-for="item in problem.languages" :key="item.languageKey" :value="item.languageKey">{{ item.languageKey }}</option>
               </select>
             </label>
-            <p v-if="language" class="muted">{{ language.timeLimitMs }} ms · {{ language.memoryLimitKb }} KiB · Revision {{ buffer?.codeRevision ?? 0 }}</p>
+            <p v-if="language" class="muted">{{ language.timeLimitMs }} ms · {{ language.memoryLimitKb }} KiB · {{ language.entryPoint || languageKey }} · Revision {{ buffer?.codeRevision ?? 0 }}</p>
             <p v-if="!problem.languages.length" role="alert">No verified language is available for this version.</p>
             <p v-if="tooLong" role="alert" class="error-text">Source exceeds {{ SOURCE_LIMIT }} characters. Shorten it before sending.</p>
             <div class="action-row">
@@ -148,6 +166,8 @@ watch(() => [route.params.id, route.query.version, route.query.collection], load
               <button class="primary-btn" :disabled="submitDisabled" @click="start('submission')">{{ judging.busy.value ? 'Judging…' : 'Submit' }}</button>
               <button class="ghost-btn" :disabled="!snapshot || mentor.pending.value" @click="mentor.refresh()">Ask mentor</button>
             </div>
+            <label class="inline-check"><input type="checkbox" v-model="automaticHints" /> AI hints after a typing pause</label>
+            <p class="muted">Ask mentor reviews your current code and the public task description. Running samples first is optional. AI hints do not compile your code or mark the task solved.</p>
           </div>
           <CodeEditorPanel v-if="buffer" v-model="code" :language="languageKey" :context-id="buffer.editorSessionId" />
           <button class="ghost-btn" @click="discardOtherBuffers">Discard other buffers</button>

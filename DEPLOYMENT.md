@@ -235,8 +235,8 @@ operator recovery instructions; do not copy application secrets onto the executo
 | Need a manual compatible rollback | Acquire `/opt/socratesai/private/deployment.lock`, make an encrypted backup, restore reviewed prior image references in a private env copy, start with the same Compose/volumes, check readiness/catalog/schema. Never return to the rejected legacy executor image. |
 | Backend crashes with RUNNING jobs | Restart the backend, wait for lease expiry/reclaim, confirm generation increases and the same persisted tickets are polled. Verified with two cases, no duplicate remote executions or student attempt. |
 | Executor unavailable | Stop admission/disable judging during maintenance. Existing jobs reach bounded SYSTEM_ERROR rather than false ACCEPTED. Restore WireGuard/API/worker readiness before enabling. Preserve uncertain ticket state. |
-| Model unavailable | Python mentor falls back to RULE/templates; Java/C++ already use RULE. Judging and progress remain independent. Restore `/ready` after complete model load/checksum validation. |
-| Gemini error or budget exhausted | Template fallback is automatic. Do not retry with unbounded prompts. Review safe request IDs and durable quota counts only. |
+| Model unavailable | Gemini supplies classification and hints when the Python classifier is unavailable; Java/C++ always use Gemini. Judging and progress remain independent. Restore `/ready` after complete model load/checksum validation. |
+| Gemini error or budget exhausted | Native AI returns an explicit unavailable/allowance error; it never substitutes a rule hint. Do not retry with unbounded prompts. Review safe request IDs and durable quota counts only. |
 | TLS renewal failure | Check DNS, port 80 and ACME webroot, run the dry-run, inspect certificate metadata, deploy hook and Nginx config. Keep keys out of logs. |
 | Disk reaches 80% or host health fails | `socrates-health` fails and records a safe status. Check selected volume/image sizes and backup/log retention. Delete only confirmed unused images/build caches; never database volumes. |
 | DB loss | Preserve failed storage, restore encrypted backup into an isolated new volume, verify schema/data, then switch compatible images/config during maintenance. |
@@ -276,10 +276,10 @@ complete curriculum. Graded-source retention/deletion and external alert routing
 operational decisions; no automatic historical submission deletion is invented.
 
 Gemini uses the funded project and `gemini-3.5-flash-lite`. Durable caps are 3,000 monthly global
-requests, 30/minute and 10/student/day, with at most 2,048 counted input tokens and 128 output
+requests, 60/minute and 30/student/day, with at most 2,048 counted input tokens and 128 output
 tokens/request. At the reviewed input/output prices, the configured upper estimate is $2.8032
 per month. This excludes taxes, price changes and calls made with the same key outside this
-application; it is not a Google billing-account hard cap. Quota failure uses free templates.
+application; it is not a Google billing-account hard cap. Native quota failure is explicit; grading remains available and no fake rule hint is shown. The conservative monthly maximum remains $2.8032.
 
 ## Local build/demo
 

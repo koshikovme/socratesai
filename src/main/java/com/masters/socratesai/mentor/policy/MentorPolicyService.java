@@ -21,20 +21,22 @@ public class MentorPolicyService {
     public NativePolicyDecision decideNative(AnalyzerResult analyzer, StudentContextDto context, Integer attemptNo, String code,
                                              String languageKey, boolean executionKnown) {
         var features = PolicyFeatures.from(analyzer, context, attemptNo, code);
-        if (!"python3".equals(languageKey)) return nativeRule(features, "UNSUPPORTED_LANGUAGE");
-        if (code == null || code.isBlank()) return nativeRule(features, "EMPTY_SOURCE");
-        if (properties.getMode() != PolicyMode.ML) return nativeRule(features, "CONFIGURED_RULE");
-        if (!properties.getMl().isEnabled()) return nativeRule(features, "ML_DISABLED");
+        if (!"python3".equals(languageKey)) return nativeGemini("MULTILINGUAL_CLASSIFICATION");
+        if (code == null || code.isBlank()) return nativeGemini("EMPTY_SOURCE");
+        if (properties.getMode() != PolicyMode.ML || !properties.getMl().isEnabled()) return nativeGemini("ML_DISABLED");
         try {
             var prediction = mlPolicySelector.decideWithMetadata(features, languageKey, executionKnown);
             if (prediction.confidence() == null || !Double.isFinite(prediction.confidence()) || prediction.confidence() < properties.getMl().getMinConfidence()) {
-                var fallback = nativeRule(features, "LOW_CONFIDENCE");
-                return new NativePolicyDecision(new PolicyDecision(fallback.decision().action(), lowConfidencePolicyVersion(prediction.policyVersion()),
-                        prediction.mentorState(), prediction.confidence()), "RULE", "LOW_CONFIDENCE");
+                return nativeGemini("LOW_CONFIDENCE");
             }
             return new NativePolicyDecision(new PolicyDecision(policyGuardrailService.applyGuards(prediction.action(), features), prediction.policyVersion(),
                     prediction.mentorState(), prediction.confidence()), "ML", null);
-        } catch (RuntimeException ex) { return nativeRule(features, "ML_UNAVAILABLE"); }
+        } catch (RuntimeException ex) { return nativeGemini("ML_UNAVAILABLE"); }
+    }
+
+    private NativePolicyDecision nativeGemini(String reason) {
+        // A neutral request to the multilingual model, not a rule-selected diagnosis.
+        return new NativePolicyDecision(new PolicyDecision(FeedbackAction.CONCEPTUAL_HINT, "gemini-native-v1"), "GEMINI", reason);
     }
 
     private NativePolicyDecision nativeRule(PolicyFeatures features, String reason) {
@@ -45,7 +47,9 @@ public class MentorPolicyService {
     /** Preserve the explicit no-policy research ablation on administrator-only legacy routes. */
     public PolicyDecision decideForResearch(AnalyzerResult analyzer, StudentContextDto context, Integer attemptNo, String code, String languageKey) {
         if (properties.getMode() == PolicyMode.NO_POLICY) return new PolicyDecision(FeedbackAction.CONCEPTUAL_HINT, "no-policy-v1");
-        return decideNative(analyzer, context, attemptNo, code, languageKey, false).decision();
+        // Historical research routes retain their explicit ablations; native students never enter this rule branch.
+        if (!"python3".equals(languageKey)) return nativeRule(PolicyFeatures.from(analyzer, context, attemptNo, code), "UNSUPPORTED_LANGUAGE").decision();
+        return decide(analyzer, context, attemptNo, code);
     }
 
     public PolicyDecision decide(AnalyzerResult analyzer, StudentContextDto context, Integer attemptNo) {

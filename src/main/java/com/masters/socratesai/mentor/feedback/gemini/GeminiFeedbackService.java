@@ -8,13 +8,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.masters.socratesai.mentor.feedback.port.PhrasingQuotaPort;
+import com.masters.socratesai.mentor.feedback.port.NativeHintPort;
+import com.masters.socratesai.mentor.feedback.NativeHint;
+import com.masters.socratesai.mentor.feedback.NativeHintPrompt;
+import com.masters.socratesai.mentor.nativecontext.MentorEvidence;
+import com.masters.socratesai.mentor.policy.NativePolicyDecision;
+import com.masters.socratesai.common.api.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.Map;
 
 @Service @RequiredArgsConstructor
-public class GeminiFeedbackService {
+public class GeminiFeedbackService implements NativeHintPort {
+
+    private static final ObjectMapper JSON = new ObjectMapper();
 
     private final GeminiProperties properties;
     private final RestClient geminiRestClient;
@@ -47,7 +56,32 @@ public class GeminiFeedbackService {
                 .systemInstruction(new GeminiGenerateContentRequest.Content(null, List.of(new GeminiGenerateContentRequest.Part(
                         com.masters.socratesai.mentor.feedback.MentorPrompt.INSTRUCTIONS))))
                 .contents(List.of(new GeminiGenerateContentRequest.Content("user", List.of(new GeminiGenerateContentRequest.Part(prompt)))))
-                .generationConfig(new GeminiGenerateContentRequest.GenerationConfig(properties.getBudget().getMaxOutputTokens())).build();
+                .generationConfig(new GeminiGenerateContentRequest.GenerationConfig(properties.getBudget().getMaxOutputTokens(), null, null)).build();
+
+        return request(body);
+    }
+
+    /** Native feedback never substitutes a rule/template for a failed paid-model request. */
+    @Override public NativeHint generateNativeHint(Long studentId, String language, String code, String publicStatement,
+                                         MentorEvidence evidence, NativePolicyDecision classification) {
+        if (!isEnabled()) throw new ApiException(ApiErrorCode.MENTOR_UNAVAILABLE);
+        if (!quota.acquire(studentId)) throw new ApiException(ApiErrorCode.MENTOR_ALLOWANCE_UNAVAILABLE);
+        var body = GeminiGenerateContentRequest.builder()
+                .systemInstruction(new GeminiGenerateContentRequest.Content(null, List.of(new GeminiGenerateContentRequest.Part(NativeHintPrompt.INSTRUCTIONS))))
+                .contents(List.of(new GeminiGenerateContentRequest.Content("user", List.of(new GeminiGenerateContentRequest.Part(
+                        NativeHintPrompt.data(language, code, publicStatement, evidence, classification))))))
+                .generationConfig(new GeminiGenerateContentRequest.GenerationConfig(properties.getBudget().getMaxOutputTokens(),
+                        "application/json", NativeHintPrompt.schema())).build();
+        try {
+            var result = JSON.readValue(request(body), NativeHint.class);
+            if (result.hint() == null || result.hint().isBlank() || result.hint().length() > 1000 || result.hint().contains("```")
+                    || !NativeHintPrompt.STATES.contains(result.mentorState()) || result.action() == null || result.action() == FeedbackAction.NO_FEEDBACK)
+                throw new IllegalStateException("Invalid mentor response");
+            return result;
+        } catch (Exception failure) { throw new ApiException(ApiErrorCode.MENTOR_UNAVAILABLE); }
+    }
+
+    private String request(GeminiGenerateContentRequest body) {
 
         var tokenRequest = Map.of("generateContentRequest", Map.of("model", "models/" + properties.getModel(),
                 "systemInstruction", body.getSystemInstruction(), "contents", body.getContents(), "generationConfig", body.getGenerationConfig()));

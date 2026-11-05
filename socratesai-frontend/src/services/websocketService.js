@@ -23,7 +23,7 @@ export function createMentorSocket({ token, onFeedback, onConnect, onDisconnect,
                 client.publish({ destination: '/app/code.update', body: JSON.stringify(nativeMentorSnapshot(snapshot)) })
                 return true
             } catch {
-                onError?.({ code: 'MENTOR_UNAVAILABLE' })
+                onError?.({ code: 'CONNECTION_UNAVAILABLE' })
                 return false
             }
         },
@@ -56,7 +56,7 @@ export function createMentorSocket({ token, onFeedback, onConnect, onDisconnect,
         onError?.({ code: 'REQUEST_REJECTED' })
     }
     client.onWebSocketError = () => {
-        if (!closed) onError?.({ code: 'MENTOR_UNAVAILABLE' })
+        if (!closed) onError?.({ code: 'CONNECTION_UNAVAILABLE' })
     }
     client.onWebSocketClose = () => {
         if (!closed) onDisconnect?.()

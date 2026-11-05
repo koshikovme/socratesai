@@ -11,7 +11,8 @@ SocratesAI is a full-stack teaching assistant for programming practice. The repo
 **https://socratesai.duckdns.org** hosts the native catalog, teacher authoring, Monaco workspace,
 authenticated mentor, sample runs and formal submissions. Python 3.12, Java 21 and C++17
 compile and execute on a separate isolated Judge0/Isolate VM. Accepted submissions update
-saved progress. Python mentor inference can use ML and bounded Gemini wording; Java/C++ use rules.
+saved progress. Python mentor inference uses its trained classifier with bounded Gemini hints; Java/C++ use Gemini classification and hints.
+Ask mentor works from code and the public problem statement before any sample run; native feedback never silently falls back to RULE.
 
 The repository owner operates the installation. Owner account credentials are available only
 in the protected local `.delivery/production-access.md` file. Public signup grants STUDENT;
@@ -113,7 +114,7 @@ http://localhost:5173
 
 ### 5. Run the optional ML policy service
 
-If you want the backend to use the Python model-based policy selector instead of rule mode:
+For Python feedback classification, start the optional trained model service. Native hints themselves require Gemini configuration; if this classifier is unavailable, Gemini also estimates the feedback focus:
 
 ```bash
 cd ml
@@ -175,7 +176,7 @@ npm run build
 1. Start PostgreSQL with Docker Compose.
 2. Run the Spring Boot backend on `8080`.
 3. Run the Vue frontend on `5173`.
-4. Optionally run the ML policy service on `8001`, or switch the backend to `APP_POLICY_MODE=RULE`.
+4. Configure Gemini in the ignored environment for native hints; optionally run the Python classifier on `8001`. `APP_POLICY_MODE=RULE` is retained for legacy research routes and does not replace native Gemini hints.
 5. Open the frontend and register a user.
 
 ## Production containers and delivery

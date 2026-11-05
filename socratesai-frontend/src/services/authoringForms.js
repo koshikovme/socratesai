@@ -3,8 +3,8 @@ export const blankProblemDraft = () => ({
   constraintsText: '', comparisonMode: 'IGNORE_TRAILING_LINE_ENDINGS', visibility: 'AUTHENTICATED', languages: [], tests: [],
 })
 
-export const languageDefaults = (languageKey) => ({
-  languageKey, starterCode: '', timeLimitMs: 2000, wallTimeLimitMs: 5000, memoryLimitKb: 262144, outputLimitBytes: 65536,
+export const languageDefaults = (languageKey, starterCode = '') => ({
+  languageKey, starterCode, timeLimitMs: 2000, wallTimeLimitMs: 5000, memoryLimitKb: 262144, outputLimitBytes: 65536,
 })
 
 export function problemDraft(response) {

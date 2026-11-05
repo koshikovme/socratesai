@@ -35,8 +35,8 @@ public class GeminiProperties {
         @Min(128) @Max(8192) private int maxInputTokens = 2048;
         @Min(32) @Max(512) private int maxOutputTokens = 128;
         @Min(1) @Max(1000000) private int monthlyRequests = 3000;
-        @Min(1) @Max(120) private int requestsPerMinute = 30;
-        @Min(1) @Max(100) private int dailyRequestsPerStudent = 10;
+        @Min(1) @Max(120) private int requestsPerMinute = 60;
+        @Min(1) @Max(100) private int dailyRequestsPerStudent = 30;
         @NotNull @DecimalMin("0.01") @DecimalMax("100.00") private BigDecimal monthlyUsd = new BigDecimal("3.00");
         @NotNull @DecimalMin("0.01") @DecimalMax("100.00") private BigDecimal inputUsdPerMillion = new BigDecimal("0.30");
         @NotNull @DecimalMin("0.01") @DecimalMax("1000.00") private BigDecimal outputUsdPerMillion = new BigDecimal("2.50");

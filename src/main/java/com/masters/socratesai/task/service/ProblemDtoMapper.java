@@ -30,7 +30,7 @@ public class ProblemDtoMapper {
         return new ProblemResponse(v.getProblem().getId(), v.getId(), v.getVersionNumber(), v.getTitle(), v.getTopic(),
                 v.getDifficulty(), v.getStatement(), v.getInputFormat(), v.getOutputFormat(), v.getConstraintsText(), v.getComparisonMode(),
                 languages.findAllByProblemVersion_IdOrderByLanguageKey(v.getId()).stream().map(l -> new StudentProblemLanguageResponse(
-                        l.getLanguageKey(), l.getStarterCode(), l.getEntryPoint(), l.getTimeLimitMs(), l.getWallTimeLimitMs(),
+                        l.getLanguageKey(), StarterCodeTemplates.resolve(l.getLanguageKey(), l.getStarterCode()), l.getEntryPoint(), l.getTimeLimitMs(), l.getWallTimeLimitMs(),
                         l.getMemoryLimitKb(), l.getOutputLimitBytes())).toList(),
                 java.util.stream.IntStream.range(0, publicCases.size()).mapToObj(index -> new ProblemSampleResponse(
                         index, publicCases.get(index).getInputData(), publicCases.get(index).getExpectedOutput())).toList());

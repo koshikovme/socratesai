@@ -53,7 +53,14 @@ public class NativeMentorStore {
         // A read only lookup: editor activity never creates/increments the formal progress counter.
         int attempts = progress.findByStudentIdAndProblemId(actor.getStudentId(), message.getProblemId()).map(value -> value.getFormalAttempts()).orElse(0);
         return PreparedMentorContext.builder().sessionId(session.getSessionId()).evidence(observed).history(history).formalAttempts(attempts)
-                .sourceHash(hash).publicStatement(version.getStatement().substring(0, Math.min(2000, version.getStatement().length()))).build();
+                .sourceHash(hash).publicStatement(publicDescription(version)).build();
+    }
+
+    private String publicDescription(com.masters.socratesai.task.model.ProblemVersion version) {
+        // Explicit public fields only. No tests, reference source, diagnostics or entity serialization.
+        return java.util.stream.Stream.of(version.getStatement(), "Input: " + version.getInputFormat(),
+                        "Output: " + version.getOutputFormat(), "Constraints: " + version.getConstraintsText())
+                .filter(Objects::nonNull).collect(java.util.stream.Collectors.joining("\n"));
     }
 
     @Transactional
@@ -72,7 +79,7 @@ public class NativeMentorStore {
                 .totalErrorsSeen(history.getTotalErrorsSeen()).lastFeedbackAction(history.getLastFeedbackAction()).lastFeedbackSuccess(history.getLastFeedbackSuccess())
                 .totalFeedbackCountInSession(history.getTotalFeedbackCountInSession()).feedbackAction(feedback.getAction()).feedbackText(feedback.getFeedbackText())
                 .feedbackSource(feedback.getFeedbackSource()).policyVersion(feedback.getPolicyVersion()).policyFallbackReason(feedback.getFallbackReason())
-                .mentorState(feedback.getMentorState()).mentorStateConfidence(feedback.getMentorStateConfidence()).feedbackVersion("native-v1")
+                .mentorState(feedback.getMentorState()).mentorStateConfidence(feedback.getMentorStateConfidence()).feedbackVersion("native-ai-v2")
                 .analysisTimeMs(0).policyTimeMs(policyMs).feedbackTimeMs(feedbackMs).totalLatencyMs(policyMs + feedbackMs).resolvedAfterFeedback(false).build());
         session.setTotalFeedbackCount(session.getTotalFeedbackCount() + 1);
         return feedback.toBuilder().interactionId(log.getInteractionId()).build();

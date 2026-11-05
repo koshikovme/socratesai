@@ -9,19 +9,46 @@ import { clearSessionResources } from '../../services/sessionLifecycle'
 
 const hash = code => createHash('sha256').update(code).digest('hex')
 const initial = () => ({ problemId: 1, problemVersionId: 2, languageKey: 'python3', editorSessionId: 'editor-one', codeRevision: 0, code: 'print(1)' })
-const reply = value => ({ ...value, code: undefined, codeHash: hash(value.code), policyMode: 'RULE', feedbackText: 'Check your condition.' })
+const reply = value => ({ ...value, code: undefined, codeHash: hash(value.code), policyMode: 'GEMINI', feedbackText: 'Check your condition.' })
 let hooks, send, disconnect, scope
-function setup() {
+function setup(automatic = true) {
     const snapshot = ref(initial()), token = ref('jwt')
     scope = effectScope()
     const advanceRevision = vi.fn(() => { snapshot.value.codeRevision++ })
-    const mentor = scope.run(() => useNativeMentor({ snapshot, token, advanceRevision }))
+    const mentor = scope.run(() => useNativeMentor({ snapshot, token, advanceRevision, automatic }))
     return { snapshot, token, mentor, advanceRevision }
 }
 async function settle() { await nextTick(); await vi.advanceTimersByTimeAsync(0) }
-async function connected() { hooks.onConnect(); await vi.advanceTimersByTimeAsync(350) }
+async function connected() { hooks.onConnect(); await vi.advanceTimersByTimeAsync(1500) }
 
 describe('native mentor snapshot orchestration', () => {
+    test('manual Ask mentor works before samples even when automatic AI hints are off', async () => {
+        const automatic = ref(false)
+        const { snapshot, mentor } = setup(automatic)
+        await connected()
+        expect(send).not.toHaveBeenCalled()
+        mentor.refresh()
+        await nextTick()
+        await vi.advanceTimersByTimeAsync(1500)
+        expect(send).toHaveBeenCalledOnce()
+        expect(send).toHaveBeenCalledWith(expect.objectContaining({ code: 'print(1)', codeRevision: 1 }))
+        snapshot.value = { ...snapshot.value, codeRevision: 2, code: 'print(2)' }
+        await nextTick()
+        await vi.advanceTimersByTimeAsync(1500)
+        expect(send).toHaveBeenCalledOnce()
+        expect(request).not.toHaveBeenCalled()
+    })
+
+    test('provider allowance errors keep the socket and never automatically spend again over REST', async () => {
+        const { mentor } = setup()
+        await connected()
+        hooks.onError({ code: 'MENTOR_ALLOWANCE_UNAVAILABLE' })
+        await vi.advanceTimersByTimeAsync(30000)
+        expect(mentor.pending.value).toBe(false)
+        expect(mentor.status.value).toBe('connected')
+        expect(mentor.error.value).toContain('AI hint allowance')
+        expect(request).not.toHaveBeenCalled()
+    })
     beforeEach(() => {
         vi.useFakeTimers()
         vi.stubGlobal('crypto', { subtle: { digest: vi.fn(async (_, value) => createHash('sha256').update(value).digest()) } })
@@ -41,7 +68,7 @@ describe('native mentor snapshot orchestration', () => {
         await vi.advanceTimersByTimeAsync(200)
         snapshot.value = { ...snapshot.value, codeRevision: 2, code: 'print(2)' }
         await nextTick()
-        await vi.advanceTimersByTimeAsync(350)
+        await vi.advanceTimersByTimeAsync(1500)
         expect(send).toHaveBeenCalledTimes(1)
         expect(send).toHaveBeenCalledWith(snapshot.value)
         expect(mentor.status.value).toBe('connected')
@@ -86,7 +113,7 @@ describe('native mentor snapshot orchestration', () => {
         await connected()
         request.mockImplementation(() => new Promise(() => {}))
         hooks.onError({ code: 'REQUEST_REJECTED' })
-        await vi.advanceTimersByTimeAsync(1350)
+        await vi.advanceTimersByTimeAsync(2500)
         expect(mentor.status.value).toBe('http')
         expect(advanceRevision).toHaveBeenCalledOnce()
         expect(request).toHaveBeenCalledWith(expect.objectContaining({ codeRevision: 1, code: 'print(1)' }), { signal: expect.any(AbortSignal) })
@@ -104,10 +131,10 @@ describe('native mentor snapshot orchestration', () => {
     test('uses HTTP fallback on initial connection timeout and accepts correlated result', async () => {
         const { mentor } = setup()
         request.mockImplementation(async value => reply(value))
-        await vi.advanceTimersByTimeAsync(9350)
+        await vi.advanceTimersByTimeAsync(10500)
         expect(request).toHaveBeenCalledOnce()
         expect(mentor.status.value).toBe('http')
-        expect(mentor.feedback.value?.policyMode).toBe('RULE')
+        expect(mentor.feedback.value?.policyMode).toBe('GEMINI')
         expect(mentor.pending.value).toBe(false)
     })
     test('reconnect sends latest buffer with increasing revision', async () => {
@@ -115,7 +142,7 @@ describe('native mentor snapshot orchestration', () => {
         await connected()
         hooks.onDisconnect()
         hooks.onConnect()
-        await vi.advanceTimersByTimeAsync(350)
+        await vi.advanceTimersByTimeAsync(1500)
         expect(advanceRevision).toHaveBeenCalledOnce()
         expect(snapshot.value.codeRevision).toBe(1)
         expect(send.mock.calls.at(-1)[0].codeRevision).toBe(1)
@@ -127,10 +154,10 @@ describe('native mentor snapshot orchestration', () => {
         const python = { ...snapshot.value }
         snapshot.value = { ...initial(), languageKey: 'java', editorSessionId: 'java-editor' }
         await nextTick()
-        await vi.advanceTimersByTimeAsync(350)
+        await vi.advanceTimersByTimeAsync(1500)
         snapshot.value = python
         await nextTick()
-        await vi.advanceTimersByTimeAsync(350)
+        await vi.advanceTimersByTimeAsync(1500)
         expect(advanceRevision).toHaveBeenCalledOnce()
         expect(send.mock.calls.at(-1)[0]).toMatchObject({ editorSessionId: 'editor-one', languageKey: 'python3', codeRevision: 1 })
     })
@@ -156,7 +183,7 @@ describe('native mentor snapshot orchestration', () => {
         const { mentor } = setup()
         await connected()
         request.mockRejectedValue({ response: { status: 503, data: { code: 'MENTOR_UNAVAILABLE' } } })
-        await vi.advanceTimersByTimeAsync(20350)
+        await vi.advanceTimersByTimeAsync(21500)
         expect(request).toHaveBeenCalledOnce()
         expect(mentor.pending.value).toBe(false)
         expect(mentor.error.value).toBe('Mentor feedback is temporarily unavailable.')
@@ -166,20 +193,20 @@ describe('native mentor snapshot orchestration', () => {
     test('drops pending HTTP when editing and masks backend exception bodies', async () => {
         const { snapshot, mentor } = setup()
         request.mockImplementationOnce(() => new Promise(() => {}))
-        await vi.advanceTimersByTimeAsync(9350)
+        await vi.advanceTimersByTimeAsync(10500)
         const signal = request.mock.calls[0][1].signal
         request.mockRejectedValueOnce({ response: { status: 500, data: { message: 'secret source/database/token' } } })
         snapshot.value = { ...snapshot.value, codeRevision: 1, code: 'new-code' }
         await nextTick()
         expect(signal.aborted).toBe(true)
-        await vi.advanceTimersByTimeAsync(350)
+        await vi.advanceTimersByTimeAsync(1500)
         expect(mentor.error.value).toBe('The request could not be completed. Please try again.')
         expect(mentor.pending.value).toBe(false)
     })
     test('rejects mismatched HTTP result without leaving an endless loading state', async () => {
         const { mentor } = setup()
         request.mockImplementation(async value => ({ ...reply(value), editorSessionId: 'other' }))
-        await vi.advanceTimersByTimeAsync(9350)
+        await vi.advanceTimersByTimeAsync(10500)
         expect(mentor.feedback.value).toBeNull()
         expect(mentor.pending.value).toBe(false)
         expect(mentor.error.value).toContain('could not be verified')

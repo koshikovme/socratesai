@@ -5,7 +5,7 @@
     <main class="page-content profile-page">
       <section class="card profile-hero">
         <div>
-          <p class="eyebrow">Student profile</p>
+          <p class="eyebrow">My profile</p>
           <h2>{{ profile.fullName || auth.fullName || 'Student' }}</h2>
           <p class="profile-subtitle">{{ profile.email || auth.email }}</p>
           <div class="profile-meta-row">

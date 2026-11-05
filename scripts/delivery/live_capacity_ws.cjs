@@ -20,13 +20,13 @@ Promise.all(state.identities.map(identity => new Promise((resolve, reject) => {
       timers.push(setInterval(() => { if (socket.readyState === WebSocket.OPEN) socket.send('\n') }, 10000))
     } else if (frame.startsWith('MESSAGE')) {
       const body = JSON.parse(frame.slice(frame.indexOf('\n\n') + 2).replace(/\0$/, ''))
-      if (body.policyMode !== 'RULE' || body.fallbackReason !== 'UNSUPPORTED_LANGUAGE') return reject(Error())
+      if (body.policyMode !== 'GEMINI' || body.feedbackSource !== 'gemini' || body.executionKnown !== false) return reject(Error())
       clearTimeout(timeout); messages++; resolve()
     } else if (frame.startsWith('ERROR')) reject(Error())
   }
   socket.onerror = () => reject(Error())
 }))).then(() => {
-  fs.writeFileSync(state.ready_file, JSON.stringify({ sessions: clients.length, mentorMessages: messages }))
+  fs.writeFileSync(state.ready_file, JSON.stringify({ sessions: clients.length, mentorMessages: messages, classification: 'GEMINI', codeOnlyHints: messages }))
   process.stdin.once('data', () => {
     timers.forEach(clearInterval); clients.forEach(socket => socket.close())
     setTimeout(() => process.exit(0), 200)

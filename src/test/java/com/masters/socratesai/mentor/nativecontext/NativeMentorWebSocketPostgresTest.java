@@ -1,5 +1,8 @@
 package com.masters.socratesai.mentor.nativecontext;
 
+import com.masters.socratesai.common.api.ApiException;
+import com.masters.socratesai.common.api.ApiErrorCode;
+
 import com.fasterxml.jackson.databind.*;
 import com.masters.socratesai.execution.domain.*;
 import com.masters.socratesai.execution.domain.port.CodeExecutionPort;
@@ -97,6 +100,9 @@ class NativeMentorWebSocketPostgresTest {
 
     @BeforeEach void fixtures() throws Exception {
         policy.setMode(PolicyMode.RULE); policy.getMl().setEnabled(false); verdict.set(ExecutionVerdict.ACCEPTED);
+        when(gemini.generateNativeHint(any(), anyString(), anyString(), anyString(), any(), any()))
+                .thenReturn(new com.masters.socratesai.mentor.feedback.NativeHint("Read the public input in your entry point and trace which value you print.",
+                        "semantic_debug", com.masters.socratesai.mentor.model.FeedbackAction.CONCEPTUAL_HINT));
         student = user(UserRole.STUDENT); other = user(UserRole.STUDENT); token = token(student); otherToken = token(other);
         var teacher = user(UserRole.TEACHER); teacherToken = token(teacher); teacherId = teacher.getId();
         otherTeacherToken = token(user(UserRole.TEACHER)); adminToken = token(user(UserRole.ADMIN));
@@ -141,7 +147,7 @@ class NativeMentorWebSocketPostgresTest {
         body.put("analyzerResult", Map.of("compileSuccess", true, "testsPassed", 1000));
         client.send(body); var feedback = client.feedback();
         assertThat(feedback.get("executionKnown").asBoolean()).isFalse(); assertThat(feedback.get("compileSuccess").isNull()).isTrue();
-        assertThat(feedback.get("testsPassed").isNull()).isTrue(); assertThat(feedback.get("policyMode").asText()).isEqualTo("RULE");
+        assertThat(feedback.get("testsPassed").isNull()).isTrue(); assertThat(feedback.get("policyMode").asText()).isEqualTo("GEMINI");
         var log = logs.findById(UUID.fromString(feedback.get("interactionId").asText())).orElseThrow();
         assertThat(log.getStudentId()).isEqualTo(student.getId()); assertThat(log.getAttemptNo()).isZero();
         assertThat(log.getProblemId()).isEqualTo(problem); assertThat(log.getProblemVersionId()).isEqualTo(version); assertThat(log.getCodeRevision()).isEqualTo(1);
@@ -183,13 +189,14 @@ class NativeMentorWebSocketPostgresTest {
         assertThat(logs.findByStudentIdOrderByCreatedAtDesc(student.getId())).hasSize(1);
     }
     @ParameterizedTest @ValueSource(strings = {"java", "cpp17"})
-    void nonPythonCompilationEvidenceUsesRulesAndNeverCallsMlOrLlm(String language) throws Exception {
+    void nonPythonCompilationEvidenceUsesGeminiAndNeverCallsThePythonClassifier(String language) throws Exception {
         localMl(200, "{\"action\":\"NO_FEEDBACK\",\"mentor_state\":\"accepted\",\"confidence\":0.9}");
         verdict.set(ExecutionVerdict.COMPILATION_ERROR); String source = "student-"+language+"-buffer"; sample(language, source);
         var client = client(token); client.subscribe(); client.send(snapshot(UUID.randomUUID(), language, 1, source)); var feedback = client.feedback();
         assertThat(feedback.get("executionKnown").asBoolean()).isTrue(); assertThat(feedback.get("compileSuccess").asBoolean()).isFalse();
-        assertThat(feedback.get("verdict").asText()).isEqualTo("COMPILATION_ERROR"); assertThat(feedback.get("policyMode").asText()).isEqualTo("RULE");
-        assertThat(feedback.get("fallbackReason").asText()).isEqualTo("UNSUPPORTED_LANGUAGE"); assertThat(predictions.get()).isZero();
+        assertThat(feedback.get("verdict").asText()).isEqualTo("COMPILATION_ERROR"); assertThat(feedback.get("policyMode").asText()).isEqualTo("GEMINI");
+        assertThat(feedback.get("feedbackSource").asText()).isEqualTo("gemini"); assertThat(predictions.get()).isZero();
+        verify(gemini).generateNativeHint(eq(student.getId()), eq(language), eq(source), anyString(), any(), any());
         verify(gemini, never()).generateWithGemini(any(), any(), any(), any());
         verify(gemini, never()).generateForStudent(any(), any(), any(), any(), any());
         verify(openai, never()).generateWithLlm(any(), any(), any());
@@ -200,23 +207,39 @@ class NativeMentorWebSocketPostgresTest {
         var stranger = client(otherToken); stranger.subscribe(); stranger.send(snapshot(UUID.randomUUID(), "python3", 1, "print(3)"));
         assertThat(stranger.feedback().get("executionKnown").asBoolean()).isFalse();
     }
-    @Test void pythonInferenceReceivesOnlyCurrentPublicEvidenceAndLlmFailureUsesTemplates() throws Exception {
+    @Test void pythonInferenceReceivesOnlyCurrentPublicEvidenceAndGeminiWritesTheHint() throws Exception {
         sample("python3", "print(3)"); localMl(200, "{\"action\":\"CONCEPTUAL_HINT\",\"mentor_state\":\"semantic_debug\",\"confidence\":0.9}");
-        when(gemini.isEnabled()).thenReturn(true); when(openai.isEnabled()).thenReturn(true);
-        doThrow(new IllegalStateException(HIDDEN+REFERENCE)).when(gemini).generateForStudent(any(), any(), any(), any(), any());
-        doThrow(new IllegalStateException(HIDDEN+REFERENCE)).when(openai).generateWithLlm(any(), any(), any());
         var client = client(token); client.subscribe(); client.send(snapshot(UUID.randomUUID(), "python3", 1, "print(3)")); var feedback = client.feedback();
-        assertThat(feedback.get("policyMode").asText()).isEqualTo("ML"); assertThat(feedback.get("feedbackSource").asText()).isEqualTo("template");
+        assertThat(feedback.get("policyMode").asText()).isEqualTo("ML"); assertThat(feedback.get("feedbackSource").asText()).isEqualTo("gemini");
         assertThat(predictions.get()).isEqualTo(1); assertThat(predictionBody.get()).contains("\"language_key\":\"python3\"", "\"tests_passed\":1")
                 .doesNotContain(HIDDEN, REFERENCE, "stdout", "stderr", "expected_output");
         assertThat(feedback.toString()).doesNotContain(HIDDEN, REFERENCE, "stdout", "stderr");
     }
-    @Test void mlOutageAndLowConfidenceFallBackToRuleWithoutSendingUnknownMetricsAsObservedZeros() throws Exception {
+    @Test void mlOutageUsesGeminiClassificationWithoutSendingUnknownMetricsAsObservedZeros() throws Exception {
         localMl(503, HIDDEN+REFERENCE);
         var client = client(token); client.subscribe(); client.send(snapshot(UUID.randomUUID(), "python3", 1, "print(3)")); var feedback = client.feedback();
-        assertThat(feedback.get("policyMode").asText()).isEqualTo("RULE"); assertThat(feedback.get("fallbackReason").asText()).isEqualTo("ML_UNAVAILABLE");
+        assertThat(feedback.get("policyMode").asText()).isEqualTo("GEMINI"); assertThat(feedback.get("fallbackReason").asText()).isEqualTo("ML_UNAVAILABLE");
         assertThat(predictionBody.get()).contains("\"compile_success\":null", "\"tests_passed\":null");
         assertThat(feedback.toString()).doesNotContain(HIDDEN, REFERENCE);
+    }
+    @Test void javaGetsACodeOnlyGeminiHintBeforeAnySampleRun() throws Exception {
+        var client = client(token); client.subscribe();
+        client.send(snapshot(UUID.randomUUID(), "java", 1, "class Solution { int sum(int a, int b) { return a+b; } }"));
+        var feedback = client.feedback();
+        assertThat(feedback.get("executionKnown").asBoolean()).isFalse();
+        assertThat(feedback.get("policyMode").asText()).isEqualTo("GEMINI");
+        assertThat(feedback.get("feedbackSource").asText()).isEqualTo("gemini");
+        assertThat(feedback.get("mentorState").asText()).isEqualTo("semantic_debug");
+        assertThat(feedback.get("mentorStateConfidence").isNull()).isTrue();
+        assertThat(progress.findByStudentIdOrderByLastActivityAtDesc(student.getId())).isEmpty();
+    }
+    @Test void geminiFailureIsExplicitAndNeverReplacedByAVagueRuleHint() throws Exception {
+        doThrow(new ApiException(ApiErrorCode.MENTOR_UNAVAILABLE)).when(gemini)
+                .generateNativeHint(any(), anyString(), anyString(), anyString(), any(), any());
+        var client = client(token); client.subscribe(); client.send(snapshot(UUID.randomUUID(), "java", 1, "class Main {}"));
+        var response = client.feedback();
+        assertThat(response.get("code").asText()).isEqualTo("MENTOR_UNAVAILABLE");
+        assertThat(response.toString()).doesNotContain("RULE", "Compare this part", HIDDEN, REFERENCE);
     }
     @Test void invalidBuffersAndArbitraryBrokerSendAreRejectedWithoutSourceInErrors() throws Exception {
         var client = client(token); client.subscribe(); client.send(snapshot(UUID.randomUUID(), "python3", 1, "private-source-"+"x".repeat(20001)));

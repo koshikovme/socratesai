@@ -77,7 +77,8 @@ watch(dirty, (changed) => { if (changed) { verification.value = null; stopVerifi
 
 function addLanguage() {
   if (!availableLanguages.value.some((language) => language.languageKey === nextLanguage.value)) return
-  form.value.languages.push(languageDefaults(nextLanguage.value)); nextLanguage.value = ''
+  const language = availableLanguages.value.find(item => item.languageKey === nextLanguage.value)
+  form.value.languages.push(languageDefaults(nextLanguage.value, language.starterCode)); nextLanguage.value = ''
 }
 function removeLanguage(key) {
   form.value.languages = form.value.languages.filter((language) => language.languageKey !== key)

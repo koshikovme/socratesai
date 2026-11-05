@@ -8,6 +8,8 @@ const messages = {
   CAPACITY_EXCEEDED: 'The service is busy. Wait a moment before trying again.',
   SANDBOX_UNAVAILABLE: 'The execution service is unavailable. Please try again later.',
   MENTOR_UNAVAILABLE: 'Mentor feedback is temporarily unavailable.',
+  MENTOR_ALLOWANCE_UNAVAILABLE: 'The AI hint allowance is temporarily unavailable. You can still run samples and submit your code.',
+  CONNECTION_UNAVAILABLE: 'The realtime connection is unavailable. Trying the secure request transport.',
   REQUEST_REJECTED: 'The connection request was rejected. Reconnect or sign in again.',
 }
 

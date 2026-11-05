@@ -12,6 +12,7 @@
     --accent: #0f766e;
     --accent-strong: #155e75;
     --accent-soft: #d9f3ef;
+    --button-ink: #ffffff;
     --signal: #b45309;
     --signal-soft: #fff1d6;
     --danger: #dc2626;
@@ -41,6 +42,7 @@
     --accent: #2dd4bf;
     --accent-strong: #38bdf8;
     --accent-soft: rgba(45, 212, 191, 0.14);
+    --button-ink: #06211f;
     --signal: #fbbf24;
     --signal-soft: rgba(251, 191, 36, 0.14);
     --danger: #f87171;
@@ -141,13 +143,15 @@ a {
     flex-wrap: wrap;
 }
 
-.header-link,
-.role-chip,
-.user-chip {
-    background: rgba(255,255,255,0.1);
-    padding: 8px 12px;
-    border-radius: 999px;
+.header-nav { display: flex; align-items: center; gap: 4px; }
+
+.header-link {
+    background: transparent;
+    padding: 10px 14px;
+    border-radius: 10px;
     font-size: 14px;
+    font-weight: 500;
+    transition: background 150ms ease;
 }
 
 .header-link {
@@ -155,43 +159,39 @@ a {
     text-decoration: none;
 }
 
-.header-link.router-link-active {
-    background: rgba(255, 255, 255, 0.18);
-}
-
-.header-button {
-    border: 0;
-    cursor: pointer;
-    font: inherit;
-}
-
-.role-chip {
-    background: rgba(20, 122, 103, 0.28);
+.header-link.router-link-active, .header-link:hover {
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .app-header .ghost-btn {
-    background: rgba(255, 255, 255, 0.12);
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.18);
     color: var(--header-ink);
 }
 
 .primary-btn,
 .ghost-btn {
-    border: none;
-    border-radius: 999px;
-    padding: 12px 18px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    min-height: 42px;
+    padding: 10px 16px;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 20px;
     font-weight: 600;
     cursor: pointer;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+    gap: 8px;
+    transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease;
 }
 
 .primary-btn {
     background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-    color: white;
-    box-shadow: 0 12px 25px rgba(20, 122, 103, 0.22);
+    color: var(--button-ink);
+    box-shadow: 0 3px 10px rgba(20, 122, 103, 0.15);
 }
 
 .primary-btn:hover {
@@ -201,7 +201,13 @@ a {
 .ghost-btn {
     background: var(--control-bg);
     color: var(--ink);
+    border-color: var(--line);
 }
+.ghost-btn:hover:not(:disabled) { background: var(--accent-soft); }
+.app-header .ghost-btn:hover:not(:disabled) { background: rgba(255, 255, 255, 0.1); }
+.primary-btn:focus-visible, .ghost-btn:focus-visible, .header-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.icon-button { width: 42px; padding: 10px; }
+.icon-button svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 
 .primary-btn:disabled,
 .ghost-btn:disabled {
@@ -330,6 +336,14 @@ a {
     background: var(--control-bg);
     color: var(--ink-soft);
 }
+.signal-pill.signal-error { background: color-mix(in srgb, var(--danger) 12%, transparent); color: var(--danger); }
+.program-contract p { margin: 8px 0 12px; line-height: 1.6; }
+.program-contract code { font-family: 'IBM Plex Mono', monospace; font-size: 0.9em; color: var(--accent); }
+.program-contract details { margin: 14px 0; }
+.program-contract summary { cursor: pointer; color: var(--ink-soft); }
+.program-contract pre { white-space: pre-wrap; overflow-wrap: anywhere; padding: 16px; background: var(--meta-bg); border: 1px solid var(--line); border-radius: var(--radius-md); font: 13px/1.6 'IBM Plex Mono', monospace; }
+.workspace-controls .inline-check { display: flex; align-items: center; gap: 9px; margin-top: 18px; font-size: 14px; }
+.inline-check input[type='checkbox'] { width: 16px; height: 16px; margin: 0; accent-color: var(--accent); }
 
 .editor-card {
     padding: 16px;
@@ -682,5 +696,7 @@ button:disabled { cursor: not-allowed; opacity: .55; }
   .page-content { padding: 14px; }
   .card { padding: 16px; }
   .sample-pair { grid-template-columns: 1fr; }
-  .header-link, .user-chip, .role-chip { font-size: 12px; }
+  .header-link { font-size: 12px; }
 }
+
+.workspace-description { display: grid; align-content: start; gap: 16px; min-width: 0; }

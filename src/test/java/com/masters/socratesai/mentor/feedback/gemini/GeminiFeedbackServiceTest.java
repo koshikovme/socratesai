@@ -3,6 +3,12 @@ package com.masters.socratesai.mentor.feedback.gemini;
 import com.masters.socratesai.analyzer.dto.AnalyzerResult;
 import com.masters.socratesai.mentor.model.FeedbackAction;
 import com.masters.socratesai.mentor.feedback.port.PhrasingQuotaPort;
+import com.masters.socratesai.mentor.nativecontext.MentorEvidence;
+import com.masters.socratesai.mentor.policy.*;
+import com.masters.socratesai.common.api.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
@@ -143,6 +149,43 @@ class GeminiFeedbackServiceTest {
                 .andExpect(jsonPath("$.generateContentRequest.model").value("models/gemini-3.5-flash-lite"))
                 .andExpect(jsonPath("$.generateContentRequest.generationConfig.maxOutputTokens").value(128))
                 .andRespond(withSuccess("{\"totalTokens\":" + tokens + "}", MediaType.APPLICATION_JSON));
+    }
+
+    @Test void nativeJavaRequestsStructuredGeminiClassificationAndHintBeforeRunningCode() throws Exception {
+        expectTokens(120);
+        server.expect(requestTo("https://gemini.example.test/models/gemini-3.5-flash-lite:generateContent"))
+                .andExpect(jsonPath("$.generationConfig.responseMimeType").value("application/json"))
+                .andExpect(jsonPath("$.generationConfig.responseJsonSchema.required[0]").value("hint"))
+                .andRespond(withSuccess(nativeResponse("{\"hint\":\"Add Main and call your method from its entry point.\",\"mentorState\":\"execution_safety\",\"action\":\"CODE_HIGHLIGHT\"}"), MediaType.APPLICATION_JSON));
+        var hint = service.generateNativeHint(42L, "java", "class Solution {}", "Public sum task", MentorEvidence.unknown(), nativeClassification());
+        assertThat(hint.hint()).contains("Main"); assertThat(hint.mentorState()).isEqualTo("execution_safety");
+        assertThat(hint.toString()).doesNotContain(hint.hint());
+        verify(quota).acquire(42L); server.verify();
+    }
+
+    @Test void nativeAllowanceFailureDoesNotFallBackToRulesOrContactTheProvider() {
+        when(quota.acquire(42L)).thenReturn(false);
+        assertThatThrownBy(() -> service.generateNativeHint(42L, "java", "private source", "Public task", MentorEvidence.unknown(), nativeClassification()))
+                .isInstanceOfSatisfying(ApiException.class, failure -> assertThat(failure.getCode()).isEqualTo(ApiErrorCode.MENTOR_ALLOWANCE_UNAVAILABLE))
+                .hasNoCause().hasMessageNotContaining("private source");
+        server.verify();
+    }
+
+    @Test void malformedOrInvalidNativeModelOutputIsNotShownAsAHint() throws Exception {
+        expectTokens(120);
+        server.expect(requestTo("https://gemini.example.test/models/gemini-3.5-flash-lite:generateContent"))
+                .andRespond(withSuccess(nativeResponse("{\"hint\":\"private provider body\",\"mentorState\":\"invented\",\"action\":\"CONCEPTUAL_HINT\"}"), MediaType.APPLICATION_JSON));
+        assertThatThrownBy(() -> service.generateNativeHint(42L, "java", "private source", "Public task", MentorEvidence.unknown(), nativeClassification()))
+                .isInstanceOfSatisfying(ApiException.class, failure -> assertThat(failure.getCode()).isEqualTo(ApiErrorCode.MENTOR_UNAVAILABLE))
+                .hasNoCause().hasMessageNotContaining("private provider body");
+        server.verify();
+    }
+
+    private NativePolicyDecision nativeClassification() {
+        return new NativePolicyDecision(new PolicyDecision(FeedbackAction.CONCEPTUAL_HINT, "gemini-native-v1"), "GEMINI", null);
+    }
+    private String nativeResponse(String output) throws Exception {
+        return new ObjectMapper().writeValueAsString(Map.of("candidates", List.of(Map.of("content", Map.of("parts", List.of(Map.of("text", output)))))));
     }
 
     private AnalyzerResult analyzerResult() {

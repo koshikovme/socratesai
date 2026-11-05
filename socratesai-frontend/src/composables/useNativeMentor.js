@@ -4,7 +4,7 @@ import { nativeMentorSnapshot, requestNativeMentor } from '../services/mentorSer
 import { apiErrorMessage } from '../services/errors'
 import { registerSessionCleanup } from '../services/sessionLifecycle'
 
-const DEBOUNCE_MS = 350
+const DEBOUNCE_MS = 1500
 const RESPONSE_TIMEOUT_MS = 20000
 const MAX_REVISION_ENTRIES = 64
 const contextFields = ['problemId', 'problemVersionId', 'languageKey', 'editorSessionId', 'codeRevision']
@@ -16,7 +16,7 @@ export async function sourceCodeHash(code) {
 }
 
 /** Full snapshots scoped to a mounted workspace. Recovery shares one revision stream. */
-export function useNativeMentor({ snapshot, token, advanceRevision }) {
+export function useNativeMentor({ snapshot, token, advanceRevision, automatic = true }) {
     const feedback = ref(null)
     const status = ref('offline')
     const pending = ref(false)
@@ -28,6 +28,7 @@ export function useNativeMentor({ snapshot, token, advanceRevision }) {
     let stopped = false
     let connectionGeneration = 0
     let problemContext = null
+    let requestedSnapshot = null
     const current = () => nativeMentorSnapshot(toValue(snapshot))
 
     function cancelRequest() {
@@ -55,17 +56,19 @@ export function useNativeMentor({ snapshot, token, advanceRevision }) {
 
     function schedule() {
         clearTimeout(debounceTimer)
-        if (!stopped && current() && toValue(token)) debounceTimer = setTimeout(dispatch, DEBOUNCE_MS)
+        if (!stopped && current() && toValue(token) && (toValue(automatic) || sameContext(requestedSnapshot, current()))) debounceTimer = setTimeout(dispatch, DEBOUNCE_MS)
     }
 
     function refresh() {
         if (stopped || !current() || !toValue(token)) return
         advanceRevision()
+        requestedSnapshot = current()
         schedule()
     }
 
     function recover() {
         const value = current()
+        if (!toValue(automatic) && !sameContext(requestedSnapshot, value)) return
         if (value && attemptedRevisions.get(value.editorSessionId) === value.codeRevision) refresh()
         else schedule()
     }
@@ -82,6 +85,7 @@ export function useNativeMentor({ snapshot, token, advanceRevision }) {
         if (attemptedRevisions.get(value.editorSessionId) === value.codeRevision) return
         attemptedRevisions.delete(value.editorSessionId)
         attemptedRevisions.set(value.editorSessionId, value.codeRevision)
+        requestedSnapshot = null
         if (attemptedRevisions.size > MAX_REVISION_ENTRIES) attemptedRevisions.delete(attemptedRevisions.keys().next().value)
         cancelRequest()
         pending.value = true
@@ -158,13 +162,18 @@ export function useNativeMentor({ snapshot, token, advanceRevision }) {
             onError: (failure) => {
                 if (!active()) return
                 error.value = apiErrorMessage({ response: { data: failure } })
+                pending.value = false
+                clearTimeout(responseTimer)
                 clearTimeout(fallbackTimer)
+                // An application/provider refusal is not a broken socket. Do not spend twice via REST.
+                if (['MENTOR_UNAVAILABLE', 'MENTOR_ALLOWANCE_UNAVAILABLE'].includes(failure?.code)) return
                 fallbackTimer = setTimeout(fallback, 1000)
             }
         })
     }
 
     const stopTokenWatch = watch(() => toValue(token), connect, { immediate: true })
+    const stopAutomaticWatch = watch(() => toValue(automatic), schedule)
     const stopContextWatch = watch(() => {
         const value = current()
         return value ? `${value.problemId}:${value.problemVersionId}` : null
@@ -182,6 +191,7 @@ export function useNativeMentor({ snapshot, token, advanceRevision }) {
         stopped = true
         stopSnapshotWatch()
         stopTokenWatch()
+        stopAutomaticWatch()
         stopContextWatch()
         disconnect()
         feedback.value = null
