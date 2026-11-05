@@ -4,10 +4,12 @@ The authorized installation is **https://socratesai.duckdns.org**. The applicati
 `89.126.199.55` and real compilation/execution on the separate `89.126.199.58` VM.
 The repository owner operates both hosts. Credentials are held in the ignored, protected
 `.delivery/production-access.md` and external host configuration; none belong in this document.
-The verified automatic release is **v0.9.1** (`95d2904`); its permanent nonsecret digest
-manifest is [deploy/releases/v0.9.1.json](deploy/releases/v0.9.1.json).
+The verified automatic release is **v0.9.3** (`c53bf74`); its permanent nonsecret digest
+manifest is [deploy/releases/v0.9.3.json](deploy/releases/v0.9.3.json).
 Dated checks, image identifiers and release evidence are in
-[tasks/socrates-evolution/result-9-production.md](tasks/socrates-evolution/result-9-production.md).
+[tasks/socrates-evolution/result-mentor-v2.md](tasks/socrates-evolution/result-mentor-v2.md).
+The original installation/recovery evidence remains in
+[result-9-production.md](tasks/socrates-evolution/result-9-production.md).
 
 ## Layout and boundaries
 
@@ -126,6 +128,11 @@ on the executor. The stock PostgreSQL image has recorded findings in its unused 
 dropped. Findings are reported, not silently excluded or called an all-stack zero. Review
 new advisories and patch pins regularly; a dated scan is not a security guarantee.
 
+v0.9.2 correctly stopped at the security gate on the APT/libapt-pkg6.0 advisory
+CVE-2026-109518. v0.9.3 installs Debian's 2.6.2 fix in the model and executor images;
+all four built images passed the fresh gate before publication. Do not restore the earlier
+2.6.1 images to bypass a failed scan. The scan summary prints advisory/package data only.
+
 Repository settings already contain:
 
 - Secrets `PRODUCTION_SSH_KEY` and `PRODUCTION_KNOWN_HOSTS`.
@@ -206,23 +213,33 @@ owned by its nonsuperuser restoration role. Verify Flyway history and expected c
 printing private rows. Remove plaintext after verification. There is no automatic Flyway
 schema downgrade; database restoration is a separate recovery operation.
 
-The exact certified execution image is also copied off-host as
-`.delivery/production-images/certified-judge0.tar.gz` (345 MiB), with SHA-256
-`c561de10a87b2595e862c697af6a55fa54d3a51d7960b2817831df32c037c738`.
-Its restore/load and configuration-only startup were verified locally, without student execution.
+The patched execution image is also copied off-host as
+`.delivery/production-images/judge0-apt262.tar.gz`, with SHA-256
+`dc04cdc1df73d64e75c70ecc76afca00a2190f0300a69e9de104caf828e53cc3`.
+Its archive checksum and immutable Docker image ID were verified before activation on the
+dedicated VM. Three real language runs, nine boundary probes and all three unfinished starters
+passed afterward. The old archive is historical evidence, not a current security rollback target.
 On a replacement **dedicated execution VM**, after verifying that archive checksum:
 
 ```bash
-docker load --input certified-judge0.tar.gz
-docker image inspect sha256:3e554e1a3764edd2fa1acceac63854a3dcb3ea1b2359d5c4b77a5b599c1cb075 \
+docker load --input judge0-apt262.tar.gz
+docker image inspect sha256:c2853099f079f4d9031173ea21dab5ac65fec4618f2daa63adb1b1ce2f57aca1 \
   --format '{{.Id}}'
-docker tag sha256:3e554e1a3764edd2fa1acceac63854a3dcb3ea1b2359d5c4b77a5b599c1cb075 \
-  socratesai/judge0:certified-restore-20261105
+cd /opt/socratesai
+docker compose --project-name socrates-judge \
+  --env-file private/judge0.conf --env-file private/images.env \
+  -f compose.yml config --quiet
+docker compose --project-name socrates-judge \
+  --env-file private/judge0.conf --env-file private/images.env \
+  -f compose.yml up -d --no-build --pull never --wait --wait-timeout 180 server worker
 ```
 
-The restored local tag is permitted only after matching the exact recorded image ID;
-start with `--pull never` and the protected execution configuration, correct kernel/cgroups,
-private link and fresh isolation checks. Do not substitute the rejected legacy image or assume
+Set `JUDGE_IMAGE` in the protected `images.env` to the exact `sha256:c285…` image ID recorded
+above. This is a locally certified Docker image ID, not a registry manifest digest. Preserve
+the existing named database/Redis volumes, project name and both environment files. A new
+host also needs the pinned database/Redis images and reviewed initialization configuration.
+Start with `--pull never`, the correct kernel/cgroups, private link and fresh isolation checks.
+Do not substitute the rejected legacy image or assume
 that the separately published CI execution candidate has already been certified on this host.
 No runtime credentials are present in this image archive. Keep the archive/checksum alongside
 operator recovery instructions; do not copy application secrets onto the executor.
@@ -259,7 +276,7 @@ The browser rehearsal uses actual HTTPS/WSS/Monaco and real judging, separately 
 From the operator checkout, with Node 22.23.1, installed frontend Playwright dependencies and Chrome:
 
 ```bash
-python3 scripts/delivery/live_acceptance.py --access-file .delivery/production-access.json --run-label v0.9.1
+python3 scripts/delivery/live_acceptance.py --access-file .delivery/production-access.json --run-label v0.9.3
 python3 scripts/delivery/live_runtime_matrix.py --access-file .delivery/production-access.json
 node scripts/delivery/live_browser.cjs --access-file .delivery/production-access.json
 ```
@@ -268,8 +285,10 @@ The release label gives a stable new idempotency namespace for that rehearsal. T
 create synthetic runs/attempts; they are not read-only health checks. Preserve existing evidence
 before repeating capacity/recovery rehearsals.
 
-The bounded 30-session rehearsal covers a short single-sample problem with 30 authenticated
-WebSockets. It does not establish throughput for arbitrary compiler-heavy classes or learning
+The v0.9.3 bounded rehearsal received 30 genuine code-only Gemini hints over 30 authenticated
+WebSockets, then completed 30 short Python sample runs with no graded attempts. POST 202
+p95 was 3,159.2 ms; maximum completion was 37.1 seconds. These are one synthetic rehearsal's
+observations. They do not establish throughput for arbitrary compiler-heavy classes or learning
 gains. Keep one executor worker and the recorded quotas initially; inspect queue pressure
 before a class. The collection currently contains a verified introductory problem, not a
 complete curriculum. Graded-source retention/deletion and external alert routing remain owner

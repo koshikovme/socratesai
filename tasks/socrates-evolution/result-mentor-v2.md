@@ -1,7 +1,11 @@
 # Native AI hints, starter programs and workspace correction
 
-Date: **2026-11-05**. Requested follow-up to production v0.9.1. Deployment verification is
-in progress; this report does not yet claim the new application is live.
+Date: **2026-11-05**. Follow-up to production v0.9.1, now **deployed and verified** at
+**https://socratesai.duckdns.org**. Release **v0.9.3**, source
+`c53bf74f3b9e6a7be622f4e2a475dc9ff52fa9eb`, passed
+[release/publication/automatic promotion](https://github.com/koshikovme/socratesai/actions/runs/41961137181).
+The exact application digests, unchanged model checksums and separately certified executor
+image/archive are recorded in [the permanent manifest](../../deploy/releases/v0.9.3.json).
 
 The user's Java sample was a method-only `Solution` class. The dedicated provider reported
 that `Main` could not be loaded; compilation success did not imply the program could start.
@@ -61,11 +65,46 @@ ML prediction is a judge verdict. Accepted-derived progress and private diagnost
 are unchanged. Saved models, research metrics, datasets and papers were not rewritten; new
 interaction provenance is `native-ai-v2`, distinct from the earlier native rule configuration.
 
-## Release verification remaining
+## Completed production acceptance
 
-Record the immutable v0.9.3 image manifest and workflow outcome, then run the real browser
-journey showing a Java Gemini hint before any execution, starter reset and real judging,
-plus ownership/hidden-data checks and a bounded 30-session AI/sample rehearsal.
+- The main and tagged release workflows both passed on `c53bf74`; the latter published images
+  and promoted the exact three recorded GHCR digests. All four application services are healthy,
+  the schema remains V13 and the loaded model SHA-256 values match the unchanged manifest.
+- `scripts/delivery/live_browser.cjs` passed on actual HTTPS/WSS/Monaco: a Java method-only
+  buffer received a Gemini entry-point hint **before any Run/Submit POST**. The compact header,
+  confirmed starter reset, unfinished starter's WRONG_ANSWER, language buffer isolation,
+  accepted public run, accepted complete submission and logout passed. One WSS connection,
+  four mentor messages, zero STOMP errors and zero unexpected page errors were observed.
+  Two editor-cancellation notifications were separately counted during disposal/language changes.
+- `live_acceptance.py --run-label v0.9.3` obtained fresh ACCEPTED runs/submissions and
+  idempotent replay for Python, Java and C++; accepted-derived progress and hidden-safe
+  projections passed. Foreign submission/teacher access, elevated public signup and anonymous/
+  foreign WSS subscriptions were denied. A spoofed body studentId was ignored in favor of the
+  authenticated principal. An echo submission remained WRONG_ANSWER without hidden output.
+- Additional code-only requests showed actual Python **ML classification + Gemini wording**,
+  and C++ **Gemini classification + wording**, with `executionKnown=false`. The Python model's
+  estimated label is not evidence that a source-only classification is correct; no new model
+  accuracy result is claimed. Gemini classification retains a null confidence score.
+- `live_capacity.py` received **30 genuine code-only Gemini hints over 30 authenticated WSS
+  sessions**, then **30 ACCEPTED Python sample runs**. Zero graded attempts were created;
+  load-account progress stayed unsolved. POST 202 p95 was **3,159.2 ms**, maximum completion
+  **37.1 seconds**. This is a bounded synthetic single-public-sample rehearsal, not a classroom
+  SLA or throughput promise for arbitrary compiler-heavy workloads.
+- The patched dedicated executor preserved database/Redis volumes. Actual Python/Java/C++
+  solutions passed; all three unfinished starters compiled/launched without printing the
+  answer. Nine additional probes exercised syntax errors, CPU/output/process/memory/compiler
+  bounds and filesystem/environment/network isolation, exclusively on that VM.
+- Post-check health and disk checks passed. A fresh encrypted application backup completed
+  and off-host encrypted copies passed checksum verification. Selected last-30-minute logs
+  across all eight containers had zero known credential/source-fixture matches and zero JWT
+  matches. This is a bounded check, not a claim that arbitrary secrets can never be logged.
+
+Protected JSON/screenshots, synthetic identities and recovery material remain under ignored
+`.delivery/`; no source, provider ticket, credential or interaction export was committed.
+Earlier restore, lease-recovery and compatible-rollback evidence remains dated in
+[result-9-production.md](result-9-production.md); those interruptions were not repeated merely
+to change the hint UI. Long-term graded-source retention and external incident notification
+routing remain explicit owner follow-ups.
 
 ## Security gate correction before release
 
@@ -82,5 +121,8 @@ findings remain separately reported under the existing exposure review.
 
 `scan_summary.py` now prints only advisory/package/fixed-version data, never image env,
 and fails closed on a missing/malformed report. Six delivery tests pass, including this
-report safety and failure behavior. v0.9.2 was not deployed or retagged; the corrected
-release will be v0.9.3. The dedicated execution image is also being patched and reverified.
+report safety and failure behavior. v0.9.2 was not deployed or retagged. The corrected
+v0.9.3 release passed the complete GitHub Actions gate and automatic promotion. The dedicated
+executor now runs the checksum-verified `sha256:c2853099…` local image with APT 2.6.2;
+the exact full identifier and archive SHA-256 are in the release manifest. Compiler/catalog
+versions and model artifacts did not change.

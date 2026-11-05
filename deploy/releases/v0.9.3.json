@@ -1,0 +1,50 @@
+{
+  "origin": "https://socratesai.duckdns.org",
+  "schema_version": 13,
+  "models": {
+    "action": {
+      "file": "mentor_policy_model.joblib",
+      "sha256": "f38cb4cb0476f7544eaa006663c297e44b5025caec9305de9685ce8c2df3ddfb"
+    },
+    "mentor_state": {
+      "file": "source_code_model.joblib",
+      "sha256": "e7be65df21e20cdd005d54139cc17c1a37ee348751b17713cd7f712e00dcf13d"
+    }
+  },
+  "model_manifest_sha256": "b0311a0780e0911bce9653a8d2aafad6b3e42d74b25957d97a4d99a8f129e392",
+  "evidence_scope": "AUTHORIZED_SYNTHETIC_ACCEPTANCE_NOT_CLASSROOM_RESEARCH",
+  "version": "v0.9.3",
+  "source_commit": "c53bf74f3b9e6a7be622f4e2a475dc9ff52fa9eb",
+  "workflow_run": "https://github.com/koshikovme/socratesai/actions/runs/41961137181",
+  "verified_at_utc": "2026-11-05T03:37:51.740074+00:00",
+  "application_images": {
+    "backend": "ghcr.io/koshikovme/socratesai/backend@sha256:975719c9c160a8350acafa63636d403c60bf0b57287e7f0bf1282a216a2c159a",
+    "frontend": "ghcr.io/koshikovme/socratesai/frontend@sha256:6d14ef03a6f0d0eef5b4656b94b05ae1bd94bdb3ed8c8d47e3a78cfe24eaa90a",
+    "policy-api": "ghcr.io/koshikovme/socratesai/policy-api@sha256:25e1c3ea37a1f87bdfbdca01891bc6ea0faa68745e0934797a0cf8b0935c5304"
+  },
+  "execution": {
+    "scope": "OPERATOR_VERIFIED_LOCAL_IMAGE_SEPARATE_FROM_CI_CANDIDATE",
+    "image": "sha256:c2853099f079f4d9031173ea21dab5ac65fec4618f2daa63adb1b1ce2f57aca1",
+    "source_commit": "d0632cffaaf4fcdbf83a83e7a55ed9baf8a86db6",
+    "isolate_commit": "ad39cc4d0fbb577fb545910095c9da5ef8fc9a1a",
+    "runtime_catalog_sha256": "e40dfee5fbff382a529c09c9bc747762125f6d58883cfeabcc2d53c3abd6367e",
+    "certified_archive_sha256": "dc04cdc1df73d64e75c70ecc76afca00a2190f0300a69e9de104caf828e53cc3",
+    "catalog": [
+      {
+        "id": 1003,
+        "name": "C++ (GCC 12.2.0)"
+      },
+      {
+        "id": 1002,
+        "name": "Java (OpenJDK 21.0.13)"
+      },
+      {
+        "id": 1001,
+        "name": "Python (3.12.16)"
+      }
+    ],
+    "image_reference_type": "DOCKER_IMAGE_ID",
+    "certified_archive_file": "judge0-apt262.tar.gz",
+    "apt_version": "2.6.2"
+  }
+}

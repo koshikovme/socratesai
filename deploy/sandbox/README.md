@@ -71,16 +71,22 @@ WireGuard first. Copy `compose.yml` to `/opt/socratesai/compose.yml`, copy
 Generate each password/auth token with `openssl rand -hex 32` and signing material with
 `openssl rand -hex 64`; write directly into protected files, never chat, shell history or Git.
 The runtime role/password and Redis password must agree between the two files.
-Set `JUDGE_IMAGE` to the verified immutable image digest, not `latest`.
+Set `JUDGE_IMAGE` to the verified immutable registry digest or locally loaded image ID, not `latest`.
 Use mode 0600 for `images.env` and 0640 root:999 for `judge0.conf` so UID 1000:999 can read it.
 
 ```bash
 cd /opt/socratesai
 docker compose --project-name socrates-judge \
-  --env-file private/images.env -f compose.yml config --quiet
+  --env-file private/judge0.conf --env-file private/images.env -f compose.yml config --quiet
 docker compose --project-name socrates-judge \
-  --env-file private/images.env -f compose.yml up -d --wait --wait-timeout 180
+  --env-file private/judge0.conf --env-file private/images.env -f compose.yml up -d --no-build --wait --wait-timeout 180
 ```
+
+Keep this project name and both environment files on the existing host: the first supplies
+runtime database/Redis settings, the second supplies operator/image settings. For an already
+loaded execution image, use `--pull never` when recreating only `server worker`. The current
+certified image/archive identifiers are in [v0.9.3.json](../releases/v0.9.3.json); the published
+CI candidate is a separate artifact until its dedicated-host boundary checks pass.
 
 The initializer creates the runtime role only for a new database volume. Existing clusters
 need a reviewed role/ownership migration; never delete a volume to change a password or role.

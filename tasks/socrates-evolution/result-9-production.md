@@ -7,6 +7,13 @@ No additional paid resources were purchased. All test accounts/events in this re
 synthetic acceptance fixtures, not real student research data or evidence of learning gains.
 The earlier local-only report is preserved in [result-9-local-demo.md](result-9-local-demo.md).
 
+**Current follow-up:** v0.9.3 (`c53bf74`) is deployed through successful workflow 41961137181.
+Code-only Gemini/ML guidance, runnable starter/reset UX, compact header, thirty real concurrent
+AI hints and the APT 2.6.2 image fix are verified in [result-mentor-v2.md](result-mentor-v2.md),
+with the [current immutable manifest](../../deploy/releases/v0.9.3.json).
+The v0.9.1 measurements/recovery rehearsals below remain historical evidence; in particular,
+native Java/C++ and model-outage guidance now uses Gemini instead of the earlier RULE mode.
+
 **Release status: completed.** Release **v0.9.1**, source
 `95d2904477eb6b2a7fa519eb7c3e0b91691231c4`, passed the complete
 [release workflow 41922786265](https://github.com/koshikovme/socratesai/actions/runs/41922786265),
