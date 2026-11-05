@@ -31,6 +31,8 @@ logging:
     liquibase: info
 
 app:
+  reporting:
+    internal-user-ids: ${APP_REPORTING_INTERNAL_USER_IDS:}
   mentor:
     realtime:
       debounce-ms: ${APP_MENTOR_DEBOUNCE_MS:250}

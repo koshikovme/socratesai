@@ -98,6 +98,7 @@ watch(() => [route.params.id, kind.value], loadResource, { immediate: true })
       <section class="card">
         <RouterLink :to="`/teacher/${kind}/${route.params.id}`">{{ t('Back to editor') }}</RouterLink>
         <div class="section-head"><div><p class="eyebrow">{{ t('Student results') }}</p><h1>{{ title }}</h1></div><button class="ghost-btn" :disabled="loading || !resource" @click="load">{{ t('Refresh') }}</button></div>
+        <p class="muted">{{ t('Only student submissions are shown. Staff and operational test accounts are excluded.') }}</p>
         <p class="muted">{{ t('Results come from formal submissions. Sample runs and editor activity do not count as attempts. No separate manual grade is needed.') }}</p>
         <label class="auto-refresh"><input v-model="automaticRefresh" type="checkbox" /> {{ t('Refresh automatically every 10 seconds') }}</label>
         <p v-if="kind === 'collections'" class="muted">{{ t('Only submissions sent through this collection are shown, including historical versions. This is an activity view, not an enrollment roster.') }}</p>

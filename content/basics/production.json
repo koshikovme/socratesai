@@ -1,0 +1,144 @@
+{
+  "curriculumVersion": 1,
+  "origin": "https://socratesai.duckdns.org",
+  "verified_at_utc": "2026-11-05T05:44:51.247896+00:00",
+  "referenceExecutionsAccepted": 138,
+  "collections": [
+    {
+      "languageKey": "java",
+      "id": 2,
+      "title": "Java: основы программирования",
+      "url": "https://socratesai.duckdns.org/collections/2",
+      "problems": [
+        {
+          "key": "sum-two",
+          "problemId": 2,
+          "problemVersionId": 4,
+          "position": 0
+        },
+        {
+          "key": "rectangle-perimeter",
+          "problemId": 3,
+          "problemVersionId": 5,
+          "position": 1
+        },
+        {
+          "key": "maximum-three",
+          "problemId": 4,
+          "problemVersionId": 6,
+          "position": 2
+        },
+        {
+          "key": "parity",
+          "problemId": 5,
+          "problemVersionId": 7,
+          "position": 3
+        },
+        {
+          "key": "sum-to-n",
+          "problemId": 6,
+          "problemVersionId": 8,
+          "position": 4
+        },
+        {
+          "key": "factorial",
+          "problemId": 7,
+          "problemVersionId": 9,
+          "position": 5
+        },
+        {
+          "key": "digit-count",
+          "problemId": 8,
+          "problemVersionId": 10,
+          "position": 6
+        },
+        {
+          "key": "array-sum",
+          "problemId": 9,
+          "problemVersionId": 11,
+          "position": 7
+        },
+        {
+          "key": "array-maximum",
+          "problemId": 10,
+          "problemVersionId": 12,
+          "position": 8
+        },
+        {
+          "key": "vowel-count",
+          "problemId": 11,
+          "problemVersionId": 13,
+          "position": 9
+        }
+      ]
+    },
+    {
+      "languageKey": "cpp17",
+      "id": 3,
+      "title": "C++: основы программирования",
+      "url": "https://socratesai.duckdns.org/collections/3",
+      "problems": [
+        {
+          "key": "sum-two",
+          "problemId": 12,
+          "problemVersionId": 14,
+          "position": 0
+        },
+        {
+          "key": "rectangle-perimeter",
+          "problemId": 13,
+          "problemVersionId": 15,
+          "position": 1
+        },
+        {
+          "key": "maximum-three",
+          "problemId": 14,
+          "problemVersionId": 16,
+          "position": 2
+        },
+        {
+          "key": "parity",
+          "problemId": 15,
+          "problemVersionId": 17,
+          "position": 3
+        },
+        {
+          "key": "sum-to-n",
+          "problemId": 16,
+          "problemVersionId": 18,
+          "position": 4
+        },
+        {
+          "key": "factorial",
+          "problemId": 17,
+          "problemVersionId": 19,
+          "position": 5
+        },
+        {
+          "key": "digit-count",
+          "problemId": 18,
+          "problemVersionId": 20,
+          "position": 6
+        },
+        {
+          "key": "array-sum",
+          "problemId": 19,
+          "problemVersionId": 21,
+          "position": 7
+        },
+        {
+          "key": "array-maximum",
+          "problemId": 20,
+          "problemVersionId": 22,
+          "position": 8
+        },
+        {
+          "key": "vowel-count",
+          "problemId": 21,
+          "problemVersionId": 23,
+          "position": 9
+        }
+      ]
+    }
+  ]
+}

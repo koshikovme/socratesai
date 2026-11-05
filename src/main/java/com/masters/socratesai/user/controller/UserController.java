@@ -6,6 +6,8 @@ import com.masters.socratesai.user.dto.UpdateProfileRequest;
 import com.masters.socratesai.user.dto.UpdateSettingsRequest;
 import com.masters.socratesai.user.dto.UserProfileResponse;
 import com.masters.socratesai.user.service.UserService;
+import com.masters.socratesai.user.service.AccountProfileService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final AccountProfileService profileService;
 
     @GetMapping
     public UserProfileResponse getMyProfile(@AuthenticationPrincipal SecurityUserDetails currentUser) throws ChangeSetPersister.NotFoundException {
@@ -31,16 +34,16 @@ public class UserController {
     @PutMapping("/profile")
     public UserProfileResponse updateProfile(
             @AuthenticationPrincipal SecurityUserDetails currentUser,
-            @RequestBody UpdateProfileRequest request
+            @Valid @RequestBody UpdateProfileRequest request
     ) throws ChangeSetPersister.NotFoundException {
-        return userService.updateProfile(currentUser, request);
+        return profileService.update(currentUser, request);
     }
 
     @PutMapping("/settings")
     public UserProfileResponse updateSettings(
             @AuthenticationPrincipal SecurityUserDetails currentUser,
-            @RequestBody UpdateSettingsRequest request
+            @Valid @RequestBody UpdateSettingsRequest request
     ) throws ChangeSetPersister.NotFoundException {
-        return userService.updateSettings(currentUser, request);
+        return profileService.settings(currentUser, request);
     }
 }

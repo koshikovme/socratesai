@@ -2,9 +2,10 @@ import { createHash } from 'node:crypto'
 
 // Synthetic protocol fixtures, never a connection to a shared DB or live judge.
 export async function installNativeFixture(page) {
-  const state = { problem: null, collection: null, accepted: false, submissions: [], snapshots: [], posts: [], polls: {} }
+  const state = { problem: null, collection: null, accepted: false, submissions: [], snapshots: [], posts: [], polls: {}, profiles: {} }
   const languageKeys = ['python3', 'java', 'cpp17']
-  const profile = role => ({ id: role === 'TEACHER' ? 1 : 2, role, email: `${role.toLowerCase()}@example.test`, fullName: role === 'TEACHER' ? 'Teacher Test' : 'Student Test' })
+  const profile = role => state.profiles[role] ||= ({ id: role === 'TEACHER' ? 1 : 2, role, email: `${role.toLowerCase()}@example.test`, fullName: role === 'TEACHER' ? 'Teacher Test' : 'Student Test',
+    university: '', groupName: '', darkMode: false, profileRevision: 'a'.repeat(64) })
   const roleFor = request => request.headers().authorization?.includes('teacher') ? 'TEACHER' : 'STUDENT'
   const publicProblem = () => ({ ...state.problem?.version, id: 11, problemVersionId: 21, samples: [{ position: 0, inputData: '2 3', expectedOutput: '5' }], tests: undefined })
   const summary = () => ({ id: 11, problemVersionId: 21, title: state.problem?.version.title, topic: 'Basics', difficulty: 'EASY' })
@@ -19,6 +20,12 @@ export async function installNativeFixture(page) {
     const role = roleFor(request)
     if (path === '/api/auth/login') { const type = body.email.startsWith('teacher') ? 'TEACHER' : 'STUDENT'; return respond(route, { ...profile(type), userId: profile(type).id, token: `${type.toLowerCase()}-fixture-token` }) }
     if (path === '/api/users/me') return respond(route, profile(role))
+    if (path === '/api/users/me/profile' && method === 'PUT') {
+      const changedEmail = body.email !== profile(role).email
+      const { currentPassword: _password, ...fields } = body
+      state.profiles[role] = { ...profile(role), ...fields, profileRevision: 'b'.repeat(64) }
+      return respond(route, { ...profile(role), ...(changedEmail ? { authentication: { userId: profile(role).id, token: `${role.toLowerCase()}-rotated-fixture-token` } } : {}) })
+    }
     if (path === '/api/users/me/settings') return respond(route, { ...profile(role), ...body })
     if (path === '/api/languages') return respond(route, languageKeys.map(languageKey => ({ languageKey, runtimeVersion: 'fixture' })))
     if (path.startsWith('/api/teacher/') && role !== 'TEACHER') return respond(route, { code: 'FORBIDDEN' }, 403)

@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ApiErrorCode {
     INVALID_REQUEST(400, "Invalid request"),
+    PROFILE_REAUTHENTICATION_REQUIRED(400, "Current password is required to change email"),
+    EMAIL_UNAVAILABLE(409, "Email is unavailable"),
     AUTHENTICATION_REQUIRED(401, "Authentication required"),
     FORBIDDEN(403, "Access denied"),
     NOT_FOUND(404, "Resource not found"),

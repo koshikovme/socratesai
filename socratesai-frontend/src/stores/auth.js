@@ -10,6 +10,17 @@ export const useAuthStore = defineStore('auth', {
         role: localStorage.getItem('role') || ''
     }),
     actions: {
+        refreshProfile(profile) {
+            // A delayed response must never restore a logged-out user or replace another account.
+            if (!this.token || String(profile.id) !== this.userId) return false
+            if (profile.authentication && String(profile.authentication.userId) !== this.userId) return false
+            this.email = profile.email
+            this.fullName = profile.fullName
+            this.role = profile.role
+            if (profile.authentication) this.token = profile.authentication.token
+            for (const key of ['token', 'email', 'fullName', 'role']) localStorage.setItem(key, this[key])
+            return true
+        },
         setAuth(data) {
             this.logout()
             this.token = data.token

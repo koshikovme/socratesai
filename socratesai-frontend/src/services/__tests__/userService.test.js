@@ -12,7 +12,7 @@ vi.mock('../api', () => ({
     }
 }))
 
-import { fetchMyProfile, fetchMyProgress, updateMySettings } from '../userService'
+import { fetchMyProfile, fetchMyProgress, updateMyProfile, updateMySettings } from '../userService'
 
 describe('userService', () => {
     test('fetchMyProgress calls the progress endpoint', async () => {
@@ -29,8 +29,16 @@ describe('userService', () => {
 
         const result = await fetchMyProfile()
 
-        expect(get).toHaveBeenCalledWith('/api/users/me')
+        expect(get).toHaveBeenCalledWith('/api/users/me', {})
         expect(result.fullName).toBe('Student One')
+    })
+
+    test('profile updates carry the revision and cancellation signal', async () => {
+        const payload = { fullName: 'Student', email: 'new@example.test', profileRevision: 'a'.repeat(64) }
+        const config = { signal: new AbortController().signal }
+        put.mockResolvedValueOnce({ data: payload })
+        expect(await updateMyProfile(payload, config)).toEqual(payload)
+        expect(put).toHaveBeenCalledWith('/api/users/me/profile', payload, config)
     })
 
     test('updateMySettings persists settings', async () => {

@@ -29,6 +29,7 @@ public class SubmissionReviewService {
     private final UserRepository users;
     private final ExecutionJobRepository jobs;
     private final ExecutionCaseResultRepository results;
+    private final StudentReportingPolicy audience;
 
     public SubmissionResultsResponse problem(Long id, SubmissionResultsFilter filter, int page, int size) {
         problemAccess.owned(id, false);
@@ -49,6 +50,7 @@ public class SubmissionReviewService {
         boolean ownsCollection = submission.getCollectionId() != null && collections.existsByIdAndOwnerId(submission.getCollectionId(), actor.id());
         if (!actor.admin() && !Objects.equals(problem.getOwnerId(), actor.id()) && !ownsCollection) throw new ApiException(ApiErrorCode.NOT_FOUND);
         var student = users.findById(submission.getStudentId()).orElseThrow(() -> new ApiException(ApiErrorCode.NOT_FOUND));
+        if (!audience.includes(student)) throw new ApiException(ApiErrorCode.NOT_FOUND);
         var version = versions.findById(submission.getSnapshot().getProblemVersionId()).orElseThrow(() -> new ApiException(ApiErrorCode.NOT_FOUND));
         var job = jobs.findBySubmissionId(id).orElseThrow(() -> new ApiException(ApiErrorCode.NOT_FOUND));
         var cases = results.findAllByJob_IdAndGenerationOrderByTestCase_Position(job.getId(), 0).stream()

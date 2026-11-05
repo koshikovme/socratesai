@@ -8,6 +8,7 @@ import com.masters.socratesai.execution.repo.*;
 import com.masters.socratesai.execution.service.*;
 import com.masters.socratesai.security.*;
 import com.masters.socratesai.submission.repo.*;
+import com.masters.socratesai.submission.service.StudentReportingPolicy;
 import com.masters.socratesai.user.model.*;
 import com.masters.socratesai.user.repo.UserRepository;
 import org.junit.jupiter.api.*;
@@ -70,6 +71,7 @@ class SubmissionJudgingPostgresTest {
     @Autowired @org.springframework.beans.factory.annotation.Qualifier("judgingExecutor") ExecutorService judgingExecutor;
     @Autowired ExecutionRunRepository runs;
     @Autowired PlatformTransactionManager transactions;
+    @Autowired StudentReportingPolicy reporting;
     @MockitoBean CodeExecutionPort execution;
     @MockitoBean ExecutionRuntimeCatalogPort catalog;
     private final ObjectMapper json = new ObjectMapper();
@@ -84,6 +86,7 @@ class SubmissionJudgingPostgresTest {
         // This test class owns its container. Finish prior intentionally interrupted jobs.
         jdbc.update("UPDATE execution_jobs SET status='SYSTEM_ERROR', retry_allowed=false, finished_at=NOW(), lease_owner=NULL, lease_token=NULL, lease_expires_at=NULL WHERE status <> 'FINISHED'");
         properties.setBatchSize(5); properties.setMaxPerUser(5); properties.setMaxQueued(1000); properties.setEnabled(false);
+        reporting.setInternalUserIds(Set.of());
         verdict.set(ExecutionVerdict.ACCEPTED);
         student = user(UserRole.STUDENT); studentToken = token(student); otherToken = token(user(UserRole.STUDENT));
         teacherToken = token(user(UserRole.TEACHER)); otherTeacherToken = token(user(UserRole.TEACHER)); adminToken = token(user(UserRole.ADMIN));
@@ -372,6 +375,30 @@ class SubmissionJudgingPostgresTest {
                 .andExpect(jsonPath("$.sourceCode").value(SOURCE)).andExpect(jsonPath("$.student.fullName").value("Learner_100% Alim"))
                 .andExpect(jsonPath("$.cases.length()").value(2)).andReturn();
         assertThat(detail.getResponse().getContentAsString()).doesNotContain(SECRET, "stdout", "stderr", "expectedOutput", "providerToken");
+    }
+
+    @Test void teachingResultsExcludeStaffAndOperatorAccountsIncludingDirectDetailAccess() throws Exception {
+        UUID genuine = submit(request(UUID.randomUUID()));
+        var internal = user(UserRole.STUDENT);
+        reporting.setInternalUserIds(Set.of(internal.getId()));
+        var internalResult = tree(api(post("/api/problems/{id}/submissions", problemId), token(internal), request(UUID.randomUUID()))
+                .andExpect(status().isAccepted()).andReturn()).get("id").asText();
+        var staffResult = tree(api(post("/api/problems/{id}/submissions", problemId), adminToken, request(UUID.randomUUID()))
+                .andExpect(status().isAccepted()).andReturn()).get("id").asText();
+        for (String staff : List.of(teacherToken, adminToken)) {
+            api(get("/api/teacher/problems/{id}/submissions", problemId), staff, null).andExpect(status().isOk())
+                    .andExpect(jsonPath("$.summary.attempts").value(1)).andExpect(jsonPath("$.summary.students").value(1))
+                    .andExpect(jsonPath("$.submissions.totalElements").value(1)).andExpect(jsonPath("$.submissions.items[0].id").value(genuine.toString()));
+            api(get("/api/teacher/submissions/{id}", internalResult), staff, null).andExpect(status().isNotFound());
+            api(get("/api/teacher/submissions/{id}", staffResult), staff, null).andExpect(status().isNotFound());
+            api(get("/api/teacher/problems/{id}/submissions", problemId).param("studentId", internal.getId().toString()), staff, null)
+                    .andExpect(status().isOk()).andExpect(jsonPath("$.summary.attempts").value(0));
+        }
+        // Renaming a fixture never changes its classification. Nothing is deleted.
+        internal.setEmail("renamed-" + UUID.randomUUID() + "@example.test"); internal.setFullName("Ordinary display name"); users.saveAndFlush(internal);
+        api(get("/api/teacher/problems/{id}/submissions", problemId), teacherToken, null).andExpect(status().isOk()).andExpect(jsonPath("$.summary.attempts").value(1));
+        assertThat(submissions.findById(UUID.fromString(internalResult))).isPresent();
+        api(get("/api/submissions/{id}", internalResult), token(internal), null).andExpect(status().isOk());
     }
 
     @Test void staffResultsRequireResourceOwnershipAndValidateBoundedFilters() throws Exception {

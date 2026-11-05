@@ -18,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -33,14 +34,15 @@ public class AuthService {
         if (request.getRole() != null && request.getRole() != UserRole.STUDENT) {
             throw new ApiException(ApiErrorCode.INVALID_REQUEST);
         }
-        if (userRepository.existsByEmail(request.getEmail())) {
+        String email = request.getEmail().strip().toLowerCase(Locale.ROOT);
+        if (userRepository.existsByEmailIgnoreCase(email)) {
             throw new ApiException(ApiErrorCode.CONFLICT);
         }
 
         User user = User.builder()
-                .email(request.getEmail())
+                .email(email)
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
-                .fullName(request.getFullName())
+                .fullName(request.getFullName().strip())
                 .role(UserRole.STUDENT)
                 .settings(UserSettings.builder().build())
                 .createdAt(LocalDateTime.now())
@@ -61,14 +63,17 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
-        authenticationManager.authenticate(
+        String email = request.getEmail().strip().toLowerCase(Locale.ROOT);
+        var authenticated = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
+                        email,
                         request.getPassword()
                 )
         );
 
-        User user = userRepository.findByEmail(request.getEmail())
+        if (!(authenticated.getPrincipal() instanceof SecurityUserDetails principal)) throw new ApiException(ApiErrorCode.AUTHENTICATION_REQUIRED);
+        // An email can change/reappear between authentication and this read. Bind to its verified account ID.
+        User user = userRepository.findById(principal.getId())
                 .orElseThrow(() -> new ApiException(ApiErrorCode.AUTHENTICATION_REQUIRED));
 
         String token = jwtService.generateToken(new SecurityUserDetails(user));

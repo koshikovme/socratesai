@@ -1,7 +1,12 @@
 import api from './api'
 
-export async function fetchMyProfile() {
-    const { data } = await api.get('/api/users/me')
+export async function fetchMyProfile(config = {}) {
+    const { data } = await api.get('/api/users/me', config)
+    return data
+}
+
+export async function updateMyProfile(payload, config = {}) {
+    const { data } = await api.put('/api/users/me/profile', payload, config)
     return data
 }
 

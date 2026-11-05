@@ -19,12 +19,14 @@ public class AdminRoleService {
     private final UserRepository users;
     private final RoleChangeAuditRepository audits;
     private final CurrentActor actors;
+    private final jakarta.persistence.EntityManager entities;
 
     @Transactional
     public UserRoleResponse change(Long id, @Valid ChangeRoleRequest request) {
         if (administration.lockState() == null) throw new ApiException(ApiErrorCode.CONFLICT);
         var actor = actors.admin();
-        var user = users.findById(id).orElseThrow(() -> new ApiException(ApiErrorCode.NOT_FOUND));
+        var user = users.lockById(id).orElseThrow(() -> new ApiException(ApiErrorCode.NOT_FOUND));
+        entities.refresh(user);
         var previous = user.getRole();
         if (previous != request.expectedRole()) throw new ApiException(ApiErrorCode.CONFLICT);
         if (previous == request.role()) return new UserRoleResponse(id, previous);

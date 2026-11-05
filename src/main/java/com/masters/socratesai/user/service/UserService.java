@@ -10,8 +10,6 @@ import com.masters.socratesai.session.repo.StudentTaskSessionRepository;
 import com.masters.socratesai.task.model.Task;
 import com.masters.socratesai.task.repo.TaskRepository;
 import com.masters.socratesai.user.dto.StudentProgressResponse;
-import com.masters.socratesai.user.dto.UpdateProfileRequest;
-import com.masters.socratesai.user.dto.UpdateSettingsRequest;
 import com.masters.socratesai.user.dto.UserProfileResponse;
 import com.masters.socratesai.user.model.User;
 import com.masters.socratesai.user.repo.UserRepository;
@@ -99,45 +97,13 @@ public class UserService {
                 .build();
     }
 
-    @Transactional
-    public UserProfileResponse updateProfile(SecurityUserDetails currentUser, UpdateProfileRequest request) throws ChangeSetPersister.NotFoundException {
-        User user = getUserEntity(currentUser.getId());
-
-        if (request.getFullName() != null) user.setFullName(request.getFullName());
-        if (request.getUniversity() != null) user.setUniversity(request.getUniversity());
-        if (request.getGroupName() != null) user.setGroupName(request.getGroupName());
-
-        return mapToResponse(user);
-    }
-
-    @Transactional
-    public UserProfileResponse updateSettings(SecurityUserDetails currentUser, UpdateSettingsRequest request) throws ChangeSetPersister.NotFoundException {
-        User user = getUserEntity(currentUser.getId());
-
-        if (request.getDarkMode() != null) user.getSettings().setDarkMode(request.getDarkMode());
-        if (request.getEmailNotifications() != null) user.getSettings().setEmailNotifications(request.getEmailNotifications());
-        if (request.getPreferredLanguage() != null) user.getSettings().setPreferredLanguage(request.getPreferredLanguage());
-
-        return mapToResponse(user);
-    }
-
     private User getUserEntity(Long id) throws ChangeSetPersister.NotFoundException {
         return userRepository.findById(id)
                 .orElseThrow(ChangeSetPersister.NotFoundException::new);
     }
 
     private UserProfileResponse mapToResponse(User user) {
-        return UserProfileResponse.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .fullName(user.getFullName())
-                .role(user.getRole())
-                .university(user.getUniversity())
-                .groupName(user.getGroupName())
-                .darkMode(user.getSettings().getDarkMode())
-                .emailNotifications(user.getSettings().getEmailNotifications())
-                .preferredLanguage(user.getSettings().getPreferredLanguage())
-                .build();
+        return UserProfileMapper.response(user);
     }
 
     private StudentProgressResponse.TaskProgress toTaskProgress(StudentProblemProgress progress, Task task) {

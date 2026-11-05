@@ -3,6 +3,8 @@ package com.masters.socratesai.submission.repo;
 import com.masters.socratesai.common.api.PageResponse;
 import com.masters.socratesai.execution.model.*;
 import com.masters.socratesai.submission.dto.*;
+import com.masters.socratesai.submission.service.StudentReportingPolicy;
+import com.masters.socratesai.user.model.UserRole;
 import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Repository;
 @Repository @RequiredArgsConstructor
 public class SubmissionResultsReader {
     private final EntityManager entities;
+    private final StudentReportingPolicy audience;
 
     private static final String FROM = """
         from Submission s join User u on u.id = s.studentId
@@ -39,6 +42,8 @@ public class SubmissionResultsReader {
         if (problemId == null && collectionId == null) throw new com.masters.socratesai.common.api.ApiException(com.masters.socratesai.common.api.ApiErrorCode.INVALID_REQUEST);
         var paging = PageResponse.request(page, size);
         var conditions = Stream.of(
+                new Condition("studentRole", "u.role = :studentRole", UserRole.STUDENT),
+                new Condition("internalUsers", "u.id not in :internalUsers", audience.getInternalUserIds().isEmpty() ? null : audience.getInternalUserIds()),
                 new Condition("problem", "s.snapshot.problemId = :problem", problemId),
                 new Condition("collection", "s.collectionId = :collection", collectionId),
                 new Condition("version", "s.snapshot.problemVersionId = :version", filter.problemVersionId()),

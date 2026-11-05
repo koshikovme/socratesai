@@ -833,4 +833,13 @@ New smoke/benchmark/experiment outputs use a new directory or prefix, never over
 - [x] Staff task/collection results with paging/filtering, participant identity, counts, read-only source/case review and bounded visible-page refresh. Collection-context access does not expose unrelated attempts on copied public tasks. No manual grading workflow.
 - [x] PostgreSQL authorization/projection tests and `mvnw verify`: 322 tests, zero failures/errors, one opt-in skip; frontend tests/coverage, lint/build and three browser journeys cover builder/results/privacy/mobile behavior.
 - [x] Ten public beginner definitions and Java/C++ scaffolds prepared; all twenty starters compiled/launched exclusively on the dedicated executor. Hidden suites/reference programs stay private. Nine delivery tests cover safe import validation/replay.
-- [ ] Release, publish/verify both ten-problem collections, improve the known demo starter through an immutable new version, and run real staff/student acceptance. See `result-teaching.md`.
+- [x] v0.9.5/v0.9.6 released; both ten-problem collections published and reference-verified (138 accepted executions); original demo upgraded to equivalent typed-starter version 3 and all three languages reverified. Real staff/student HTTPS/mobile acceptance and named-function Gemini hint passed. See `result-teaching.md`.
+
+### Editable profiles and student-only teaching results — 2026-11-05
+
+- [x] Validated name/email/university/group editing for all account roles; optional study fields can be cleared. Password confirmation for email changes, uniqueness checks, stable-ID JWT binding and same-session credential rotation. Role/ID/internal-account fields cannot be self-assigned.
+- [x] Serialized account/settings writes and opaque editable-field revision reject stale tabs without a new migration. Existing research/export contracts retained.
+- [x] Student profile explains actual graded progress; staff profile links to the teaching workspace. Removed raw research/debug charts and mentor-event history from normal profiles. English/Russian/Kazakh forms preserve typed values.
+- [x] Teaching lists, totals and source detail admit STUDENT users only, excluding operator-configured internal account IDs. Prepared classification of the 32 known synthetic student fixtures; no history deleted.
+- [x] PostgreSQL concurrency/security tests, frontend unit/coverage/lint/build and five Chromium fixture journeys passed.
+- [ ] Release final source, verify real profile edit/reload/email rotation and restoration on synthetic accounts, verify live report exclusion, fresh health/backup/log checks. See `result-profile.md`.

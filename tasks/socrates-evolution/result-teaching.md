@@ -1,10 +1,11 @@
 # Typed starters, staff results and beginner collections
 
-Date: **2026-11-05**. Initial **v0.9.5** delivery, both course publications and real staff/student
-acceptance passed. A small follow-up release is finishing mentor wording so it names the
-actual TODO function rather than assuming every starter uses `solve`.
-The first delivery passed [workflow 41972522928](https://github.com/koshikovme/socratesai/actions/runs/41972522928);
-its [immutable manifest](../../deploy/releases/v0.9.5.json) is preserved.
+Date: **2026-11-05**. Delivered and verified in **v0.9.5**, with the named-function
+mentor wording correction deployed in **v0.9.6**. Both published beginner courses and the
+original demo's new typed-starter version passed real HTTPS/sandbox/browser checks.
+The [v0.9.5 pipeline](https://github.com/koshikovme/socratesai/actions/runs/41972522928)
+and [v0.9.6 pipeline](https://github.com/koshikovme/socratesai/actions/runs/41975575426) succeeded;
+immutable image manifests are retained in `deploy/releases/`.
 
 ## Starter contract
 
@@ -64,8 +65,15 @@ progress 1/10. Teacher/admin list/detail access passed; student/anonymous/foreig
 access was denied and hidden diagnostics stayed absent. Actual HTTPS/Monaco staff review
 passed at width 390, with zero unexpected page errors. The original demo now uses version 3
 with typed starters in three languages, reverified through the sandbox; historical version 2
-and submissions remain intact. Its equivalent existing draft was reused only after read-only
+and submissions remain intact. Its three additional typed starters also compiled/launched on the dedicated executor, for 23 total starter probes. Its equivalent existing draft was reused only after read-only
 field/case/author-language comparison and optimistic revision checks.
 
 Research models, datasets, interaction schema and papers are unchanged. This prepared
 curriculum and synthetic acceptance do not establish classroom learning gains.
+
+A real code-only Gemini check after v0.9.6 returned `semantic_debug`, `executionKnown=false`
+and a nonempty hint naming the actual `add` function/parameters before execution. READY
+onboarding referred to the TODO function and did not claim a compiler result. Final mobile
+staff/student acceptance and host readiness passed. Subsequent profile/reporting work explicitly
+excludes the operational acceptance/load accounts from normal teaching results; their historical
+records are retained. See [result-profile.md](result-profile.md).

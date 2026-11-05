@@ -28,18 +28,18 @@ async function main() {
     await page.goto(`${access.base_url}/teacher/collections/${pack.collections.java.id}/results`)
     await page.getByLabel('Student name, email or group', { exact: true }).fill(access.accounts.probe.email)
     await page.getByRole('button', { name: 'Apply filters', exact: true }).click()
-    await expect(page.locator('tbody')).toContainText('ACCEPTED')
-    await expect(page.locator('tbody')).toContainText('WRONG_ANSWER')
+    await expect(page.getByText('No formal submissions match these filters.', { exact: true })).toBeVisible()
+    await expect(page.locator('tbody tr')).toHaveCount(0)
     if (!await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)) throw Error('Viewport overflow')
     await page.screenshot({ path: path.join(path.dirname(accessFile), 'production-teaching-results.png'), fullPage: true })
-    await page.getByRole('button', { name: 'View attempt', exact: true }).first().click()
-    await expect(page.locator('.review-detail pre')).toContainText('add(')
-    await page.getByRole('button', { name: 'Close', exact: true }).click()
     await page.getByRole('button', { name: 'Logout', exact: true }).click()
     stage = 'admin-results'
     await login('admin')
     await page.goto(`${access.base_url}/teacher/problems/${pack.problems['java:sum-two'].id}/results`)
-    await expect(page.locator('tbody')).toContainText('ACCEPTED')
+    await page.getByLabel('Student name, email or group', { exact: true }).fill(access.accounts.probe.email)
+    await page.getByRole('button', { name: 'Apply filters', exact: true }).click()
+    await expect(page.getByText('No formal submissions match these filters.', { exact: true })).toBeVisible()
+    await expect(page.locator('tbody tr')).toHaveCount(0)
     await page.getByRole('button', { name: 'Logout', exact: true }).click()
     stage = 'foreign-teacher'
     await login('teacherB')
@@ -59,7 +59,7 @@ async function main() {
     await page.getByRole('button', { name: 'Logout', exact: true }).click()
     if (unexpectedPageErrors) throw Error('Unexpected page error')
     const evidence = { teacherCollectionResults: true, adminProblemResults: true, foreignTeacherDenied: true, studentStaffRouteDenied: true,
-      typedJavaStarter: true, sourceOnExplicitReview: true, mobileWidth: 390, unexpectedPageErrors }
+      typedJavaStarter: true, operationalSubmissionsExcluded: true, mobileWidth: 390, unexpectedPageErrors }
     fs.writeFileSync(path.join(path.dirname(accessFile), 'production-teaching-browser.json'), JSON.stringify(evidence, null, 2), { mode: 0o600 })
     console.log(JSON.stringify(evidence))
   } catch {

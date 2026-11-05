@@ -1,5 +1,7 @@
 const messages = {
   INVALID_REQUEST: 'Check the form fields and limits, then try again.',
+  PROFILE_REAUTHENTICATION_REQUIRED: 'Enter your current password to change your email address.',
+  EMAIL_UNAVAILABLE: 'This email address is unavailable. Choose another address.',
   AUTHENTICATION_REQUIRED: 'Your session has expired. Please sign in again.',
   FORBIDDEN: 'You do not have access to this resource.',
   NOT_FOUND: 'This resource is unavailable or has expired.',
