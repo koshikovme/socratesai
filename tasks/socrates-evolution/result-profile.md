@@ -1,7 +1,11 @@
 # Editable accounts and clear teaching/student profiles
 
-Date: **2026-11-05**. Implementation and local verification complete; production release and
-synthetic-account live acceptance are pending. No real student account has been edited.
+Date: **2026-11-05**. **Deployed and live-verified in v0.9.7**, application source
+`97ad768864a820d0314ab673a6f527706afe06c4`.
+[Release pipeline](https://github.com/koshikovme/socratesai/actions/runs/41980434590) passed
+all test, build, smoke, advisory, publication and automatic deployment gates.
+[Immutable release manifest](../../deploy/releases/v0.9.7.json).
+No real student account was edited.
 
 ## Account behavior
 
@@ -16,7 +20,7 @@ revision. It requires `currentPassword` only for email changes, rejects unrecogn
 (including role, ID and internal-account flags), validates lengths/email and checks email
 uniqueness. Errors use the standard safe envelope; no password/token/database details escape.
 
-Profile/settings writes lock and refresh the same user row. Concurrent/stale profile updates
+Profile/settings and administrator role writes lock and refresh the same user row. Concurrent/stale profile updates
 return 409 rather than overwriting another tab. A concurrent theme save cannot overwrite
 profile fields. No migration or change to `interaction_logs` / `PolicyFeatures` was needed.
 
@@ -48,7 +52,7 @@ Personal owner history remains accessible and is never deleted.
 
 `APP_REPORTING_INTERNAL_USER_IDS` is a bounded comma-separated list of immutable positive IDs,
 configured externally by the operator. Display-name/email edits cannot evade it. Production
-classification was prepared from the authenticated identities of the 32 known synthetic
+classification was configured from the authenticated identities of the 32 known synthetic
 student/acceptance/load accounts. New operational accounts must be added to this list before
 running future checks. Never classify a real student by matching their name or email text.
 
@@ -65,3 +69,27 @@ running future checks. Never classify a real student by matching their name or e
 
 These are implementation/security and synthetic acceptance checks, not evidence of classroom
 learning gains, student preference or a new trained ML model.
+
+## Authorized production checks
+
+- `live_profiles.cjs` passed on real HTTPS at 390 px for the synthetic teacher and student:
+  three-language forms, saved name/university/group after reload, student email rotation,
+  replacement credentials and old-token rejection. Both original fixture profiles were
+  restored, including the changed email. Zero unexpected page errors and zero real student
+  profiles modified. No programs or formal submissions were created by this check.
+- Teacher/admin filtered result counts were zero for the excluded probe; direct detail was
+  safe 404, while its owner history remained accessible. The separate real teaching browser
+  check passed collection/problem reports, foreign-teacher denial, student staff-route denial
+  and the named Java starter, with zero unexpected page errors.
+- Readiness/disk checks passed after promotion. A fresh encrypted backup completed after
+  fixture restoration; **13 off-host encrypted backup copies** passed SHA-256 verification.
+  The private local env snapshot was refreshed safely, including the new reporting binding.
+- A bounded last-30-minute audit of edge/backend/model/database logs found zero known
+  configuration-secret/source-fixture matches and zero JWT-pattern matches. This is the
+  recorded audit scope, not a claim about arbitrary future logs.
+- Schema remains 13; runtime/model hashes and the separately certified executor are retained.
+  Original v0.9.1 recovery and v0.9.3 capacity/isolation evidence remain dated in their reports.
+
+Protected browser/API JSON and screenshots are under ignored `.delivery/`. Public operational
+helpers accept the private access file and emit only booleans/counts; credentials are never
+part of their diagnostics. Documentation/handoff commits follow the immutable release source.

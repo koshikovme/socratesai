@@ -7,10 +7,16 @@ No additional paid resources were purchased. All test accounts/events in this re
 synthetic acceptance fixtures, not real student research data or evidence of learning gains.
 The earlier local-only report is preserved in [result-9-local-demo.md](result-9-local-demo.md).
 
-**Current release:** v0.9.4 (`8f7f917`) is deployed through successful workflow 41965872170.
-English/Russian/Kazakh interface and real three-role mobile checks are recorded in
-[result-ui-localization.md](result-ui-localization.md), with the
-[current immutable manifest](../../deploy/releases/v0.9.4.json).
+**Current release:** **v0.9.7** (`97ad768`) is deployed through successful workflow
+[41980434590](https://github.com/koshikovme/socratesai/actions/runs/41980434590).
+[Current immutable manifest](../../deploy/releases/v0.9.7.json).
+The [profile/reporting follow-up](result-profile.md) records real teacher/student mobile editing,
+email rotation, restored synthetic profiles and exclusion of operational submissions without
+history deletion. Fresh readiness, encrypted backup, 13 off-host checksum checks and a bounded
+known-secret/source/JWT log audit passed. The [teaching follow-up](result-teaching.md) records
+named typed starters and the published Java/C++ collections (ten exercises each, 138 accepted
+reference executions). Earlier three-role English/Russian/Kazakh checks remain in
+[result-ui-localization.md](result-ui-localization.md).
 The preceding v0.9.3 (`c53bf74`) native AI/workspace follow-up remains dated below.
 Code-only Gemini/ML guidance, runnable starter/reset UX, compact header, thirty real concurrent
 AI hints and the APT 2.6.2 image fix are verified in [result-mentor-v2.md](result-mentor-v2.md),
@@ -245,8 +251,8 @@ credentials; privileged/student execution is never enabled on PR runners.
 
 Step 9 is closed for the recorded production release and synthetic acceptance scope. Before depending on unattended
 classroom operation, the owner should select an external alert destination, protect/copy the
-recovery key independently, decide graded-source retention/deletion and prepare the actual
-teaching problem bank/accounts. Keep the one-worker starting limits and watch queue pressure
+recovery key independently, decide graded-source retention/deletion and enroll actual students/extend the
+published beginner problem bank for their course. Keep the one-worker starting limits and watch queue pressure
 for compiler-heavy tasks. These are explicit handoff limits, not missing compilers or a need
 to buy a managed Judge0 subscription/Vercel/domain. No new ML training or paper metric changes
 were made; public Codeforces/model/synthetic policy/real interaction evidence remain separate.

@@ -1,13 +1,16 @@
 # Final implementation and production handoff
 
 Date: **2026-11-05**. Live installation: **https://socratesai.duckdns.org**.
-Current release **v0.9.4** (`8f7f9174b846299b898a381911bc02a78449b284`) passed
-[automatic release/deployment](https://github.com/koshikovme/socratesai/actions/runs/41965872170).
-[Permanent digest/model/runtime manifest](../../deploy/releases/v0.9.4.json).
+Current release **v0.9.7** (`97ad768864a820d0314ab673a6f527706afe06c4`) passed
+[automatic release/deployment](https://github.com/koshikovme/socratesai/actions/runs/41980434590).
+[Permanent digest/model/runtime manifest](../../deploy/releases/v0.9.7.json).
 The original v0.9.1 installation/recovery evidence remains dated in the production report;
 [the follow-up](result-mentor-v2.md) records current AI/workspace and patched-image acceptance.
 [Interface localization](result-ui-localization.md) adds English/Russian/Kazakh across all roles,
 verified live with mobile layout and unsaved form/code preservation.
+[Typed starters and teaching results](result-teaching.md) include two published ten-problem
+Java/C++ collections. [Editable profiles](result-profile.md) add secure account editing and
+exclude the 32 known operational student accounts from classroom reports, preserving history.
 Operational helper/documentation commits follow the tagged application source; the tag is unchanged.
 
 | Requirement | Implementation / evidence |
@@ -23,9 +26,9 @@ Operational helper/documentation commits follow the tagged application source; t
 | Bounded LLM spending | Gemini classification/phrasing uses durable month/minute/student-day quotas, counted input and output caps, explicit provider/allowance errors. Reviewed configured upper estimate $2.8032/month; tax, price changes and outside-key use excluded. No paid request for untouched onboarding or already accepted graded work. |
 | Research integrity | Saved models, experiment result folders, TeX and figure artifacts were not changed. Public Codeforces evaluation, weak labels, genuine interaction data and synthetic production probes remain distinct. No new classroom effectiveness claim. |
 
-Current verification includes 319 Java tests (0 failures/errors, one opt-in experiment skipped),
-107 frontend tests/coverage/lint/build, Python inference/readiness contracts, three CI browser fixtures,
-four real build-context exclusion checks, six delivery tests, five demo fixture tests and
+Current verification includes 335 Java tests (0 failures/errors, one opt-in experiment skipped),
+144 frontend tests/coverage/lint/build, Python inference/readiness contracts, five CI browser fixtures,
+four real build-context exclusion checks, nine delivery tests, five demo fixture tests and
 successful image/security/release gates. The actual live probes are separate evidence:
 three-language fresh Run/Submit/idempotency, twelve verdict cases, actual browser, hidden echo,
 foreign access/principal spoofing, anonymous/foreign WSS denial, real Gemini hints before any
@@ -44,12 +47,12 @@ provider tickets, private source and unrelated research files were excluded from
 
 The IEEE integration section was inspected: endpoint, Python features, threshold 0.35 and
 confidence logging remain compatible. No paper edits, new research runs, duplicate-source
-synchronization or PDF rebuild is claimed. The production database is fresh and synthetic;
-no migration/testing was performed on shared real developer/student databases 21/22.
+synchronization or PDF rebuild is claimed. The original installation was fresh with synthetic fixtures; follow-up live checks used only
+known synthetic accounts and did not edit real student profiles. No migration/testing was performed on shared real developer/student databases 21/22.
 
 The owner still needs to choose long-term graded-source retention/deletion and external
-incident notification routing, keep recovery material independently safe, and prepare the
-actual teaching catalog/accounts. The current small-problem 30-session result is a bounded
+incident notification routing, keep recovery material independently safe, and enroll real students/extend the
+published introductory exercise bank for their course. The current small-problem 30-session result is a bounded
 starting point; monitor queue pressure for compiler-heavy classes. No additional VPS, domain,
 Vercel or managed Judge0 subscription is needed for the recorded deployment.
 Owner credentials remain in protected local `.delivery/production-access.md`.

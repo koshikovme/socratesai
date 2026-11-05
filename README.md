@@ -22,11 +22,32 @@ in the protected local `.delivery/production-access.md` file. Public signup gran
 staff roles require audited administrator provisioning.
 See the [production evidence](tasks/socrates-evolution/result-9-production.md) and
 [deployment/incident runbook](DEPLOYMENT.md) for release, backups, limits and commands.
-Current release **v0.9.4** passed automatic deployment and real three-role localization checks;
-see the [localization report](tasks/socrates-evolution/result-ui-localization.md).
+Current release **v0.9.7** passed automatic deployment, mobile profile editing/email rotation
+and student-only report checks; see the [profile report](tasks/socrates-evolution/result-profile.md).
+English/Russian/Kazakh interface coverage is recorded in the
+[localization report](tasks/socrates-evolution/result-ui-localization.md).
 Native AI/judging and the bounded 30-session evidence remain dated in the
 [mentor/workspace follow-up](tasks/socrates-evolution/result-mentor-v2.md).
 All recorded acceptance/load checks use synthetic accounts and do not establish classroom outcomes.
+
+## Accounts and teaching
+
+Use **Profile → Edit profile** to update your name, sign-in email, university and group.
+An email change asks for your current password. Students see progress from graded submissions;
+teachers/admins get a link to their teaching workspace.
+
+In **Teaching**, open a problem or collection and choose **Student results** to filter attempts,
+view judge verdicts and review submitted code. Staff practice and configured operational test
+accounts are excluded from classroom results. ACCEPTED submissions determine solved progress;
+there is no manual grading step.
+
+The published beginner collections contain ten exercises each:
+[Java basics](https://socratesai.duckdns.org/collections/2) and
+[C++ basics](https://socratesai.duckdns.org/collections/3). Starters expose named parameters
+with a TODO function and include the runnable input/output adapter. The teacher editor can
+generate these starters; custom input formats remain author-editable. See the
+[teaching report](tasks/socrates-evolution/result-teaching.md) and
+[profile/reporting report](tasks/socrates-evolution/result-profile.md).
 
 ## Repository Layout
 

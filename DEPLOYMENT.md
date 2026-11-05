@@ -4,9 +4,11 @@ The authorized installation is **https://socratesai.duckdns.org**. The applicati
 `89.126.199.55` and real compilation/execution on the separate `89.126.199.58` VM.
 The repository owner operates both hosts. Credentials are held in the ignored, protected
 `.delivery/production-access.md` and external host configuration; none belong in this document.
-The verified automatic release is **v0.9.4** (`8f7f917`); its permanent nonsecret digest
-manifest is [deploy/releases/v0.9.4.json](deploy/releases/v0.9.4.json).
+The verified automatic release is **v0.9.7** (`97ad768`); its permanent nonsecret digest
+manifest is [deploy/releases/v0.9.7.json](deploy/releases/v0.9.7.json).
 Dated checks, image identifiers and release evidence are in
+[the profile/reporting report](tasks/socrates-evolution/result-profile.md),
+[the teaching report](tasks/socrates-evolution/result-teaching.md),
 [the localization report](tasks/socrates-evolution/result-ui-localization.md) and
 [the native mentor report](tasks/socrates-evolution/result-mentor-v2.md).
 The original installation/recovery evidence remains in
@@ -171,6 +173,58 @@ GitHub permissions are least-privilege; PRs receive no deployment or execution c
 Reports expire after 7 days, image artifacts after 3 and release manifests after 30: retain
 operator release evidence and backups independently. Never overwrite a published tag.
 
+## Profiles and classroom reporting
+
+All account roles can use **Profile → Edit profile** to save their name, sign-in email,
+university and group. Changing email requires the current password; the same browser receives
+replacement authentication. Profile API clients must submit the `profileRevision` returned by
+`GET /api/users/me`. A stale revision returns safe 409; reload the profile before applying a
+new edit. Role assignment remains the audited administrator endpoint, never a profile field.
+
+v0.9.7 adds immutable account-ID binding to JWTs. Pre-release tokens without `uid` require
+one new sign-in. This prevents old email tokens from following an address into another
+account. When investigating authentication, inspect status/request IDs; never dump tokens.
+A rollback backend must retain this ID check. Restoring a pre-v0.9.7 backend after email
+changes requires securely rotating the JWT signing secret before restoring traffic, so older
+email-only tokens cannot become valid again. Normal future rollbacks to v0.9.7 retain the check.
+
+**Teaching → problem/collection → Student results** shows only current STUDENT accounts.
+Teacher/admin practice and internal acceptance/load users are excluded from lists, totals,
+filters and direct source review. Their owner histories and research logs are retained.
+Collection reporting still requires the explicit collection context and resource ownership.
+
+The operator maintains `APP_REPORTING_INTERNAL_USER_IDS` in the protected production env;
+it is a comma-separated list of immutable positive numeric user IDs (maximum 1,000).
+The 32 existing synthetic student fixtures were classified during the profile release.
+Before creating new load/acceptance accounts, record and add their authenticated IDs here.
+Names, email prefixes and universities are not an account classification mechanism. Never
+add real student IDs to hide a reporting issue or delete their submissions to clean up a view.
+
+For a reviewed configuration-only update, edit the private env on the main host, then acquire
+`/opt/socratesai/private/deployment.lock`, validate Compose and recreate only the backend
+using the existing image reference and volumes. The current Compose must pass this variable
+into `backend`; adding it to the env alone is insufficient. Check readiness after recreation.
+Do not print expanded Compose output or the env file. During this release the existing host
+Compose was preserved and only this new binding added after comparing its reviewed baseline.
+
+Authorized live checks use synthetic accounts from the ignored access file:
+
+```bash
+node scripts/delivery/live_profiles.cjs --access-file .delivery/production-access.json
+node scripts/delivery/live_teaching.cjs --access-file .delivery/production-access.json \
+  --pack-state .delivery/basics-publication.json
+```
+
+Use Node 22 and the installed Playwright Chrome channel. Profile checks restore original
+fixture details in `finally`, including the temporarily changed email; they do not modify
+real student profiles or submit/execute programs. They also check that internal source-review
+URLs return 404 while owner history remains intact. The teaching check expects the configured
+probe to be absent, rather than inserting artificial classroom rows to fill the table.
+
+The student profile explains graded progress. The former raw mentor-event/policy/latency
+panel was a research-oriented display; removing it from the profile does not erase logs or
+change expert/dataset exports. Staff profiles link to the actual teaching results instead.
+
 ## Backups and restore
 
 The main-host timer makes a custom-format PostgreSQL dump at 02:30 UTC plus up to ten minutes,
@@ -277,7 +331,7 @@ The browser rehearsal uses actual HTTPS/WSS/Monaco and real judging, separately 
 From the operator checkout, with Node 22.23.1, installed frontend Playwright dependencies and Chrome:
 
 ```bash
-python3 scripts/delivery/live_acceptance.py --access-file .delivery/production-access.json --run-label v0.9.4
+python3 scripts/delivery/live_acceptance.py --access-file .delivery/production-access.json --run-label v0.9.7-check
 python3 scripts/delivery/live_runtime_matrix.py --access-file .delivery/production-access.json
 node scripts/delivery/live_browser.cjs --access-file .delivery/production-access.json
 node scripts/delivery/live_localization.cjs --access-file .delivery/production-access.json
@@ -297,8 +351,9 @@ WebSockets, then completed 30 short Python sample runs with no graded attempts. 
 p95 was 3,159.2 ms; maximum completion was 37.1 seconds. These are one synthetic rehearsal's
 observations. They do not establish throughput for arbitrary compiler-heavy classes or learning
 gains. Keep one executor worker and the recorded quotas initially; inspect queue pressure
-before a class. The collection currently contains a verified introductory problem, not a
-complete curriculum. Graded-source retention/deletion and external alert routing remain owner
+before a class. The original introductory collection contains a verified problem; the Java
+and C++ beginner collections now each contain ten published exercises. These exercises cover initial
+programming practice; further coursework remains an authoring decision. Graded-source retention/deletion and external alert routing remain owner
 operational decisions; no automatic historical submission deletion is invented.
 
 Gemini uses the funded project and `gemini-3.5-flash-lite`. Durable caps are 3,000 monthly global
