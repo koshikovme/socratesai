@@ -7,21 +7,23 @@ mkdir -p "$report_dir"
 report_dir="$(cd "$report_dir" && pwd)"
 result=0
 image_tag="${DELIVERY_IMAGE_TAG:-delivery-test}"
+cache_volume="${TRIVY_CACHE_VOLUME:-socrates-trivy-cache}"
 images=(backend frontend policy-api)
 if [[ "${SCAN_SANDBOX_IMAGE:-false}" == true ]]; then images+=(judge0); fi
 for name in "${images[@]}"; do
-  docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v socrates-trivy-cache:/root/.cache/ \
+  docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$cache_volume:/root/.cache/" \
     -v "$report_dir:/reports" "$scanner" image --quiet --scanners vuln --ignore-unfixed \
     --severity HIGH,CRITICAL --exit-code 1 --format json --output "/reports/$name.json" \
     "socratesai/$name:$image_tag" || result=1
-  docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v socrates-trivy-cache:/root/.cache/ \
+  python3 "$(dirname "${BASH_SOURCE[0]}")/scan_summary.py" "$report_dir/$name.json" "$name" || result=1
+  docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$cache_volume:/root/.cache/" \
     -v "$report_dir:/reports" "$scanner" image --quiet --format cyclonedx --output "/reports/$name.cdx.json" \
     "socratesai/$name:$image_tag"
 done
 # Record the stock database image separately: its unused gosu Go helper has upstream advisories.
 # Do not suppress those findings or silently claim an all-stack zero. Runtime is explicitly UID 70.
 postgres_image="$(awk '/image: postgres:16-alpine@sha256:/ {print $2}' docker-compose.prod.yml)"
-docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v socrates-trivy-cache:/root/.cache/ \
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$cache_volume:/root/.cache/" \
   -v "$report_dir:/reports" "$scanner" image --quiet --scanners vuln --ignore-unfixed \
   --severity HIGH,CRITICAL --format json --output /reports/postgres-upstream.json "$postgres_image"
 exit "$result"

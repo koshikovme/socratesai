@@ -63,6 +63,24 @@ interaction provenance is `native-ai-v2`, distinct from the earlier native rule 
 
 ## Release verification remaining
 
-Record the immutable v0.9.2 image manifest and workflow outcome, then run the real browser
+Record the immutable v0.9.3 image manifest and workflow outcome, then run the real browser
 journey showing a Java Gemini hint before any execution, starter reset and real judging,
 plus ownership/hidden-data checks and a bounded 30-session AI/sample rehearsal.
+
+## Security gate correction before release
+
+The v0.9.2 workflow passed backend/frontend/model/infrastructure and image startup, then
+correctly blocked publication on CVE-2026-109518 in APT 2.6.1 / libapt-pkg6.0 in the policy
+and execution images. The original report artifact was fetched and its SHA-256 verified
+against GitHub metadata; cached operator scans were not used to waive the finding.
+
+Debian's [official tracker](https://security-tracker.debian.org/tracker/CVE-2026-109518)
+identifies 2.6.2 as the Bookworm security fix. Both image recipes now install that exact
+version over HTTPS, without changing compiler/model versions. All four rebuilt images
+passed the fixed HIGH/CRITICAL gate with a new Trivy cache. The stock PostgreSQL helper
+findings remain separately reported under the existing exposure review.
+
+`scan_summary.py` now prints only advisory/package/fixed-version data, never image env,
+and fails closed on a missing/malformed report. Six delivery tests pass, including this
+report safety and failure behavior. v0.9.2 was not deployed or retagged; the corrected
+release will be v0.9.3. The dedicated execution image is also being patched and reverified.

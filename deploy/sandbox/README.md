@@ -15,7 +15,7 @@ This is project-maintained packaging, not an upstream Judge0 release.
 
 The historical official 1.13.1 container was rejected: its Debian 10 runtime and dependency
 scan had 3,632 HIGH/CRITICAL findings with available fixes. Do not restore that image.
-The replacement uses Debian 12, Ruby 3.4, Rails 8.1, a checksum-bearing Bundler lockfile,
+The replacement uses Debian 12 with APT 2.6.2 (CVE-2026-109518 fixed), Ruby 3.4, Rails 8.1, a checksum-bearing Bundler lockfile,
 Python 3.12, Java 21 and GCC 12. Only these three seeded runtimes are enabled:
 
 | Language key | Provider ID | Actual provider name | Entry point |

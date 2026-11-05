@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1.7@sha256:a57df69d0ea827fb7266491f2813635de6f17269be881f696fbfdf2d83dda33e
 FROM ruby:3.4-slim-bookworm@sha256:a0636a941ef86063f17b343f6c96f271f8eeedd76febf035bb6d57bc5024682b AS base
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN sed -i 's|http://deb.debian.org|https://deb.debian.org|g' /etc/apt/sources.list.d/debian.sources \
+    && apt-get update && apt-get install -y --no-install-recommends apt=2.6.2 libapt-pkg6.0=2.6.2 \
     ca-certificates g++ libcap2 libpq5 sudo libbz2-1.0 libexpat1 libffi8 libgdbm6 \
     libgdbm-compat4 liblzma5 libncursesw6 libreadline8 libsqlite3-0 libssl3 libuuid1 \
     zlib1g libfontconfig1 libfreetype6 && rm -rf /var/lib/apt/lists/*
