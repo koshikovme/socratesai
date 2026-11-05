@@ -4,10 +4,11 @@ The authorized installation is **https://socratesai.duckdns.org**. The applicati
 `89.126.199.55` and real compilation/execution on the separate `89.126.199.58` VM.
 The repository owner operates both hosts. Credentials are held in the ignored, protected
 `.delivery/production-access.md` and external host configuration; none belong in this document.
-The verified automatic release is **v0.9.3** (`c53bf74`); its permanent nonsecret digest
-manifest is [deploy/releases/v0.9.3.json](deploy/releases/v0.9.3.json).
+The verified automatic release is **v0.9.4** (`8f7f917`); its permanent nonsecret digest
+manifest is [deploy/releases/v0.9.4.json](deploy/releases/v0.9.4.json).
 Dated checks, image identifiers and release evidence are in
-[tasks/socrates-evolution/result-mentor-v2.md](tasks/socrates-evolution/result-mentor-v2.md).
+[the localization report](tasks/socrates-evolution/result-ui-localization.md) and
+[the native mentor report](tasks/socrates-evolution/result-mentor-v2.md).
 The original installation/recovery evidence remains in
 [result-9-production.md](tasks/socrates-evolution/result-9-production.md).
 
@@ -276,14 +277,20 @@ The browser rehearsal uses actual HTTPS/WSS/Monaco and real judging, separately 
 From the operator checkout, with Node 22.23.1, installed frontend Playwright dependencies and Chrome:
 
 ```bash
-python3 scripts/delivery/live_acceptance.py --access-file .delivery/production-access.json --run-label v0.9.3
+python3 scripts/delivery/live_acceptance.py --access-file .delivery/production-access.json --run-label v0.9.4
 python3 scripts/delivery/live_runtime_matrix.py --access-file .delivery/production-access.json
 node scripts/delivery/live_browser.cjs --access-file .delivery/production-access.json
+node scripts/delivery/live_localization.cjs --access-file .delivery/production-access.json
 ```
 
 The release label gives a stable new idempotency namespace for that rehearsal. These scripts
 create synthetic runs/attempts; they are not read-only health checks. Preserve existing evidence
 before repeating capacity/recovery rehearsals.
+
+The separate localization helper logs into synthetic admin/teacher/student accounts and checks
+English/Russian/Kazakh at mobile width 390. It preserves unsaved local form/code through switching,
+then clears it on logout; it sends no execution POSTs or staff writes. Its protected screenshots
+and JSON are in `.delivery/`. Language preference is device-local, independent of login.
 
 The v0.9.3 bounded rehearsal received 30 genuine code-only Gemini hints over 30 authenticated
 WebSockets, then completed 30 short Python sample runs with no graded attempts. POST 202

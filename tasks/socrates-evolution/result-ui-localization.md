@@ -1,10 +1,13 @@
 # English, Russian and Kazakh interface
 
-Date: **2026-11-05**. Local implementation and checks are complete; production promotion
-and live three-role verification are pending in this initial source report.
+Date: **2026-11-05**. **Deployed and verified** at **https://socratesai.duckdns.org**.
+Release **v0.9.4**, source `8f7f9174b846299b898a381911bc02a78449b284`, passed
+[automatic release and deployment](https://github.com/koshikovme/socratesai/actions/runs/41965872170).
+Exact digests, unchanged model/executor identifiers and schema V13 are recorded in
+[the immutable manifest](../../deploy/releases/v0.9.4.json).
 
 - A shared plain-text translation layer covers English (`en`), Russian (`ru`) and Kazakh
-  (`kk`), with named interpolation and no new runtime dependency or raw HTML rendering.
+  (`kk`), with **396 messages**, named interpolation and no new runtime dependency or raw HTML rendering.
 - The language selector is available in the header, login, registration and session-recovery
   page. It shows English / Русский / Қазақша, updates immediately and sets document language.
 - The nonsecret preference is stored under `socrates-ui-locale`, survives reload/logout and
@@ -26,6 +29,14 @@ masking, error redaction, interpolation/escaped content and complete translation
 These are synthetic UI checks, not classroom or model-quality evidence. Backend schema,
 models, experiments, papers and dedicated execution runtime are unchanged.
 
-`scripts/delivery/live_localization.cjs` provides the authorized HTTPS three-role acceptance
-without staff writes or execution requests. The production outcome and immutable release
-manifest will be recorded after automatic delivery succeeds.
+`scripts/delivery/live_localization.cjs --access-file .delivery/production-access.json` passed
+against actual HTTPS after promotion, using the authorized synthetic admin, teacher and
+student identities. Russian/Kazakh admin forms, teacher editing, English/Russian/Kazakh Monaco
+controls, reload/logout persistence and original unsaved form/code preservation passed at
+mobile width **390 px**. **Zero staff writes, execution POSTs or unexpected page errors** were
+observed. Screenshots/evidence and credentials remain protected and ignored under `.delivery/`.
+The health/readiness/disk check passed. No paid translation API or extra hosting was added.
+
+Earlier native AI/judging/capacity evidence remains dated in [result-mentor-v2.md](result-mentor-v2.md);
+it was not relabeled as a new model or classroom evaluation. This release changes interface
+language, with generated advice and teacher-authored task content retaining their original text.

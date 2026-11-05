@@ -22,8 +22,10 @@ in the protected local `.delivery/production-access.md` file. Public signup gran
 staff roles require audited administrator provisioning.
 See the [production evidence](tasks/socrates-evolution/result-9-production.md) and
 [deployment/incident runbook](DEPLOYMENT.md) for release, backups, limits and commands.
-Current release **v0.9.3** passed automatic deployment, real code-only AI/browser checks and
-a bounded 30-session rehearsal; see the [mentor/workspace follow-up](tasks/socrates-evolution/result-mentor-v2.md).
+Current release **v0.9.4** passed automatic deployment and real three-role localization checks;
+see the [localization report](tasks/socrates-evolution/result-ui-localization.md).
+Native AI/judging and the bounded 30-session evidence remain dated in the
+[mentor/workspace follow-up](tasks/socrates-evolution/result-mentor-v2.md).
 All recorded acceptance/load checks use synthetic accounts and do not establish classroom outcomes.
 
 ## Repository Layout

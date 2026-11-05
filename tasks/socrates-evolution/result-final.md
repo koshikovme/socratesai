@@ -1,11 +1,13 @@
 # Final implementation and production handoff
 
 Date: **2026-11-05**. Live installation: **https://socratesai.duckdns.org**.
-Current release **v0.9.3** (`c53bf74f3b9e6a7be622f4e2a475dc9ff52fa9eb`) passed
-[automatic release/deployment](https://github.com/koshikovme/socratesai/actions/runs/41961137181).
-[Permanent digest/model/runtime manifest](../../deploy/releases/v0.9.3.json).
+Current release **v0.9.4** (`8f7f9174b846299b898a381911bc02a78449b284`) passed
+[automatic release/deployment](https://github.com/koshikovme/socratesai/actions/runs/41965872170).
+[Permanent digest/model/runtime manifest](../../deploy/releases/v0.9.4.json).
 The original v0.9.1 installation/recovery evidence remains dated in the production report;
 [the follow-up](result-mentor-v2.md) records current AI/workspace and patched-image acceptance.
+[Interface localization](result-ui-localization.md) adds English/Russian/Kazakh across all roles,
+verified live with mobile layout and unsaved form/code preservation.
 Operational helper/documentation commits follow the tagged application source; the tag is unchanged.
 
 | Requirement | Implementation / evidence |
@@ -22,7 +24,7 @@ Operational helper/documentation commits follow the tagged application source; t
 | Research integrity | Saved models, experiment result folders, TeX and figure artifacts were not changed. Public Codeforces evaluation, weak labels, genuine interaction data and synthetic production probes remain distinct. No new classroom effectiveness claim. |
 
 Current verification includes 319 Java tests (0 failures/errors, one opt-in experiment skipped),
-93 frontend tests/lint/build, Python inference/readiness contracts, two CI browser fixtures,
+107 frontend tests/coverage/lint/build, Python inference/readiness contracts, three CI browser fixtures,
 four real build-context exclusion checks, six delivery tests, five demo fixture tests and
 successful image/security/release gates. The actual live probes are separate evidence:
 three-language fresh Run/Submit/idempotency, twelve verdict cases, actual browser, hidden echo,
