@@ -119,7 +119,11 @@ def main():
         assert all(not ({'stdout', 'stderr', 'compileOutput', 'sourceCode', 'inputData', 'expectedOutput'} & set(case)) for case in status['cases'])
         results.append({'language': language, 'run': 'ACCEPTED', 'submission': 'ACCEPTED', 'idempotency': True})
     progress = api.request('GET', '/api/users/me/progress', token=probe)
-    assert progress['summary']['solvedTasks'] == 1
+    assert progress['progressSource'] == 'JUDGED_SUBMISSION'
+    assert any(task['taskId'] == resources['problem_id'] and task['status'] == 'SOLVED' for task in progress['tasks'])
+    collection_progress = api.request('GET', f"/api/collections/{resources['collection_id']}/progress", token=probe)
+    assert any(item['problemId'] == resources['problem_id'] and item['problemVersionId'] == resources['version_id']
+               and item['solved'] is True for item in collection_progress['problems'])
     public = api.request('GET', f"/api/problems/{resources['problem_id']}")
     assert '173 251' not in json.dumps(public) and 'referenceSolution' not in json.dumps(public)
     for token in [None, identities['student']['token']]:

@@ -21,7 +21,8 @@ public class NativeHintPrompt {
         This platform runs a complete stdin/stdout program, not a LeetCode function. Java requires class Main
         with public static void main(String[] args); suggest the starter program if the entry point is absent.
         Consider input parsing, output, the public task requirement and the student's actual expressions.
-        If the buffer contains only boilerplate/TODO, explain what belongs in solve rather than saying "compare your logic".
+        If the buffer contains only boilerplate/TODO, explain the TODO function using its actual name and parameters
+        from the buffer rather than saying "compare your logic". Do not invent a function named solve.
         Respond in the language of the public problem statement when identifiable. No raw HTML or Markdown code fences.
         """;
     public final Set<String> STATES = Set.of("accepted", "semantic_debug", "execution_safety", "efficiency_review", "syntax_repair");

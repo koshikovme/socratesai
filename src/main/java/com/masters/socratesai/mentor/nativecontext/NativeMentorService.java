@@ -20,7 +20,7 @@ public class NativeMentorService {
         if (message.getCode().isBlank() || message.getCodeRevision() == 0) {
             var feedback = base(prepared, message).action(FeedbackAction.GUIDING_QUESTION.name()).policyMode("READY")
                     .feedbackSource("onboarding").policyVersion("native-ai-v2")
-                    .feedbackText("Write your logic in solve, then pause or click Ask mentor for an AI hint. You do not need to run samples first.").build();
+                    .feedbackText("Write your logic in the function marked TODO, then pause or click Ask mentor for an AI hint. You do not need to run samples first.").build();
             return new ComputedMentorFeedback(prepared, feedback, 0, 0);
         }
         if (evidence.isExecutionKnown() && evidence.getOrigin() == EvidenceOrigin.JUDGED_SUBMISSION && evidence.getVerdict() == ExecutionVerdict.ACCEPTED) {

@@ -446,6 +446,7 @@ export const translations = [
   ['Implement the function marked TODO and keep its signature. The starter explains how inputs are passed and the answer is printed.', 'Реализуйте функцию с отметкой TODO, сохранив её сигнатуру. В шаблоне показано, как передаются входные данные и печатается ответ.', 'TODO белгісі бар функцияны сигнатурасын сақтап іске асырыңыз. Үлгіде кіріс деректерін беру және жауапты шығару көрсетілген.'],
   ['Keep main() and implement the function marked TODO. The input/output adapter reads the parameters and prints the answer.', 'Сохраните main() и реализуйте функцию с отметкой TODO. Код ввода/вывода считывает параметры и печатает ответ.', 'main() қалсын. TODO белгісі бар функцияны іске асырыңыз. Енгізу/шығару коды параметрлерді оқып, жауапты шығарады.'],
   ['Refresh automatically every 10 seconds', 'Автообновление каждые 10 секунд', 'Әр 10 секунд сайын автоматты жаңарту'],
+  ['Write your logic in the function marked TODO, then pause or click Ask mentor for an AI hint. You do not need to run samples first.', 'Напишите логику в функции с отметкой TODO, затем сделайте паузу или нажмите «Спросить ментора». Предварительный запуск примеров не требуется.', 'Логиканы TODO белгісі бар функцияда жазып, үзіліс жасаңыз немесе «Ментордан сұрау» батырмасын басыңыз. Мысалдарды алдын ала іске қосу қажет емес.'],
 ]
 
 export const messages = Object.fromEntries(['en', 'ru', 'kk'].map((locale, index) => [

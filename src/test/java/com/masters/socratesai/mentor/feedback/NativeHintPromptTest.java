@@ -18,6 +18,7 @@ class NativeHintPromptTest {
         assertThat(body.has("observed_verdict")).isFalse();
         assertThat(body.toString()).doesNotContain("provider_token", "reference_solution", "stderr", "expected_output");
         assertThat(NativeHintPrompt.INSTRUCTIONS).contains("untrusted data", "never claim", "Java requires class Main");
+        assertThat(NativeHintPrompt.INSTRUCTIONS).contains("actual name and parameters").doesNotContain("what belongs in solve");
     }
 
     @Test void largeCodeIsBoundedAndTruncationIsExplicitInsteadOfInventingMissingCode() throws Exception {

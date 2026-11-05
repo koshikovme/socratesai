@@ -53,6 +53,7 @@ class NativeMentorServiceTest {
         var result = service.compute(actor, message("java", 0)).getFeedback();
         assertThat(result.getPolicyMode()).isEqualTo("READY");
         assertThat(result.getFeedbackSource()).isEqualTo("onboarding");
+        assertThat(result.getFeedbackText()).contains("function marked TODO").doesNotContain("in solve");
         verifyNoInteractions(policy, gemini);
     }
 
